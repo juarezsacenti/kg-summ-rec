@@ -85,17 +85,49 @@ def print_statistic_info(item_count, entity_count, relation_count, triple_count)
     print ('The number of relations is: ' + str(relation_count))
     print ('The number of triples is: ' + str(triple_count))
 
+
+def back_to_ratings(input_folder, fw_ratings):
+    '''
+    Union of train.dat, valid.dat, test.dat to ratings-delete-missing-itemid.txt
+    '''
+    time = "0"
+    ratings_cnt = 0
+    train_file = os.path.join(input_folder, 'train.dat')
+    with open(train_file, 'r', encoding="utf-8") as fin:
+        for line in fin:
+            fw_ratings.write(line.replace('\n', '')+"\t"+time+"\n")
+            ratings_cnt += 1
+
+    valid_file = os.path.join(input_folder, 'valid.dat')
+    with open(valid_file, 'r', encoding="utf-8") as fin:
+        for line in fin:
+            fw_ratings.write(line.replace('\n', '')+"\t"+time+"\n")
+            ratings_cnt += 1
+
+    test_file = os.path.join(input_folder, 'test.dat')
+    with open(test_file, 'r', encoding="utf-8") as fin:
+        for line in fin:
+            fw_ratings.write(line.replace('\n', '')+"\t"+time+"\n")
+            ratings_cnt += 1
+
+    return ratings_cnt
+
+
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description=''' Map Auxiliary Information into ID''')
 
     parser.add_argument('--input_folder', type=str, dest='input_folder', default='../../datasets/ml1m-cao/')
     parser.add_argument('--mapping', type=str, dest='mapping_file', default='../../datasets/ml1m-cao2sun/auxiliary-mapping.txt')
+    parser.add_argument('--ratings', type=str, dest='ratings_file', default='../../datasets/ml1m-cao2sun/ratings-delete_missing-itemid.txt')
 
     parsed_args = parser.parse_args()
 
     input_folder = parsed_args.input_folder
     mapping_file = parsed_args.mapping_file
+    ratings_file = parsed_args.ratings_file
+
+    print(os.getcwd())
 
     fw_mapping = open(mapping_file,'w')
 
@@ -103,3 +135,9 @@ if __name__ == '__main__':
     print_statistic_info(item_count, entity_count, relations_count, triples_count)
 
     fw_mapping.close()
+
+    fw_ratings = open(ratings_file,'w')
+
+    print ('The number of ratings is: ' + str(back_to_ratings(input_folder, fw_ratings)))
+
+    fw_ratings.close()
