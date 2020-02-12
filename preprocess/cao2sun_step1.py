@@ -119,7 +119,7 @@ if __name__ == '__main__':
 
     parser.add_argument('--input_folder', type=str, dest='input_folder', default='../../datasets/ml1m-cao/ml1m/')
     parser.add_argument('--mapping', type=str, dest='mapping_file', default='../../datasets/ml1m-cao2sun/ml1m/auxiliary-mapping.txt')
-    parser.add_argument('--ratings', type=str, dest='ratings_file', default='../../datasets/ml1m-cao2sun/ml1m/ratings-delete_missing-itemid.txt')
+    parser.add_argument('--ratings', type=str, dest='ratings_file', default='../../datasets/ml1m-cao2sun/ml1m/rating-delete-missing-itemid.txt')
 
     parsed_args = parser.parse_args()
 
