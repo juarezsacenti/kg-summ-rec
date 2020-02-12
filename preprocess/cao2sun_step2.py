@@ -1,5 +1,6 @@
 # Build knowledge graph and mine the connected paths between users and movies in the training data of MovieLens
 
+import os
 import argparse
 import networkx as nx
 import random
