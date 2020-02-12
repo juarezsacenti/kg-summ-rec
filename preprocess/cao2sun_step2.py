@@ -146,12 +146,12 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description=''' Build Knowledge Graph and Mine the Connected Paths''')
 
-    parser.add_argument('--training', type=str, dest='training_file', default='../../datasets/ml1m-cao2sun/training.txt')
-    parser.add_argument('--negtive', type=str, dest='negative_file', default='../../datasets/ml1m-cao2sun/negative.txt')
-    parser.add_argument('--auxiliary', type=str, dest='auxiliary_file', default='../../datasets/ml1m-cao2sun/auxiliary-mapping.txt')
-    parser.add_argument('--positivepath', type=str, dest='positive_path', default='../../datasets/ml1m-cao2sun/positive-path.txt', \
+    parser.add_argument('--training', type=str, dest='training_file', default='../../datasets/ml1m-cao2sun/ml1m/training.txt')
+    parser.add_argument('--negtive', type=str, dest='negative_file', default='../../datasets/ml1m-cao2sun/ml1m/negative.txt')
+    parser.add_argument('--auxiliary', type=str, dest='auxiliary_file', default='../../datasets/ml1m-cao2sun/ml1m/auxiliary-mapping.txt')
+    parser.add_argument('--positivepath', type=str, dest='positive_path', default='../../datasets/ml1m-cao2sun/ml1m/positive-path.txt', \
                         help='paths between user-item interaction pairs')
-    parser.add_argument('--negativepath', type=str, dest='negative_path', default='../../datasets/ml1m-cao2sun/negative-path.txt', \
+    parser.add_argument('--negativepath', type=str, dest='negative_path', default='../../datasets/ml1m-cao2sun/ml1m/negative-path.txt', \
                         help='paths between negative sampled user-item pair')
     parser.add_argument('--pathlength', type=int, dest='path_length', default=3, help='length of paths with choices [3,5,7]')
     parser.add_argument('--samplesize', type=int, dest='sample_size', default=5, \
