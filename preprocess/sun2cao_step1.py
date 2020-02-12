@@ -164,9 +164,9 @@ if __name__ == '__main__':
     print(os.getcwd())
     parser = argparse.ArgumentParser(description=''' Map Auxiliary Information into ID''')
 
-    parser.add_argument('--auxiliary', type=str, dest='auxiliary_file', default='../../datasets/ml1m-sun/auxiliary.txt')
-    parser.add_argument('--i2kg_map', type=str, dest='i2kg_map_file', default='../../datasets/ml1m-cao/i2kg_map.tsv')
-    parser.add_argument('--mapping', type=str, dest='mapping_file', default='../../datasets/ml1m-sun2cao/kg_hop0_sun.dat')
+    parser.add_argument('--auxiliary', type=str, dest='auxiliary_file', default='../../datasets/ml1m-sun/ml1m/auxiliary.txt')
+    parser.add_argument('--i2kg_map', type=str, dest='i2kg_map_file', default='../../datasets/ml1m-cao/ml1m/i2kg_map.tsv')
+    parser.add_argument('--mapping', type=str, dest='mapping_file', default='../../datasets/ml1m-sun2cao/ml1m/kg_hop0_sun.dat')
 
     parsed_args = parser.parse_args()
 

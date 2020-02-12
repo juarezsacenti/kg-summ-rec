@@ -6,8 +6,8 @@ sys.path.append(os.path.abspath('../../joint-kg-recommender'))
 from jTransUP.data.preprocessRatings import preprocess as preprocessRating
 from jTransUP.data.preprocessTriples import preprocess as preprocessKG
 
-data_path = "../../datasets/"
-dataset = 'ml1m-sun2cao'
+data_path = "../../datasets/ml1m-sun2cao/"
+dataset = 'ml1m'
 
 dataset_path = os.path.join(data_path, dataset)
 kg_path = os.path.join(dataset_path, 'kg')
