@@ -110,6 +110,7 @@ def mine_paths_between_nodes(Graph, user_node, movie_node, maxLen, sample_size, 
             connected_path.append(path)
 
     path_size = len(connected_path)
+    print(path_size)
 
     #as there is a huge number of paths connected user-movie nodes, we get randomly sampled paths
     #random sample can better balance the data distribution and model complexity
@@ -122,7 +123,7 @@ def mine_paths_between_nodes(Graph, user_node, movie_node, maxLen, sample_size, 
         line = ",".join(path) + '\n'
         fw_file.write(line)
         count+=1
-        if(count % 10 == 0):
+        if(count % 5 == 0):
             print(line)
 
     #print('The number of paths between '+ user_node + ' and ' + movie_node + ' is: ' +  str(len(connected_path)) +'\n')
