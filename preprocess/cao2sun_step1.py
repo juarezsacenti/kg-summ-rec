@@ -67,7 +67,7 @@ def mapping(input_folder, fw_mapping):
             relation_list.append(int(r_id))
 
     for e_id in kg:
-        output_line = str(i2kg_map[e_map[e_id]])
+        output_line = str(e_id)
         for r_id in relation_list:
             output_line += '|' + str(kg[e_id][r_id]).strip('[]')
         output_line += '\n'
@@ -91,23 +91,44 @@ def back_to_ratings(input_folder, fw_ratings):
     Union of train.dat, valid.dat, test.dat to ratings-delete-missing-itemid.txt
     '''
     time = "0"
+
+    fr_i2kg_map = os.path.join(input_folder, 'i2kg_map.tsv')
+    i2kg_map = {}
+    with open(fr_i2kg_map, 'r', encoding="utf-8") as fin:
+        for line in fin:
+            (i_id, name, uri) = line.split("\t")
+            i2kg_map[str(i_id)] = str(uri.replace('\n', ''))
+
+    kg_path = os.path.join(input_folder, 'kg')
+    e_map_file = os.path.join(kg_path, 'e_map.dat')
+    entity_set = set()
+    e_map = {}
+    with open(e_map_file, 'r', encoding="utf-8") as fin:
+        for line in fin:
+            (e_id, uri) = line.split("\t")
+            uri = uri.replace('\n', '')
+            if uri in i2kg_map.keys():
+                e_map[str(uri.replace('\n', ''))]=str(e_id)
+                entity_set.add(int(e_id))
+
     ratings_cnt = 0
     train_file = os.path.join(input_folder, 'train.dat')
     with open(train_file, 'r', encoding="utf-8") as fin:
         for line in fin:
-            fw_ratings.write(line.replace('\n', '')+"\t"+time+"\n")
+            (u_id, i_id, rate) = line.split("\t")
+            fw_ratings.write(u_id+"\t"+i2kg_map[i_id]+"\t"+rate.replace('\n', '')+"\t"+time+"\n")
             ratings_cnt += 1
 
     valid_file = os.path.join(input_folder, 'valid.dat')
     with open(valid_file, 'r', encoding="utf-8") as fin:
         for line in fin:
-            fw_ratings.write(line.replace('\n', '')+"\t"+time+"\n")
+            fw_ratings.write(u_id+"\t"+i2kg_map[i_id]+"\t"+rate.replace('\n', '')+"\t"+time+"\n")
             ratings_cnt += 1
 
     test_file = os.path.join(input_folder, 'test.dat')
     with open(test_file, 'r', encoding="utf-8") as fin:
         for line in fin:
-            fw_ratings.write(line.replace('\n', '')+"\t"+time+"\n")
+            fw_ratings.write(u_id+"\t"+i2kg_map[i_id]+"\t"+rate.replace('\n', '')+"\t"+time+"\n")
             ratings_cnt += 1
 
     return ratings_cnt
