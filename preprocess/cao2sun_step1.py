@@ -12,62 +12,39 @@ def mapping(input_folder, fw_mapping):
         @fw_mapping: the auxiliary mapping information
     '''
     kg = defaultdict(lambda: defaultdict(list))
-
     triple_count = 0
-
-    fr_i2kg_map = os.path.join(input_folder, 'i2kg_map.tsv')
-    i2kg_map = {}
-    with open(fr_i2kg_map, 'r', encoding="utf-8") as fin:
-        for line in fin:
-            (e_id, name, uri) = line.split("\t")
-            i2kg_map[str(uri.replace('\n', ''))] = int(e_id)
-
     kg_path = os.path.join(input_folder, 'kg')
-    e_map_file = os.path.join(kg_path, 'e_map.dat')
-    entity_set = set()
-    e_map = {}
-    with open(e_map_file, 'r', encoding="utf-8") as fin:
-        for line in fin:
-            (e_id, uri) = line.split("\t")
-            uri = uri.replace('\n', '')
-            if uri in i2kg_map.keys():
-                e_map[int(e_id)]=str(uri.replace('\n', ''))
-                entity_set.add(int(e_id))
-    item_list = e_map.keys()
+
     train_file = os.path.join(kg_path, 'train.dat')
     with open(train_file, 'r', encoding="utf-8") as fin:
         for line in fin:
             (sub, obj, pred) = line.split("\t")
-            if int(sub) in item_list:
-                kg[int(sub)][int(pred)].append(int(obj))
-                triple_count += 1
-                entity_set.add(int(obj))
+            kg[sub][pred.replace('\n', '')].append(obj)
+            triple_count += 1
+
     test_file = os.path.join(kg_path, 'test.dat')
     with open(test_file, 'r', encoding="utf-8") as fin:
         for line in fin:
             (sub, obj, pred) = line.split("\t")
-            if int(sub) in item_list:
-                kg[int(sub)][int(pred)].append(int(obj))
-                triple_count += 1
-                entity_set.add(int(obj))
+            kg[sub][pred.replace('\n', '')].append(obj)
+            triple_count += 1
+
     valid_file = os.path.join(kg_path, 'valid.dat')
     with open(valid_file, 'r', encoding="utf-8") as fin:
         for line in fin:
             (sub, obj, pred) = line.split("\t")
-            if int(sub) in item_list:
-                kg[int(sub)][int(pred)].append(int(obj))
-                triple_count += 1
-                entity_set.add(int(obj))
+            kg[sub][pred.replace('\n', '')].append(obj)
+            triple_count += 1
 
     r_map_file = os.path.join(kg_path, 'r_map.dat')
     relation_list = []
     with open(r_map_file, 'r', encoding="utf-8") as fin:
         for line in fin:
             (r_id, uri) = line.split("\t")
-            relation_list.append(int(r_id))
+            relation_list.append(r_id)
 
-    for e_id in kg:
-        output_line = str(e_id)
+    for sub in kg.keys():
+        output_line = sub
         for r_id in relation_list:
             output_line += '|' + str(kg[e_id][r_id]).strip('[]')
         output_line += '\n'
@@ -75,7 +52,39 @@ def mapping(input_folder, fw_mapping):
 
     return len(item_list), len(entity_set), len(relation_list), triple_count
 
-def print_statistic_info(item_count, entity_count, relation_count, triple_count):
+
+def back_to_ratings(input_folder, fw_ratings):
+    '''
+    Union of train.dat, valid.dat, test.dat to ratings-delete-missing-itemid.txt
+    '''
+    time = "0"
+    ratings_cnt = 0
+
+    train_file = os.path.join(input_folder, 'train.dat')
+    with open(train_file, 'r', encoding="utf-8") as fin:
+        for line in fin:
+            (u_id, i_id, rate) = line.split("\t")
+            fw_ratings.write(u_id+"\t"+i_id+"\t"+rate.replace('\n', '')+"\t"+time+"\n")
+            ratings_cnt += 1
+
+    valid_file = os.path.join(input_folder, 'valid.dat')
+    with open(valid_file, 'r', encoding="utf-8") as fin:
+        for line in fin:
+            (u_id, i_id, rate) = line.split("\t")
+            fw_ratings.write(u_id+"\t"+i_id+"\t"+rate.replace('\n', '')+"\t"+time+"\n")
+            ratings_cnt += 1
+
+    test_file = os.path.join(input_folder, 'test.dat')
+    with open(test_file, 'r', encoding="utf-8") as fin:
+        for line in fin:
+            (u_id, i_id, rate) = line.split("\t")
+            fw_ratings.write(u_id+"\t"+i_id+"\t"+rate.replace('\n', '')+"\t"+time+"\n")
+            ratings_cnt += 1
+
+    return ratings_cnt
+
+
+def print_statistic_info(item_count, entity_count, relation_count, triple_count, ratings_count):
     '''
     print the number of item, entity, relations, triples
     '''
@@ -84,68 +93,7 @@ def print_statistic_info(item_count, entity_count, relation_count, triple_count)
     print ('The number of entity is: ' + str(entity_count))
     print ('The number of relations is: ' + str(relation_count))
     print ('The number of triples is: ' + str(triple_count))
-
-
-def back_to_ratings(input_folder, fw_ratings):
-    '''
-    Union of train.dat, valid.dat, test.dat to ratings-delete-missing-itemid.txt
-    '''
-    time = "0"
-
-    fr_i2kg_map = os.path.join(input_folder, 'i2kg_map.tsv')
-    i2kg_map = {}
-    with open(fr_i2kg_map, 'r', encoding="utf-8") as fin:
-        for line in fin:
-            (i_id, name, uri) = line.split("\t")
-            i2kg_map[str(i_id)] = str(uri.replace('\n', ''))
-
-    fr_i_map = os.path.join(input_folder, 'i_map.dat')
-    i_map = {}
-    with open(fr_i_map, 'r', encoding="utf-8") as fin:
-        for line in fin:
-            (new_id, orig_id) = line.split("\t")
-            i_map[str(new_id)] = str(orig_id.replace('\n', ''))
-
-    kg_path = os.path.join(input_folder, 'kg')
-    e_map_file = os.path.join(kg_path, 'e_map.dat')
-    e_map = {}
-    with open(e_map_file, 'r', encoding="utf-8") as fin:
-        for line in fin:
-            (e_id, uri) = line.split("\t")
-            e_map[str(uri.replace('\n', ''))]=str(e_id)
-
-    ratings_cnt = 0
-    train_file = os.path.join(input_folder, 'train.dat')
-    with open(train_file, 'r', encoding="utf-8") as fin:
-        for line in fin:
-            (u_id, i_id, rate) = line.split("\t")
-            x = i_map.get(i_id,i_id)
-            x = i2kg_map.get(x,i_id)
-            x = e_map.get(x,i_id)
-            fw_ratings.write(u_id+"\t"+x+"\t"+rate.replace('\n', '')+"\t"+time+"\n")
-            ratings_cnt += 1
-
-    valid_file = os.path.join(input_folder, 'valid.dat')
-    with open(valid_file, 'r', encoding="utf-8") as fin:
-        for line in fin:
-            (u_id, i_id, rate) = line.split("\t")
-            x = i_map.get(i_id,i_id)
-            x = i2kg_map.get(x,i_id)
-            x = e_map.get(x,i_id)
-            fw_ratings.write(u_id+"\t"+x+"\t"+rate.replace('\n', '')+"\t"+time+"\n")
-            ratings_cnt += 1
-
-    test_file = os.path.join(input_folder, 'test.dat')
-    with open(test_file, 'r', encoding="utf-8") as fin:
-        for line in fin:
-            (u_id, i_id, rate) = line.split("\t")
-            x = i_map.get(i_id,i_id)
-            x = i2kg_map.get(x,i_id)
-            x = e_map.get(x,i_id)
-            fw_ratings.write(u_id+"\t"+x+"\t"+rate.replace('\n', '')+"\t"+time+"\n")
-            ratings_cnt += 1
-
-    return ratings_cnt
+    print ('The number of ratings is: ' + str(ratgins_count))
 
 
 if __name__ == '__main__':
@@ -162,17 +110,12 @@ if __name__ == '__main__':
     mapping_file = parsed_args.mapping_file
     ratings_file = parsed_args.ratings_file
 
-    print(os.getcwd())
-
     fw_mapping = open(mapping_file,'w')
-
     item_count, entity_count, relations_count, triples_count = mapping(input_folder, fw_mapping)
-    print_statistic_info(item_count, entity_count, relations_count, triples_count)
-
     fw_mapping.close()
 
     fw_ratings = open(ratings_file,'w')
-
-    print ('The number of ratings is: ' + str(back_to_ratings(input_folder, fw_ratings)))
-
+    ratings_cnt = back_to_ratings(input_folder, fw_ratings)
     fw_ratings.close()
+
+    print_statistic_info(item_count, entity_count, relations_count, triples_count, ratgins_count)

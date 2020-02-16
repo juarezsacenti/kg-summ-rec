@@ -47,7 +47,7 @@ def add_user_movie_interaction_into_graph(positive_rating):
     return Graph
 
 
-def add_auxiliary_into_graph(fr_auxiliary, Graph):
+def add_auxiliary_into_graph(fr_auxiliary, fr_e_map, fr_i2kg_map, fr_i_map, Graph):
     '''
     add auxiliary information (e.g., actor, director, genre) into graph
     Input:
@@ -56,27 +56,51 @@ def add_auxiliary_into_graph(fr_auxiliary, Graph):
     Output:
         @Graph: the graph with user-moive interaction and auxiliary info
     '''
+    #maps to convert e_id to movie_id using fr_e_map and fr_i2kg_map
+    e_map = {}
+    for line in fr_e_map:
+        (e_id, uri) = line.split("\t")
+        e_map[e_id] = uri.replace('\n', '')
+
+    i2kg_map = {}
+    for line in fr_i2kg_map:
+        (orig_id, name, uri) = line.split("\t")
+        i2kg_map[uri.replace('\n', '')] = i_id
+
+    i_map = {}
+    for line in fr_i_map:
+        (mapped_id, orig_id) = line.split("\t")
+        i_map[orig_id.replace('\n', '')] = mapped_id
+
+    i_node_map = {}
 
     pred_cnt = 0
     for line in fr_auxiliary:
         lines = line.replace('\n', '').split('|')
 
-        movie_id = lines.pop(0)
+        e_id = lines.pop(0)
         for pred in lines:
             pred_list = pred.split(',')
 
             #add movie nodes into Graph, in case the movie is not included in the training data
-            movie_node = 'i' + movie_id
-            if not Graph.has_node(movie_node):
-                Graph.add_node(movie_node)
+            #convert e_id to movie_id using fr_e_map and fr_i2kg_map
+            uri = e_map.get(e_id, 'not_found')
+            orig_id = i2kg_map.get(uri, 'not_found')
+            mapped_id = i_map.get(orig_id, 'not_found')
+
+            sub_node = 'e' + e_id if mapped_id == 'not_found' else 'i' + mapped_id
+            i_node_map[e_id] = sub_node
+
+            if not Graph.has_node(sub_node):
+                Graph.add_node(sub_node)
 
             #add the pred nodes into the graph
-            for pred_id in pred_list:
-                pred_node = 'p' + str(pred_cnt) + '_' + pred_id
-                if not Graph.has_node(pred_node):
-                    Graph.add_node(pred_node)
-                Graph.add_edge(movie_node, pred_node)
-                Graph.add_edge(pred_node, movie_node)
+            for obj_id in pred_list:
+                obj_node = i_node_map[obj_id] if i_node_map.has_key(obj_id) else 'o' + obj_id
+                if not Graph.has_node(obj_node):
+                    Graph.add_node(obj_node)
+                Graph.add_edge(sub_node, obj_node)
+                Graph.add_edge(obj_node, sub_node)
 
             pred_cnt += 1
 
@@ -166,6 +190,9 @@ if __name__ == '__main__':
     parser.add_argument('--pathlength', type=int, dest='path_length', default=3, help='length of paths with choices [3,5,7]')
     parser.add_argument('--samplesize', type=int, dest='sample_size', default=5, \
                         help='the sampled size of paths between nodes with choices [5, 10, 20, ...]')
+    parser.add_argument('--e_map', type=str, dest='e_map_file', default='../../datasets/ml1m-cao/ml1m/kg/e_map.data')
+    parser.add_argument('--i2kg_map', type=str, dest='i2kg_map_file', default='../../datasets/ml1m-cao/ml1m/i2kg_map.tsv')
+    parser.add_argument('--i_map', type=str, dest='i_map_file', default='../../datasets/ml1m-cao/ml1m/i_map.data')
 
     parsed_args = parser.parse_args()
 
@@ -176,14 +203,17 @@ if __name__ == '__main__':
     negative_path = parsed_args.negative_path
     path_length = parsed_args.path_length
     sample_size = parsed_args.sample_size
-
-    print(os.getcwd())
+    i2kg_map_file = parsed_args.i2kg_map_file
+    e_map_file = parsed_args.e_map_file
 
     fr_training = open(training_file,'r')
     fr_negative = open(negative_file, 'r')
     fr_auxiliary = open(auxiliary_file,'r')
     fw_positive_path = open(positive_path, 'w')
     fw_negative_path = open(negative_path, 'w')
+    fr_i2kg_map = open(i2kg_map_file,'r')
+    fr_e_map = open(e_map_file, 'r')
+    fr_i_map = open(i_map_file, 'r')
 
     positive_rating = load_data(fr_training)
     negative_rating = load_data(fr_negative)
@@ -192,7 +222,7 @@ if __name__ == '__main__':
     print('The number of negative sampled data is:  ' + str(len(negative_rating))+ ' \n')
 
     Graph = add_user_movie_interaction_into_graph(positive_rating)
-    Graph = add_auxiliary_into_graph(fr_auxiliary, Graph)
+    Graph = add_auxiliary_into_graph(fr_auxiliary, fr_e_map, fr_i2kg_map, fr_i_map,  Graph)
     print_graph_statistic(Graph)
 
     dump_paths(Graph, positive_rating, path_length, sample_size, fw_positive_path)
