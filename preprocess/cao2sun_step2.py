@@ -203,8 +203,9 @@ if __name__ == '__main__':
     negative_path = parsed_args.negative_path
     path_length = parsed_args.path_length
     sample_size = parsed_args.sample_size
-    i2kg_map_file = parsed_args.i2kg_map_file
     e_map_file = parsed_args.e_map_file
+    i2kg_map_file = parsed_args.i2kg_map_file
+    i_map_file = parsed_args.i_map_file
 
     fr_training = open(training_file,'r')
     fr_negative = open(negative_file, 'r')
