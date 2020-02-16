@@ -65,7 +65,7 @@ def add_auxiliary_into_graph(fr_auxiliary, fr_e_map, fr_i2kg_map, fr_i_map, Grap
     i2kg_map = {}
     for line in fr_i2kg_map:
         (orig_id, name, uri) = line.split("\t")
-        i2kg_map[uri.replace('\n', '')] = i_id
+        i2kg_map[uri.replace('\n', '')] = orig_id
 
     i_map = {}
     for line in fr_i_map:
