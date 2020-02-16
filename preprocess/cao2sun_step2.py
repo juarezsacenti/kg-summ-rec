@@ -96,7 +96,7 @@ def add_auxiliary_into_graph(fr_auxiliary, fr_e_map, fr_i2kg_map, fr_i_map, Grap
 
             #add the pred nodes into the graph
             for obj_id in pred_list:
-                obj_node = i_node_map[obj_id] if obj_id in i_node_map.keys() else 'o' + obj_id
+                obj_node = i_node_map[obj_id] if obj_id in i_node_map.keys() else 'o' + str(obj_id)
                 if not Graph.has_node(obj_node):
                     Graph.add_node(obj_node)
                 Graph.add_edge(sub_node, obj_node)
@@ -147,7 +147,7 @@ def mine_paths_between_nodes(Graph, user_node, movie_node, maxLen, sample_size, 
         line = ",".join(path) + '\n'
         fw_file.write(line)
         count+=1
-        if(count % 5 == 0):
+        if(count % 100 == 0):
             print(line)
 
     #print('The number of paths between '+ user_node + ' and ' + movie_node + ' is: ' +  str(len(connected_path)) +'\n')
