@@ -13,8 +13,8 @@ def mapping(input_folder, fw_mapping):
     '''
     kg = defaultdict(lambda: defaultdict(list))
     triple_count = 0
-    item_set = {}
-    entity_set = {}
+    item_set = set()
+    entity_set = set()
     kg_path = os.path.join(input_folder, 'kg')
 
     train_file = os.path.join(kg_path, 'train.dat')
@@ -101,7 +101,7 @@ def print_statistic_info(item_count, entity_count, relation_count, triple_count,
     print ('The number of entity is: ' + str(entity_count))
     print ('The number of relations is: ' + str(relation_count))
     print ('The number of triples is: ' + str(triple_count))
-    print ('The number of ratings is: ' + str(ratgins_count))
+    print ('The number of ratings is: ' + str(ratings_count))
 
 
 if __name__ == '__main__':
@@ -123,7 +123,7 @@ if __name__ == '__main__':
     fw_mapping.close()
 
     fw_ratings = open(ratings_file,'w')
-    ratings_cnt = back_to_ratings(input_folder, fw_ratings)
+    ratings_count = back_to_ratings(input_folder, fw_ratings)
     fw_ratings.close()
 
-    print_statistic_info(item_count, entity_count, relations_count, triples_count, ratgins_count)
+    print_statistic_info(item_count, entity_count, relations_count, triples_count, ratings_count)
