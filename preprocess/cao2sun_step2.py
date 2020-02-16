@@ -190,9 +190,9 @@ if __name__ == '__main__':
     parser.add_argument('--pathlength', type=int, dest='path_length', default=3, help='length of paths with choices [3,5,7]')
     parser.add_argument('--samplesize', type=int, dest='sample_size', default=5, \
                         help='the sampled size of paths between nodes with choices [5, 10, 20, ...]')
-    parser.add_argument('--e_map', type=str, dest='e_map_file', default='../../datasets/ml1m-cao/ml1m/kg/e_map.data')
+    parser.add_argument('--e_map', type=str, dest='e_map_file', default='../../datasets/ml1m-cao/ml1m/kg/e_map.dat')
     parser.add_argument('--i2kg_map', type=str, dest='i2kg_map_file', default='../../datasets/ml1m-cao/ml1m/i2kg_map.tsv')
-    parser.add_argument('--i_map', type=str, dest='i_map_file', default='../../datasets/ml1m-cao/ml1m/i_map.data')
+    parser.add_argument('--i_map', type=str, dest='i_map_file', default='../../datasets/ml1m-cao/ml1m/i_map.dat')
 
     parsed_args = parser.parse_args()
 
