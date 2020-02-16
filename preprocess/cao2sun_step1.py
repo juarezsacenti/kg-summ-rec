@@ -13,6 +13,8 @@ def mapping(input_folder, fw_mapping):
     '''
     kg = defaultdict(lambda: defaultdict(list))
     triple_count = 0
+    item_set = {}
+    entity_set = {}
     kg_path = os.path.join(input_folder, 'kg')
 
     train_file = os.path.join(kg_path, 'train.dat')
@@ -21,6 +23,8 @@ def mapping(input_folder, fw_mapping):
             (sub, obj, pred) = line.split("\t")
             kg[sub][pred.replace('\n', '')].append(obj)
             triple_count += 1
+            item_set.add(sub)
+            entity_set.add(obj)
 
     test_file = os.path.join(kg_path, 'test.dat')
     with open(test_file, 'r', encoding="utf-8") as fin:
@@ -28,6 +32,8 @@ def mapping(input_folder, fw_mapping):
             (sub, obj, pred) = line.split("\t")
             kg[sub][pred.replace('\n', '')].append(obj)
             triple_count += 1
+            item_set.add(sub)
+            entity_set.add(obj)
 
     valid_file = os.path.join(kg_path, 'valid.dat')
     with open(valid_file, 'r', encoding="utf-8") as fin:
@@ -35,6 +41,8 @@ def mapping(input_folder, fw_mapping):
             (sub, obj, pred) = line.split("\t")
             kg[sub][pred.replace('\n', '')].append(obj)
             triple_count += 1
+            item_set.add(sub)
+            entity_set.add(obj)
 
     r_map_file = os.path.join(kg_path, 'r_map.dat')
     relation_list = []
@@ -46,11 +54,11 @@ def mapping(input_folder, fw_mapping):
     for sub in kg.keys():
         output_line = sub
         for r_id in relation_list:
-            output_line += '|' + str(kg[e_id][r_id]).strip('[]')
+            output_line += '|' + str(kg[sub][r_id]).strip('[]')
         output_line += '\n'
         fw_mapping.write(output_line)
 
-    return len(item_list), len(entity_set), len(relation_list), triple_count
+    return len(item_set), len(entity_set.union(item_set)), len(relation_list), triple_count
 
 
 def back_to_ratings(input_folder, fw_ratings):
