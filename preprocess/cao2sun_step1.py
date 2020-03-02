@@ -80,6 +80,8 @@ def back_to_ratings(input_folder, fw_ratings):
     '''
     time = "0"
     ratings_cnt = 0
+    user_set = set()
+    item_set = set()
 
     train_file = os.path.join(input_folder, 'train.dat')
     with open(train_file, 'r', encoding="utf-8") as fin:
@@ -87,6 +89,8 @@ def back_to_ratings(input_folder, fw_ratings):
             (u_id, i_id, rate) = line.split("\t")
             fw_ratings.write(u_id+"\t"+i_id+"\t"+rate.replace('\n', '')+"\t"+time+"\n")
             ratings_cnt += 1
+            user_set.add(u_id)
+            item_set.add(i_id)
 
     valid_file = os.path.join(input_folder, 'valid.dat')
     with open(valid_file, 'r', encoding="utf-8") as fin:
@@ -94,6 +98,8 @@ def back_to_ratings(input_folder, fw_ratings):
             (u_id, i_id, rate) = line.split("\t")
             fw_ratings.write(u_id+"\t"+i_id+"\t"+rate.replace('\n', '')+"\t"+time+"\n")
             ratings_cnt += 1
+            user_set.add(u_id)
+            item_set.add(i_id)
 
     test_file = os.path.join(input_folder, 'test.dat')
     with open(test_file, 'r', encoding="utf-8") as fin:
@@ -101,11 +107,13 @@ def back_to_ratings(input_folder, fw_ratings):
             (u_id, i_id, rate) = line.split("\t")
             fw_ratings.write(u_id+"\t"+i_id+"\t"+rate.replace('\n', '')+"\t"+time+"\n")
             ratings_cnt += 1
+            user_set.add(u_id)
+            item_set.add(i_id)
 
-    return ratings_cnt
+    return ratings_cnt, len(user_set), len(item_set)
 
 
-def print_statistic_info(sub_count, entity_count, relation_count, triple_count, ratings_count):
+def print_statistic_info(sub_count, entity_count, relation_count, triple_count, rating_count, user_count, item_count):
     '''
     print the number of item, entity, relations, triples, ratings
     '''
@@ -114,7 +122,9 @@ def print_statistic_info(sub_count, entity_count, relation_count, triple_count, 
     print ('The number of entities (subjects+objects) is: ' + str(entity_count))
     print ('The number of relations is: ' + str(relation_count))
     print ('The number of triples is: ' + str(triple_count))
-    print ('The number of ratings is: ' + str(ratings_count))
+    print ('\nThe number of ratings is: ' + str(rating_count))
+    print ('The number of users is: ' + str(user_count))
+    print ('The number of items is: ' + str(item_count))
 
 
 if __name__ == '__main__':
@@ -136,7 +146,7 @@ if __name__ == '__main__':
     fw_mapping.close()
 
     fw_ratings = open(ratings_file,'w')
-    rating_count = back_to_ratings(input_folder, fw_ratings)
+    rating_count, user_count, item_count = back_to_ratings(input_folder, fw_ratings)
     fw_ratings.close()
 
-    print_statistic_info(subject_count, entity_count, relation_count, triple_count, rating_count)
+    print_statistic_info(subject_count, entity_count, relation_count, triple_count, rating_count, user_count, item_count)
