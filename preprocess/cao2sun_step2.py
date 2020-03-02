@@ -107,9 +107,9 @@ def add_auxiliary_into_graph(fr_auxiliary, fr_e_map, fr_i2kg_map, fr_i_map, Grap
             # add objects and edges into the graph
             for obj_id in pred_list:
                 obj_node = i_node_map.get(obj_id, 'e' + obj_id)
-                Graph.add_node(obj_node)
-                Graph.add_edge(sub_node, obj_node)
-                Graph.add_edge(obj_node, sub_node)
+                #Graph.add_node(obj_node)
+                #Graph.add_edge(sub_node, obj_node)
+                #Graph.add_edge(obj_node, sub_node)
 
     return Graph
 
