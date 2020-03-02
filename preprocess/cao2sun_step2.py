@@ -224,6 +224,7 @@ if __name__ == '__main__':
     print('The number of negative sampled data is:  ' + str(len(negative_rating))+ ' \n')
 
     Graph = add_user_movie_interaction_into_graph(positive_rating)
+    print_graph_statistic(Graph)
     Graph = add_auxiliary_into_graph(fr_auxiliary, fr_e_map, fr_i2kg_map, fr_i_map,  Graph)
     print_graph_statistic(Graph)
 
