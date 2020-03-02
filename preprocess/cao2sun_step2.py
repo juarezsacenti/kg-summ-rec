@@ -116,7 +116,7 @@ def print_graph_statistic(Graph):
     print('The knowledge graph has been built completely \n')
     print('The number of nodes is:  ' + str(len(Graph.nodes()))+ ' \n')
     print('The number of edges is  ' + str(len(Graph.edges()))+ ' \n')
-    print('The density of the graph is  ' + str(len(Graph.density()))+ ' \n')
+    print('The density of the graph is  ' + str(density(Graph))+ ' \n')
 
 
 def mine_paths_between_nodes(Graph, user_node, movie_node, maxLen, sample_size, fw_file):
