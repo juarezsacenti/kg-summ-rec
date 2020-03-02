@@ -91,19 +91,22 @@ def add_auxiliary_into_graph(fr_auxiliary, fr_e_map, fr_i2kg_map, fr_i_map, Grap
             sub_node = 'e' + e_id if mapped_id == 'not_found' else 'i' + mapped_id
             i_node_map[e_id] = sub_node
 
-            if not Graph.has_node(sub_node):
-                Graph.add_node(sub_node)
+            Graph.add_node(sub_node)
 
             #add the pred nodes into the graph
             for obj_id in pred_list:
                 obj_node = i_node_map[obj_id] if obj_id in i_node_map.keys() else 'o' + str(obj_id)
-                if not Graph.has_node(obj_node):
-                    Graph.add_node(obj_node)
+                Graph.add_node(obj_node)
                 Graph.add_edge(sub_node, obj_node)
                 Graph.add_edge(obj_node, sub_node)
 
             pred_cnt += 1
 
+    count = 0
+    for k, v in i_node_map.iteritems():
+        if k == v:
+            count += 1
+    print('The number of not found items is:' + str(count))
     return Graph
 
 
@@ -170,7 +173,7 @@ def dump_paths(Graph, rating_pair, maxLen, sample_size, fw_file):
             mine_paths_between_nodes(Graph, user_node, movie_node, maxLen, sample_size, fw_file)
 
         pair_count += 1
-        if pair_count % 1000:
+        if pair_count % 100 == 0:
             print(str(pair_count) +' / '+ str(pair_total))
 
 
