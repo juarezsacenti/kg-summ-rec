@@ -82,7 +82,6 @@ def add_auxiliary_into_graph(fr_auxiliary, fr_e_map, fr_i2kg_map, fr_i_map, Grap
         for pred in lines:
             pred_list = pred.split(',')
 
-            #add movie nodes into Graph, in case the movie is not included in the training data
             #convert e_id to movie_id using fr_e_map and fr_i2kg_map
             uri = e_map.get(e_id, 'not_found')
             orig_id = i2kg_map.get(uri, 'not_found')
@@ -91,6 +90,7 @@ def add_auxiliary_into_graph(fr_auxiliary, fr_e_map, fr_i2kg_map, fr_i_map, Grap
             sub_node = 'e' + e_id if mapped_id == 'not_found' else 'i' + mapped_id
             i_node_map[e_id] = sub_node
 
+            #add movie nodes into Graph, in case the movie is not included in the training data
             Graph.add_node(sub_node)
 
             #add the pred nodes into the graph
@@ -104,7 +104,7 @@ def add_auxiliary_into_graph(fr_auxiliary, fr_e_map, fr_i2kg_map, fr_i_map, Grap
 
     count = 0
     for k, v in i_node_map.items():
-        if k == v:
+        if 'e'+k == v:
             count += 1
     print('The number of not found items is:' + str(count))
     return Graph
