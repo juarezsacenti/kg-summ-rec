@@ -103,7 +103,7 @@ def add_auxiliary_into_graph(fr_auxiliary, fr_e_map, fr_i2kg_map, fr_i_map, Grap
             pred_cnt += 1
 
     count = 0
-    for k, v in i_node_map.iteritems():
+    for k, v in i_node_map.items():
         if k == v:
             count += 1
     print('The number of not found items is:' + str(count))
