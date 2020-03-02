@@ -89,8 +89,6 @@ def add_auxiliary_into_graph(fr_auxiliary, fr_e_map, fr_i2kg_map, fr_i_map, Grap
 
             sub_node = 'e' + e_id if mapped_id == 'not_found' else 'i' + mapped_id
             i_node_map[e_id] = sub_node
-
-            #add movie nodes into Graph, in case the movie is not included in the training data
             Graph.add_node(sub_node)
 
     # populate edges
@@ -101,6 +99,7 @@ def add_auxiliary_into_graph(fr_auxiliary, fr_e_map, fr_i2kg_map, fr_i_map, Grap
 
         e_id = lines.pop(0)
         for pred in lines:
+            i_node_map[e_id] = sub_node
             # add objects and edges into the graph
             for obj_id in pred_list:
                 obj_node = i_node_map[obj_id] if obj_id in i_node_map.keys() else 'o' + str(obj_id)
