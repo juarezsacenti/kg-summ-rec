@@ -82,7 +82,7 @@ def add_auxiliary_into_graph(fr_auxiliary, fr_e_map, fr_i2kg_map, fr_i_map, Grap
         for pred in lines:
             pred_list = pred.split(',')
 
-            #convert e_id to movie_id using fr_e_map and fr_i2kg_map
+            # convert e_id to movie_id using fr_e_map and fr_i2kg_map
             uri = e_map.get(e_id, 'not_found')
             orig_id = i2kg_map.get(uri, 'not_found')
             mapped_id = i_map.get(orig_id, 'not_found')
@@ -94,13 +94,14 @@ def add_auxiliary_into_graph(fr_auxiliary, fr_e_map, fr_i2kg_map, fr_i_map, Grap
             Graph.add_node(sub_node)
 
     # populate edges
+    fr_auxiliary.seek(0) # read from the beginning
     pred_cnt = 0
     for line in fr_auxiliary:
         lines = line.replace('\n', '').split('|')
 
         e_id = lines.pop(0)
         for pred in lines:
-            #add objects and edges into the graph
+            # add objects and edges into the graph
             for obj_id in pred_list:
                 obj_node = i_node_map[obj_id] if obj_id in i_node_map.keys() else 'o' + str(obj_id)
                 Graph.add_node(obj_node)
