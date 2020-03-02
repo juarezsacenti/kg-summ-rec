@@ -79,35 +79,30 @@ def add_auxiliary_into_graph(fr_auxiliary, fr_e_map, fr_i2kg_map, fr_i_map, Grap
         lines = line.replace('\n', '').split('|')
 
         e_id = lines.pop(0)
-        for pred in lines:
-            pred_list = pred.split(',')
+        # convert e_id to movie_id using fr_e_map and fr_i2kg_map
+        uri = e_map.get(e_id, 'not_found')
+        orig_id = i2kg_map.get(uri, 'not_found')
+        mapped_id = i_map.get(orig_id, 'not_found')
 
-            # convert e_id to movie_id using fr_e_map and fr_i2kg_map
-            uri = e_map.get(e_id, 'not_found')
-            orig_id = i2kg_map.get(uri, 'not_found')
-            mapped_id = i_map.get(orig_id, 'not_found')
-
-            sub_node = 'e' + e_id if mapped_id == 'not_found' else 'i' + mapped_id
-            i_node_map[e_id] = sub_node
-            Graph.add_node(sub_node)
+        sub_node = 'e' + e_id if mapped_id == 'not_found' else 'i' + mapped_id
+        i_node_map[e_id] = sub_node
+        Graph.add_node(sub_node)
 
     # populate edges
     fr_auxiliary.seek(0) # read from the beginning
-    pred_cnt = 0
     for line in fr_auxiliary:
         lines = line.replace('\n', '').split('|')
 
         e_id = lines.pop(0)
+        i_node_map[e_id] = sub_node
         for pred in lines:
-            i_node_map[e_id] = sub_node
+            pred_list = pred.split(',')
             # add objects and edges into the graph
             for obj_id in pred_list:
-                obj_node = i_node_map[obj_id] if obj_id in i_node_map.keys() else 'o' + str(obj_id)
+                obj_node = i_node_map[obj_id] if obj_id in i_node_map.keys() else 'e' + str(obj_id)
                 Graph.add_node(obj_node)
                 Graph.add_edge(sub_node, obj_node)
                 Graph.add_edge(obj_node, sub_node)
-
-            pred_cnt += 1
 
     count = 0
     for k, v in i_node_map.items():
