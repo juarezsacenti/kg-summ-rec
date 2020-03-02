@@ -10,10 +10,16 @@ def mapping(input_folder, fw_mapping):
     Inputs:
         @input_folder: the Cao's data folder
         @fw_mapping: the auxiliary mapping information
+
+    Outputs:
+        @subject_count: number of distinct subjects (items and non-leaves entities of the Graph)
+        @entities_count: number of distinct subjects and objects
+        @relations_count: number of distinct relations
+        @triples_count: number of triples in both kg_train, kg_valid, kg_test files
     '''
     kg = defaultdict(lambda: defaultdict(list))
     triple_count = 0
-    item_set = set()
+    sub_set = set()
     entity_set = set()
     kg_path = os.path.join(input_folder, 'kg')
 
@@ -23,7 +29,7 @@ def mapping(input_folder, fw_mapping):
             (sub, obj, pred) = line.split("\t")
             kg[sub][pred.replace('\n', '')].append(obj)
             triple_count += 1
-            item_set.add(sub)
+            sub_set.add(sub)
             entity_set.add(obj)
 
     test_file = os.path.join(kg_path, 'test.dat')
@@ -32,7 +38,7 @@ def mapping(input_folder, fw_mapping):
             (sub, obj, pred) = line.split("\t")
             kg[sub][pred.replace('\n', '')].append(obj)
             triple_count += 1
-            item_set.add(sub)
+            sub_set.add(sub)
             entity_set.add(obj)
 
     valid_file = os.path.join(kg_path, 'valid.dat')
@@ -41,7 +47,7 @@ def mapping(input_folder, fw_mapping):
             (sub, obj, pred) = line.split("\t")
             kg[sub][pred.replace('\n', '')].append(obj)
             triple_count += 1
-            item_set.add(sub)
+            sub_set.add(sub)
             entity_set.add(obj)
 
     r_map_file = os.path.join(kg_path, 'r_map.dat')
@@ -58,12 +64,19 @@ def mapping(input_folder, fw_mapping):
         output_line += '\n'
         fw_mapping.write(output_line)
 
-    return len(item_set), len(entity_set.union(item_set)), len(relation_list), triple_count
+    return len(sub_set), len(entity_set.union(sub_set)), len(relation_list), triple_count
 
 
 def back_to_ratings(input_folder, fw_ratings):
     '''
-    Union of train.dat, valid.dat, test.dat to ratings-delete-missing-itemid.txt
+    union of train.dat, valid.dat, test.dat to ratings-delete-missing-itemid.txt
+
+    Inputs:
+        @input_folder: the Cao's data folder
+        @fw_mapping: the rating-delete-missing-itemid.txt file
+
+    Outputs:
+        @rating_count: number of distinct ratings in both train, valid, test files
     '''
     time = "0"
     ratings_cnt = 0
@@ -92,13 +105,13 @@ def back_to_ratings(input_folder, fw_ratings):
     return ratings_cnt
 
 
-def print_statistic_info(item_count, entity_count, relation_count, triple_count, ratings_count):
+def print_statistic_info(sub_count, entity_count, relation_count, triple_count, ratings_count):
     '''
-    print the number of item, entity, relations, triples
+    print the number of item, entity, relations, triples, ratings
     '''
 
-    print ('The number of item is: ' + str(item_count))
-    print ('The number of entity is: ' + str(entity_count))
+    print ('The number of subjects (items and non-leaves) is: ' + str(sub_count))
+    print ('The number of entities (subjects+objects) is: ' + str(entity_count))
     print ('The number of relations is: ' + str(relation_count))
     print ('The number of triples is: ' + str(triple_count))
     print ('The number of ratings is: ' + str(ratings_count))
@@ -119,11 +132,11 @@ if __name__ == '__main__':
     ratings_file = parsed_args.ratings_file
 
     fw_mapping = open(mapping_file,'w')
-    item_count, entity_count, relations_count, triples_count = mapping(input_folder, fw_mapping)
+    subject_count, entity_count, relation_count, triple_count = mapping(input_folder, fw_mapping)
     fw_mapping.close()
 
     fw_ratings = open(ratings_file,'w')
-    ratings_count = back_to_ratings(input_folder, fw_ratings)
+    rating_count = back_to_ratings(input_folder, fw_ratings)
     fw_ratings.close()
 
-    print_statistic_info(item_count, entity_count, relations_count, triples_count, ratings_count)
+    print_statistic_info(subject_count, entity_count, relation_count, triple_count, rating_count)

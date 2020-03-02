@@ -116,6 +116,7 @@ def print_graph_statistic(Graph):
     print('The knowledge graph has been built completely \n')
     print('The number of nodes is:  ' + str(len(Graph.nodes()))+ ' \n')
     print('The number of edges is  ' + str(len(Graph.edges()))+ ' \n')
+    print('The density of the graph is  ' + str(len(Graph.density()))+ ' \n')
 
 
 def mine_paths_between_nodes(Graph, user_node, movie_node, maxLen, sample_size, fw_file):
@@ -157,6 +158,8 @@ def dump_paths(Graph, rating_pair, maxLen, sample_size, fw_file):
         @maxLen: path length
         @sample_size: size of sampled paths between user-movie nodes
     '''
+    pair_count = 0
+    pair_total = len(rating_pair)
     for pair in rating_pair:
         user_id = pair[0]
         movie_id = pair[1]
@@ -165,6 +168,10 @@ def dump_paths(Graph, rating_pair, maxLen, sample_size, fw_file):
 
         if Graph.has_node(user_node) and Graph.has_node(movie_node):
             mine_paths_between_nodes(Graph, user_node, movie_node, maxLen, sample_size, fw_file)
+
+        pair_count += 1
+        if pair_count % 1000:
+            print(str(pair_count) +' / '+ str(pair_total))
 
 
 if __name__ == '__main__':
@@ -217,7 +224,9 @@ if __name__ == '__main__':
     Graph = add_auxiliary_into_graph(fr_auxiliary, fr_e_map, fr_i2kg_map, fr_i_map,  Graph)
     print_graph_statistic(Graph)
 
+    print('Minning and Dumpping positive paths...')
     dump_paths(Graph, positive_rating, path_length, sample_size, fw_positive_path)
+    print('Minning and Dumpping negative paths...')
     dump_paths(Graph, negative_rating, path_length, sample_size, fw_negative_path)
 
     fr_training.close()
