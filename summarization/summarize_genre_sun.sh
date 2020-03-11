@@ -17,6 +17,7 @@ done
 #[hierarchy.txt]
 if no_exist "../../datasets/ml1m-summarized_sun/ml1m/hierarchy.txt"
 then
+    touch ../../datasets/ml1m-summarized_sun/ml1m/hierarchy.txt
     echo "Action,Brute_Action" >> ../../datasets/ml1m-summarized_sun/ml1m/hierarchy.txt
     echo "Adult,Porn" >> ../../datasets/ml1m-summarized_sun/ml1m/hierarchy.txt
     echo "Adventure,Imaginational_Entertainment" >> ../../datasets/ml1m-summarized_sun/ml1m/hierarchy.txt
@@ -45,6 +46,7 @@ fi
 
 #[sum_auxiliary.txt]
 if no_exist "../../datasets/ml1m-summarized_sun/ml1m/sum_auxiliary.txt"
+then
     cd ../summarization
     nohup python sun_genre.py --auxiliary '../../datasets/ml1m-sun/ml1m/auxiliary.txt' --hierarchy '../../datasets/ml1m-summarized_sun/ml1m/hierarchy.txt' --summarized '../../datasets/ml1m-summarized_sun/ml1m/sum_auxiliary.txt' &
     BACK_PID=$!
@@ -53,6 +55,7 @@ fi
 
 #[sun2cao_step1]
 if no_exist "../../datasets/ml1m-summarized_sun/ml1m/kg_hop0_sun.dat"
+then
     cd ../preprocess
     nohup python sun2cao_step1.py --auxiliary '../../datasets/ml1m-summarized_sun/ml1m/sum_auxiliary.txt' --i2kg_map '../../datasets/ml1m-cao/ml1m/i2kg_map.tsv' --mapping '../../datasets/ml1m-summarized_sun/ml1m/kg_hop0_sun.dat' &
     BACK_PID=$!
@@ -61,6 +64,7 @@ fi
 
 #[sun2cao_step2]
 if no_exist "../../datasets/ml1m-summarized_sun/ml1m/kg/e_map.dat"
+then
     nohup python sun2cao_step2.py --data_path '../../datasets/ml1m-summarized_sun/' --dataset 'ml1m' &
     BACK_PID=$!
     wait $BACK_PID
