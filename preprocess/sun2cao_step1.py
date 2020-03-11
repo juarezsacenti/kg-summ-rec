@@ -120,8 +120,8 @@ def mapping(fr_auxiliary, fr_i2kg_map, fw_mapping):
     all_predicate_set.add("http://ml1m-sun/director")
     all_predicate_set.add("http://ml1m-sun/genre")
 
-    data_path = "../../datasets/"
-    dataset = 'ml1m-sun2cao'
+    data_path = "../../datasets/ml1m-sun2cao/"
+    dataset = 'ml1m'
     dataset_path = os.path.join(data_path, dataset)
     kg_path = os.path.join(dataset_path, 'kg')
     predicate_file = os.path.join(kg_path, "predicate_vocab.dat")
@@ -174,7 +174,7 @@ if __name__ == '__main__':
     i2kg_map_file = parsed_args.i2kg_map_file
     mapping_file = parsed_args.mapping_file
 
-    fr_auxiliary = open(auxiliary_file,'r', encoding="utf-8")
+    fr_auxiliary = open(auxiliary_file,'r', encoding="utf-8-sig")
     fr_i2kg_map = open(i2kg_map_file, 'r', encoding="utf8")
     fw_mapping = open(mapping_file,'w')
 
