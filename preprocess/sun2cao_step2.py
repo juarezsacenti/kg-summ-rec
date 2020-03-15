@@ -10,7 +10,7 @@ from jTransUP.data.preprocessTriples import preprocess as preprocessKG
 
 if __name__ == '__main__':
 
-    print(os.getcwd())
+    #print(os.getcwd())
     parser = argparse.ArgumentParser(description='''Step 2: ''')
 
     parser.add_argument('--data_path', type=str, dest='data_path', default='../../datasets/ml1m-sun2cao/')
@@ -46,4 +46,5 @@ if __name__ == '__main__':
     stream_handler.setFormatter(formatter)
     logger.addHandler(stream_handler)
 
+    #print(kg_path)
     preprocessKG([triple_file], kg_path, entity_file=i2kg_file, relation_file=relation_file, logger=logger)

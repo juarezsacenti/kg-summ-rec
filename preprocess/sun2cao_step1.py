@@ -2,13 +2,38 @@
 
 import argparse
 import os
+import numpy as np
+import pandas as pd # pandas is a data manipulation library
 
-def mapping(fr_auxiliary, fr_i2kg_map, fw_mapping):
+def load_ml1m_sun_data(csv_path):
+    # pass in column names for each CSV
+    r_cols = ['movie_id', 'genre', 'director', 'actors']
+    auxiliary = pd.read_csv(csv_path, sep='|', engine="python", names=r_cols, encoding='utf-8-sig', header=None)
+
+    auxiliary['movie_id'] = auxiliary['movie_id'].str.split(':').str[1]
+    auxiliary['movie_id'] = pd.to_numeric(auxiliary['movie_id'])
+    auxiliary['genre'] = auxiliary['genre'].str.split(':').str[1]
+    auxiliary['director'] = auxiliary['director'].str.split(':').str[1]
+    auxiliary['actors'] = auxiliary['actors'].str.split(':').str[1]
+
+    return auxiliary
+
+def cleanning(auxiliary):
+    i = auxiliary.index[auxiliary['movie_id'] == 1581]
+    auxiliary.iloc[i] = [1581,'Mystery','Anthony Asquith', 'Jean Kent,Dirk Bogarde,John McCallum']
+    auxiliary = auxiliary.replace({'Biograpy':'Biography'}, regex=True)
+    auxiliary = auxiliary.replace('N/A,', np.NaN)
+    auxiliary = auxiliary.replace('N/A', np.NaN)
+
+    return auxiliary
+
+def mapping(df_auxiliary, fr_i2kg_map, fw_mapping):
     '''
     mapping the auxiliary info (e.g., genre, director, actor) into ID
 
     Inputs:
-        @fr_auxiliary: the auxiliary infomation
+        @df_auxiliary: the auxiliary infomation
+        @fr_i2kg_map: the item to kg mapping infomation
         @fw_mapping: the auxiliary mapping information
     '''
     actor_map = {}
@@ -24,43 +49,44 @@ def mapping(fr_auxiliary, fr_i2kg_map, fw_mapping):
         (id, name, uri) = line.split("\t")
         i2kg_map[int(id)] = uri.replace('\n', '')
 
-    for line in fr_auxiliary:
+    if len(df_auxiliary.columns) != 4:
+        print(df_auxiliary.columns)
 
-        lines = line.replace('\n', '').split('|')
-        if len(lines) != 4:
-            continue
-
-        movie_id = lines[0].split(':')[1]
+    for index, row in df_auxiliary.iterrows():
+        movie_id = str(row['movie_id'])
         genre_list = []
         director_list = []
         actor_list = []
 
-        for genre in lines[1].split(":")[1].split(','):
-            if genre not in genre_map:
-                genre_map.update({genre:genre_count})
-                genre_list.append(genre_count)
-                genre_count = genre_count + 1
-            else:
-                genre_id = genre_map[genre]
-                genre_list.append(genre_id)
+        if pd.notnull(row['genre']):
+            for genre in row['genre'].split(','):
+                if genre not in genre_map:
+                    genre_map.update({genre:genre_count})
+                    genre_list.append(genre_count)
+                    genre_count = genre_count + 1
+                else:
+                    genre_id = genre_map[genre]
+                    genre_list.append(genre_id)
 
-        for director in lines[2].split(":")[1].split(','):
-            if director not in director_map:
-                director_map.update({director:director_count})
-                director_list.append(director_count)
-                director_count = director_count + 1
-            else:
-                director_id = director_map[director]
-                director_list.append(director_id)
+        if pd.notnull(row['director']):
+            for director in row['director'].split(','):
+                if director not in director_map:
+                    director_map.update({director:director_count})
+                    director_list.append(director_count)
+                    director_count = director_count + 1
+                else:
+                    director_id = director_map[director]
+                    director_list.append(director_id)
 
-        for actor in lines[3].split(':')[1].split(','):
-            if actor not in actor_map:
-                actor_map.update({actor:actor_count})
-                actor_list.append(actor_count)
-                actor_count = actor_count + 1
-            else:
-                actor_id = actor_map[actor]
-                actor_list.append(actor_id)
+        if pd.notnull(row['actors']):
+            for actor in row['actors'].split(','):
+                if actor not in actor_map:
+                    actor_map.update({actor:actor_count})
+                    actor_list.append(actor_count)
+                    actor_count = actor_count + 1
+                else:
+                    actor_id = actor_map[actor]
+                    actor_list.append(actor_id)
 
         # Writing
         head_json_str = "["
@@ -81,29 +107,6 @@ def mapping(fr_auxiliary, fr_i2kg_map, fw_mapping):
         output_line = i2kg_map.get(int(movie_id), "http://ml1m-sun/movie_"+movie_id) + '\t' + head_json_str + '\t' + '[]' + '\n'
         fw_mapping.write(output_line)
 
-        ''' WRONG NEW CODE
-        new_movie_id = int(movie_id) - 1
-        for genre_id in genre_list:
-            output_line = f'{new_movie_id}' + ' 0 ' + f'{genre_id}' + '\n'
-            fw_mapping.write(output_line)
-
-        for director_id in director_list:
-            output_line = f'{new_movie_id}' + ' 1 ' + f'{director_id}' + '\n'
-            fw_mapping.write(output_line)
-
-        for actor_id in actor_list:
-            output_line =  f'{new_movie_id}' + ' 2 ' +f'{actor_id}' + '\n'
-            fw_mapping.write(output_line)
-        '''
-
-        ''' OLD CODE
-        genre_list = ",".join(list(map(str, genre_list)))
-        director_list = ",".join(list(map(str, director_list)))
-        actor_list = ",".join(list(map(str, actor_list)))
-
-        output_line = movie_id + '|' + genre_list + '|' + director_list + '|' + actor_list + '\n'
-        fw_mapping.write(output_line)
-        '''
         # Entities and predicates
         all_entity_set.add(i2kg_map.get(int(movie_id), "http://ml1m-sun/movie_"+movie_id))
         input_entity_set.add(movie_id)
@@ -146,6 +149,8 @@ def mapping(fr_auxiliary, fr_i2kg_map, fw_mapping):
             fout.write(str(movie_id) + '\t' + "name" + '\t' + i2kg_map.get(int(movie_id), "http://ml1m-sun/movie_"+movie_id) + '\n')
             id+=1
 
+    print(genre_map)#
+
     return genre_count, director_count, actor_count
 
 
@@ -174,12 +179,14 @@ if __name__ == '__main__':
     i2kg_map_file = parsed_args.i2kg_map_file
     mapping_file = parsed_args.mapping_file
 
-    fr_auxiliary = open(auxiliary_file,'r', encoding="utf-8-sig")
     fr_i2kg_map = open(i2kg_map_file, 'r', encoding="utf8")
     fw_mapping = open(mapping_file,'w')
 
-    genre_count, director_count, actor_count = mapping(fr_auxiliary, fr_i2kg_map, fw_mapping)
+    df_auxiliary = load_ml1m_sun_data(auxiliary_file)
+    df_auxiliary = cleanning(df_auxiliary)
+
+    genre_count, director_count, actor_count = mapping(df_auxiliary, fr_i2kg_map, fw_mapping)
     print_statistic_info(genre_count, director_count, actor_count)
 
-    fr_auxiliary.close()
+    fr_i2kg_map.close()
     fw_mapping.close()
