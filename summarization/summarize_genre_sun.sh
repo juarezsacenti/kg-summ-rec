@@ -59,7 +59,7 @@ cd ../preprocess
 #[sun2cao_step1]
 if no_exist "../../datasets/ml1m-summarized_sun/ml1m/kg_hop0_sun.dat"
 then
-    python sun2cao_step1.py --auxiliary '../../datasets/ml1m-summarized_sun/ml1m/sum_auxiliary.txt' --i2kg_map '../../datasets/ml1m-cao/ml1m/i2kg_map.tsv' --mapping '../../datasets/ml1m-summarized_sun/'
+    python sun2cao_step1.py --auxiliary '../../datasets/ml1m-summarized_sun/ml1m/sum_auxiliary.txt' --i2kg_map '../../datasets/ml1m-cao/ml1m/i2kg_map.tsv' --mapping '../../datasets/ml1m-summarized_sun/ml1m/'
     BACK_PID=$!
     wait $BACK_PID
 fi
