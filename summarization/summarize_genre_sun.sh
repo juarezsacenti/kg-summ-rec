@@ -49,7 +49,7 @@ cd ../summarization
 #[sum_auxiliary.txt]
 if no_exist "../../datasets/ml1m-summarized_sun/ml1m/sum_auxiliary.txt"
 then
-    python sun_genre.py --auxiliary '../../datasets/ml1m-sun/ml1m/auxiliary.txt' --hierarchy '../../datasets/ml1m-summarized_sun/ml1m/hierarchy.txt' --summarized '../../datasets/ml1m-summarized_sun/ml1m/sum_auxiliary.txt'
+    python sun_genre.py --auxiliary '../../datasets/ml1m-sun/ml1m/auxiliary.txt' --summarize '../../datasets/ml1m-summarized_sun/ml1m/hierarchy.txt' --output '../../datasets/ml1m-summarized_sun/ml1m/sum_auxiliary.txt'
     BACK_PID=$!
     wait $BACK_PID
 fi
