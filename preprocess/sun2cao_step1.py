@@ -170,7 +170,7 @@ if __name__ == '__main__':
 
     parser.add_argument('--auxiliary', type=str, dest='auxiliary_file', default='../../datasets/ml1m-sun/ml1m/auxiliary.txt')
     parser.add_argument('--i2kg_map', type=str, dest='i2kg_map_file', default='../../datasets/ml1m-cao/ml1m/i2kg_map.tsv')
-    parser.add_argument('--mapping', type=str, dest='mapping_path', default='../../datasets/ml1m-sun2cao/')
+    parser.add_argument('--mapping', type=str, dest='mapping_path', default='../../datasets/ml1m-sun2cao/ml1m/')
 
     parsed_args = parser.parse_args()
 
