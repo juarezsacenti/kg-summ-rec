@@ -49,7 +49,7 @@ cd ../summarization
 #[sum_auxiliary.txt]
 if no_exist "../../datasets/ml1m-summarized_sun/ml1m/sum_auxiliary.txt"
 then
-    nohup python sun_genre.py --auxiliary '../../datasets/ml1m-sun/ml1m/auxiliary.txt' --hierarchy '../../datasets/ml1m-summarized_sun/ml1m/hierarchy.txt' --summarized '../../datasets/ml1m-summarized_sun/ml1m/sum_auxiliary.txt' &
+    python sun_genre.py --auxiliary '../../datasets/ml1m-sun/ml1m/auxiliary.txt' --hierarchy '../../datasets/ml1m-summarized_sun/ml1m/hierarchy.txt' --summarized '../../datasets/ml1m-summarized_sun/ml1m/sum_auxiliary.txt'
     BACK_PID=$!
     wait $BACK_PID
 fi
@@ -59,7 +59,7 @@ cd ../preprocess
 #[sun2cao_step1]
 if no_exist "../../datasets/ml1m-summarized_sun/ml1m/kg_hop0_sun.dat"
 then
-    nohup python sun2cao_step1.py --auxiliary '../../datasets/ml1m-summarized_sun/ml1m/sum_auxiliary.txt' --i2kg_map '../../datasets/ml1m-cao/ml1m/i2kg_map.tsv' --mapping '../../datasets/ml1m-summarized_sun/ml1m/kg_hop0_sun.dat' &
+    python sun2cao_step1.py --auxiliary '../../datasets/ml1m-summarized_sun/ml1m/sum_auxiliary.txt' --i2kg_map '../../datasets/ml1m-cao/ml1m/i2kg_map.tsv' --mapping '../../datasets/ml1m-summarized_sun/'
     BACK_PID=$!
     wait $BACK_PID
 fi
@@ -67,7 +67,7 @@ fi
 #[sun2cao_step2]
 if no_exist "../../datasets/ml1m-summarized_sun/ml1m/kg/e_map.dat"
 then
-    nohup python sun2cao_step2.py --data_path '../../datasets/ml1m-summarized_sun/' --dataset 'ml1m' &
+    python sun2cao_step2.py --data_path '../../datasets/ml1m-summarized_sun/' --dataset 'ml1m'
     BACK_PID=$!
     wait $BACK_PID
 fi

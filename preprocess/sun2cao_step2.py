@@ -24,7 +24,7 @@ if __name__ == '__main__':
     dataset_path = os.path.join(data_path, dataset)
     kg_path = os.path.join(dataset_path, 'kg')
 
-    triple_file = os.path.join(dataset_path, "kg_hop0_sun.dat")
+    triple_file = os.path.join(kg_path, "kg_hop0_sun.dat")
     relation_file = os.path.join(kg_path, "relation_filter.dat")
     i2kg_file = os.path.join(dataset_path, "i2kg_map.tsv")
 
