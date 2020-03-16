@@ -19,11 +19,7 @@ def load_ml1m_sun_data(csv_path):
     return auxiliary
 
 def cleanning(auxiliary):
-    i = auxiliary.index[auxiliary['movie_id'] == 1581]
-    auxiliary.iloc[i] = [1581,'Mystery','Anthony Asquith', 'Jean Kent,Dirk Bogarde,John McCallum']
-    auxiliary = auxiliary.replace({'Biograpy':'Biography'}, regex=True)
-    auxiliary = auxiliary.replace('N/A,', np.NaN)
-    auxiliary = auxiliary.replace('N/A', np.NaN)
+    auxiliary = auxiliary.replace('nan', np.NaN)
 
     return auxiliary
 
