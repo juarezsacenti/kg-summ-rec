@@ -79,7 +79,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=''' Map Auxiliary Information into ID''')
 
     parser.add_argument('--auxiliary', type=str, dest='auxiliary_file', default='../../datasets/ml1m-sun/ml1m/auxiliary.txt')
-    parser.add_argument('--summarize', type=str, dest='summarize_file', default='../../datasets/ml1m-summarized_sun/ml1m/hierarchy.txt')
+    parser.add_argument('--summarize', type=str, dest='summarize_file', default=None)
     parser.add_argument('--output', type=str, dest='output_file', default='../../datasets/ml1m-summarized_sun/ml1m/sum_auxiliary.txt')
 
     parsed_args = parser.parse_args()
