@@ -70,7 +70,7 @@ def save_to_csv(df_auxiliary):
     df_auxiliary['director'] = 'director:' + df_auxiliary['director'].map(str)
     df_auxiliary['actors'] = 'actors:'+ df_auxiliary['actors'].map(str)
 
-    df_auxiliary.to_csv(output_file, sep='|', encoding='utf-8-sig', index=False, header=False)
+    df_auxiliary.to_csv(output_file, sep='|', encoding='utf-8', index=False, header=False)
 
 
 if __name__ == '__main__':

@@ -186,7 +186,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=''' Build Knowledge Graph and Mine the Connected Paths''')
 
     parser.add_argument('--training', type=str, dest='training_file', default='../../datasets/ml1m-cao2sun/ml1m/training.txt')
-    parser.add_argument('--negtive', type=str, dest='negative_file', default='../../datasets/ml1m-cao2sun/ml1m/negative.txt')
+    parser.add_argument('--negative', type=str, dest='negative_file', default='../../datasets/ml1m-cao2sun/ml1m/negative.txt')
     parser.add_argument('--auxiliary', type=str, dest='auxiliary_file', default='../../datasets/ml1m-cao2sun/ml1m/auxiliary-mapping.txt')
     parser.add_argument('--positivepath', type=str, dest='positive_path', default='../../datasets/ml1m-cao2sun/ml1m/positive-path.txt', \
                         help='paths between user-item interaction pairs')

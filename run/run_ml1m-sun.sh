@@ -16,8 +16,8 @@ done
 
 cd ../../Recurrent-Knowledge-Graph-Embedding
 
-#[TRANSE]
-if no_exist "../results/ml1m-cao/ml1m-rkge-results.log"
+#[RKGE]
+if no_exist "../results/ml1m-sun/ml1m-rkge-results.log"
 then
     CUDA_VISIBLE_DEVICES=0 nohup python recurrent-neural-network.py --results ~/git/results/ml1m-sun/ml1m-rkge-results.log &
     BACK_PID=$!
