@@ -14,6 +14,10 @@ do
 done
 }
 
+#[activate jointrec]
+conda deactivate
+conda activate jointrec
+
 cd ../../joint-kg-recommender
 
 #[TRANSE]
@@ -99,6 +103,11 @@ then
     BACK_PID=$!
     wait $BACK_PID
 fi
+
+#[activate rkge]
+conda deactivate
+conda activate rkge
+
 
 cd ../Recurrent-Knowledge-Graph-Embedding
 
