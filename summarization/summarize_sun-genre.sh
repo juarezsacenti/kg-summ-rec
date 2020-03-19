@@ -18,6 +18,8 @@ done
 ln -s ../../datasets/ml1m-cao/ml1m/train.dat ../../datasets/ml1m-summarized_sun/ml1m/train.dat
 ln -s ../../datasets/ml1m-cao/ml1m/valid.dat ../../datasets/ml1m-summarized_sun/ml1m/valid.dat
 ln -s ../../datasets/ml1m-cao/ml1m/test.dat ../../datasets/ml1m-summarized_sun/ml1m/test.dat
+ln -s ../../datasets/ml1m-cao/ml1m/i_map.dat ../../datasets/ml1m-summarized_sun/ml1m/i_map.dat
+ln -s ../../datasets/ml1m-cao/ml1m/u_map.dat ../../datasets/ml1m-summarized_sun/ml1m/u_map.dat
 
 #[hierarchy.txt]
 if no_exist "../../datasets/ml1m-summarized_sun/ml1m/hierarchy.txt"

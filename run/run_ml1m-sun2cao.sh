@@ -99,3 +99,13 @@ then
     BACK_PID=$!
     wait $BACK_PID
 fi
+
+cd ../Recurrent-Knowledge-Graph-Embedding
+
+#[RKGE]
+if no_exist "../results/ml1m-sun/ml1m-rkge-results.log"
+then
+    CUDA_VISIBLE_DEVICES=0 nohup python recurrent-neural-network.py --imputdim 10 -- hiddendim 16 --outdim 1 --iteration 5 --learingrate 0.2 --positivepath ~/git/datasets/ml1m-sun2cao/ml1m/positive-path.txt --negativepath ~/git/datasets/ml1m-sun2cao/ml1m/negative-path.txt --pretrainuserembedding ~/git/datasets/ml1m-sun/ml1m/pre-train-user-embedding.txt --pretrainmovieembedding ~/git/datasets/ml1m-sun/ml1m/pre-train-item-embedding.txt --train ~/git/datasets/ml1m-sun2cao/ml1m/training.txt --test ~/git/datasets/ml1m-sun2cao/ml1m/test.txt --results ~/git/results/ml1m-sun/ml1m-rkge-results.log &
+    BACK_PID=$!
+    wait $BACK_PID
+fi
