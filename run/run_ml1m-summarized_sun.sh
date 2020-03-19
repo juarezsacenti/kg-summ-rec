@@ -100,7 +100,6 @@ then
     wait $BACK_PID
 fi
 
-
 cd ../Recurrent-Knowledge-Graph-Embedding
 
 #[RKGE]
