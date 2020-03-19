@@ -51,6 +51,10 @@ then
     echo "Western,Old_Action" >> ../../datasets/ml1m-summarized_sun/ml1m/hierarchy.txt
 fi
 
+#[activate jointrec]
+conda deactivate
+conda activate jointrec
+
 cd ../preprocess
 
 #[sum_auxiliary.txt]
@@ -76,6 +80,10 @@ then
     BACK_PID=$!
     wait $BACK_PID
 fi
+
+#[activate rkge]
+conda deactivate
+conda activate rkge
 
 cd ../../Recurrent-Knowledge-Graph-Embedding
 
