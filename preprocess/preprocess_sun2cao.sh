@@ -13,8 +13,10 @@ do
     fi
 done
 }
-
-cd ../preprocess
+#[train.dat, valid.dat, test.dat symbolic links]
+ln -s ../../datasets/ml1m-cao/ml1m/train.dat ../../datasets/ml1m-sun2cao/ml1m/train.dat
+ln -s ../../datasets/ml1m-cao/ml1m/valid.dat ../../datasets/ml1m-sun2cao/ml1m/valid.dat
+ln -s ../../datasets/ml1m-cao/ml1m/test.dat ../../datasets/ml1m-sun2cao/ml1m/test.dat
 
 #[clean_auxiliary.txt]
 if no_exist "../../datasets/ml1m-sun2cao/ml1m/clean_auxiliary.txt"
