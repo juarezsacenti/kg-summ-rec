@@ -88,9 +88,9 @@ if __name__ == '__main__':
 
     load_file = parsed_args.load_file
     column = parsed_args.column
-    save_path = parsed_args.save_path
     u_map_file = parsed_args.u_map_file
     i_map_file = parsed_args.i_map_file
+    save_path = parsed_args.save_path
     #frac = parsed_args.frac
 
     df = load_ml1m_sun_data(load_file)
