@@ -3,13 +3,12 @@ import os
 import numpy as np
 import pandas as pd
 
-def load_ml1m_sun_data(load_path):
+def load_ml1m_sun_data(load_file):
     # file: rating-delete-missing-itemid
 
     # pass in column names for each CSV
     r_cols = ['user_id', 'movie_id', 'rating', 'timestamp']
-    csv_path = os.path.join(load_path, "rating-delete-missing-itemid.txt")
-    rating = pd.read_csv(csv_path, sep='\t', engine="python", names=r_cols, encoding='utf-8', header=None)
+    rating = pd.read_csv(load_file, sep='\t', engine="python", names=r_cols, encoding='utf-8', header=None)
 
     return rating
 
@@ -61,7 +60,6 @@ def sun2cao_split(df, column='user_id', frac=[0.1,0.2]):
 
     # drop selected rows
     for i in range(num_sets):
-        print(sets[i])
         df_remain = df_remain.drop(sets[i].index)
 
     # sample remain by frac
@@ -79,21 +77,26 @@ if __name__ == '__main__':
     #print(os.getcwd())
     parser = argparse.ArgumentParser(description=''' Map Auxiliary Information into ID''')
 
-    parser.add_argument('--loadpath', type=str, dest='load_path', default='../../datasets/ml1m-sun/')
+    parser.add_argument('--loadfile', type=str, dest='load_file', default='../../datasets/ml1m-sun/ml1m/rating-delete-missing-itemid.txt')
     parser.add_argument('--column', type=str, dest='column', default='user_id')
-    parser.add_argument('--savepath', type=str, dest='save_path', default='../../datasets/ml1m-sun2cao/')
+    parser.add_argument('--umapfile', type=str, dest='u_map_file', default='../../datasets/ml1m-sun2cao/ml1m/u_map.dat')
+    parser.add_argument('--imapfile', type=str, dest='i_map_file', default='../../datasets/ml1m-sun2cao/ml1m/i_map.dat')
+    parser.add_argument('--savepath', type=str, dest='save_path', default='../../datasets/ml1m-sun2cao/ml1m/')
     #parser.add_argument('--frac', type=str, dest='frac', default='[0.1, 0.2]')
 
     parsed_args = parser.parse_args()
 
-    load_path = parsed_args.load_path
+    load_file = parsed_args.load_file
     column = parsed_args.column
     save_path = parsed_args.save_path
+    u_map_file = parsed_args.u_map_file
+    i_map_file = parsed_args.i_map_file
     #frac = parsed_args.frac
 
-    df = load_ml1m_sun_data(load_path)
+    df = load_ml1m_sun_data(load_file)
     df = id_map(df, u_map_file, i_map_file)
     train, sets = sun2cao_split(df, column)
+
     valid = sets[0]
     test = sets[1]
 
