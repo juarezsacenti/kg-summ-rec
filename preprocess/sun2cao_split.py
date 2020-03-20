@@ -13,6 +13,30 @@ def load_ml1m_sun_data(load_path):
 
     return rating
 
+def id_map(df, u_map_file, i_map_file):
+    array = df['user_id'].unique()
+    array.sort()
+    zipObj = zip(array, range(0, len(array)))
+    u_map = dict(zipObj)
+
+    array = df['movie_id'].unique()
+    array.sort()
+    zipObj = zip(array, range(0, len(array)))
+    i_map = dict(zipObj)
+
+    df['user_id'] = df['user_id'].replace(u_map)
+    df['movie_id'] = df['movie_id'].replace(i_map)
+
+    with open(u_map_file, 'w') as fout:
+        for k,v in u_map.items():
+            fout.write(str(v)+"\t"+str(v))
+
+    with open(i_map_file, 'w') as fout:
+        for k,v in i_map.items():
+            fout.write(str(v)+"\t"+str(v))
+
+    return df
+
 
 def sun2cao_split(df, column='user_id', frac=[0.1,0.2]):
     df_remain = df.copy()
@@ -68,6 +92,7 @@ if __name__ == '__main__':
     #frac = parsed_args.frac
 
     df = load_ml1m_sun_data(load_path)
+    df = id_map(df, u_map_file, i_map_file)
     train, sets = sun2cao_split(df, column)
     valid = sets[0]
     test = sets[1]
