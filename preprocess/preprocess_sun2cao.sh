@@ -13,12 +13,21 @@ do
     fi
 done
 }
-#[train.dat, valid.dat, test.dat symbolic links]
-ln -s ~/git/datasets/ml1m-cao/ml1m/train.dat ~/git/datasets/ml1m-sun2cao/ml1m/train.dat
-ln -s ~/git/datasets/ml1m-cao/ml1m/valid.dat ~/git/datasets/ml1m-sun2cao/ml1m/valid.dat
-ln -s ~/git/datasets/ml1m-cao/ml1m/test.dat ~/git/datasets/ml1m-sun2cao/ml1m/test.dat
-ln -s ~/git/datasets/ml1m-cao/ml1m/i_map.dat ~/git/datasets/ml1m-sun2cao/ml1m/i_map.dat
-ln -s ~/git/datasets/ml1m-cao/ml1m/u_map.dat ~/git/datasets/ml1m-sun2cao/ml1m/u_map.dat
+
+if 1
+then
+    #[train.dat, valid.dat, test.dat by splitting rating-delete-missing-item.txt]
+    python sun2cao_split.py --loadpath ../../datasets/ml1m-sun/ml1m/ --column user_id --savepath ../../datasets/ml1m-sun2cao/ml1m/ &
+    BACK_PID=$!
+    wait $BACK_PID
+else
+    #[train.dat, valid.dat, test.dat symbolic links]
+    ln -s ~/git/datasets/ml1m-cao/ml1m/train.dat ~/git/datasets/ml1m-sun2cao/ml1m/train.dat
+    ln -s ~/git/datasets/ml1m-cao/ml1m/valid.dat ~/git/datasets/ml1m-sun2cao/ml1m/valid.dat
+    ln -s ~/git/datasets/ml1m-cao/ml1m/test.dat ~/git/datasets/ml1m-sun2cao/ml1m/test.dat
+    ln -s ~/git/datasets/ml1m-cao/ml1m/i_map.dat ~/git/datasets/ml1m-sun2cao/ml1m/i_map.dat
+    ln -s ~/git/datasets/ml1m-cao/ml1m/u_map.dat ~/git/datasets/ml1m-sun2cao/ml1m/u_map.dat
+fi
 
 #[activate jointrec]
 conda deactivate

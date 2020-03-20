@@ -1,4 +1,4 @@
-ml1m-summarized_sunml1m-summarized_sun#!/bin/bash
+#!/bin/bash
 no_exist() {
 for f in $1;
 do
