@@ -1,3 +1,4 @@
+import argparse
 import os
 import numpy as np
 import pandas as pd
@@ -67,11 +68,11 @@ if __name__ == '__main__':
     #frac = parsed_args.frac
 
     df = load_ml1m_sun_data(load_path)
-    train, sets = cao_split(df, column)
+    train, sets = sun2cao_split(df, column)
     valid = sets[0]
     test = sets[1]
 
-    print('train: '+str(len(train)/len(rating)) + '\nvalid: ' + str(len(valid)/len(rating)) + '\ntest: ' + str(len(test)/len(rating)) )
+    print('train: '+str(len(train)/len(df)) + '\nvalid: ' + str(len(valid)/len(df)) + '\ntest: ' + str(len(test)/len(df)) )
 
     train.to_csv(save_path+'train.dat', encoding='utf-8', index=False)
     valid.to_csv(save_path+'valid.dat', encoding='utf-8', index=False)
