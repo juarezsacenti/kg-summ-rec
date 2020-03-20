@@ -17,7 +17,7 @@ done
 if true
 then
     #[train.dat, valid.dat, test.dat by splitting rating-delete-missing-item.txt]
-    python sun2cao_split.py --loadfile ../../datasets/ml1m-sun/ml1m/ --column user_id --umapfile ../../datasets/ml1m-sun2cao/ml1m/u_map.dat --imapfile ../../datasets/ml1m-sun2cao/ml1m/u_map.dat --savepath ../../datasets/ml1m-sun2cao/ml1m/ &
+    python sun2cao_split.py --loadfile '../../datasets/ml1m-sun/ml1m/rating-delete-missing-itemid.txt' --column 'user_id' --umapfile '../../datasets/ml1m-sun2cao/ml1m/u_map.dat' --imapfile '../../datasets/ml1m-sun2cao/ml1m/u_map.dat' --savepath '../../datasets/ml1m-sun2cao/ml1m/' &
     BACK_PID=$!
     wait $BACK_PID
 else
