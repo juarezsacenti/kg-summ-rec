@@ -14,7 +14,7 @@ do
 done
 }
 
-if 1
+if true
 then
     #[train.dat, valid.dat, test.dat by splitting rating-delete-missing-item.txt]
     python sun2cao_split.py --loadpath ../../datasets/ml1m-sun/ml1m/ --column user_id --savepath ../../datasets/ml1m-sun2cao/ml1m/ &
