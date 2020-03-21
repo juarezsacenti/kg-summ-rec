@@ -102,6 +102,10 @@ if __name__ == '__main__':
 
     print('train: '+str(len(train)/len(df)) + '\nvalid: ' + str(len(valid)/len(df)) + '\ntest: ' + str(len(test)/len(df)) )
 
-    train.to_csv(save_path+'train.dat', encoding='utf-8', index=False)
-    valid.to_csv(save_path+'valid.dat', encoding='utf-8', index=False)
-    test.to_csv(save_path+'test.dat', encoding='utf-8', index=False)
+    train = train.drop(columns=['timestamp'])
+    valid = valid.drop(columns=['timestamp'])
+    test = test.drop(columns=['timestamp'])
+
+    train.to_csv(save_path+'train.dat', sep='\t', header=False, encoding='utf-8', index=False)
+    valid.to_csv(save_path+'valid.dat', sep='\t', header=False, encoding='utf-8', index=False)
+    test.to_csv(save_path+'test.dat', sep='\t', header=False, encoding='utf-8', index=False)
