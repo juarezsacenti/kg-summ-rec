@@ -112,7 +112,7 @@ conda activate rkge
 cd ../Recurrent-Knowledge-Graph-Embedding
 
 #[RKGE]
-if no_exist "../results/ml1m-sun/ml1m-rkge-results.log"
+if no_exist "../results/ml1m-summarized_sun/ml1m-rkge-results.log"
 then
     CUDA_VISIBLE_DEVICES=0 nohup python recurrent-neural-network.py --inputdim 10 --hiddendim 16 --outdim 1 --iteration 5 --learingrate 0.2 --positivepath ~/git/datasets/ml1m-summarized_sun/ml1m/positive-path.txt --negativepath ~/git/datasets/ml1m-summarized_sun/ml1m/negative-path.txt --pretrainuserembedding ~/git/datasets/ml1m-sun/ml1m/pre-train-user-embedding.txt --pretrainmovieembedding ~/git/datasets/ml1m-sun/ml1m/pre-train-item-embedding.txt --train ~/git/datasets/ml1m-summarized_sun/ml1m/training.txt --test ~/git/datasets/ml1m-summarized_sun/ml1m/test.txt --results ~/git/results/ml1m-summarized_sun/ml1m-rkge-results.log &
     BACK_PID=$!
