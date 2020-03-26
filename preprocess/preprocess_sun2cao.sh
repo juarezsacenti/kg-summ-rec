@@ -23,7 +23,7 @@ then
     if true
     then
         #[train.dat, valid.dat, test.dat by splitting rating-delete-missing-item.txt]
-        python sun2cao_split.py --loadfile '../../datasets/ml1m-sun/ml1m/rating-delete-missing-itemid.txt' --column 'user_id' --umapfile '../../datasets/ml1m-sun2cao/ml1m/u_map.dat' --imapfile '../../datasets/ml1m-sun2cao/ml1m/i_map.dat' --savepath '../../datasets/ml1m-sun2cao/ml1m/' &
+        python sun_split.py --loadfile '../../datasets/ml1m-sun/ml1m/rating-delete-missing-itemid.txt' --column 'user_id' --frac '0.1,0.2' --savepath '../../datasets/ml1m-sun2cao/ml1m/' &
         BACK_PID=$!
         wait $BACK_PID
     else
@@ -70,7 +70,7 @@ cd ../../Recurrent-Knowledge-Graph-Embedding
 if no_exist "../../datasets/ml1m-sun2cao/ml1m/negative.txt" || no_exist "../../datasets/ml1m-sun2cao/positive-path.txt" || no_exist "../../datasets/ml1m-sun2cao/negative-path.txt"
 then
     python auxiliary-mapping-ml.py --auxiliary ../datasets/ml1m-sun2cao/ml1m/clean_auxiliary.txt --mapping ../datasets/ml1m-sun2cao/ml1m/auxiliary-mapping.txt
-    python data-split.py --rating ../datasets/ml1m-sun/ml1m/rating-delete-missing-itemid.txt --train ../datasets/ml1m-sun2cao/ml1m/training.txt --test ../datasets/ml1m-sun2cao/ml1m/test.txt --ratio 0.8
+    #python data-split.py --rating ../datasets/ml1m-sun/ml1m/rating-delete-missing-itemid.txt --train ../datasets/ml1m-sun2cao/ml1m/training.txt --test ../datasets/ml1m-sun2cao/ml1m/test.txt --ratio 0.8
     python negative-sample.py --train ../datasets/ml1m-sun2cao/ml1m/training.txt --negative ../datasets/ml1m-sun2cao/ml1m/negative.txt --shrink 0.05
     python path-extraction-ml.py --training ../datasets/ml1m-sun2cao/ml1m/training.txt --negtive ../datasets/ml1m-sun2cao/ml1m/negative.txt --auxiliary ../datasets/ml1m-sun2cao/ml1m/auxiliary-mapping.txt --positivepath ../datasets/ml1m-sun2cao/ml1m/positive-path.txt --negativepath ../datasets/ml1m-sun2cao/ml1m/negative-path.txt --pathlength 3 --samplesize 5
 fi
