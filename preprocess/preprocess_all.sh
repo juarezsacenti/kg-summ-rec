@@ -19,7 +19,7 @@ conda deactivate
 conda activate jointrec
 
 #[sun2cao/train.dat, valid.dat, test.dat by splitting rating-delete-missing-item.txt]
-if no_exist "~/git/datasets/ml1m-sun2cao/ml1m/cao_train.dat" || no_exist "~/git/datasets/ml1m-sun2cao/ml1m/sun_training.txt"
+if no_exist "~/git/datasets/ml1m-sun2cao/ml1m/train.dat" || no_exist "~/git/datasets/ml1m-sun2cao/ml1m/sun_training.txt"
 then
     python sun_split.py --loadfile '../../datasets/ml1m-sun/ml1m/rating-delete-missing-itemid.txt' --column 'user_id' --frac '0.1,0.2' --savepath '../../datasets/ml1m-sun2cao/ml1m/' &
     BACK_PID=$!
@@ -71,9 +71,9 @@ fi
 cd ../know-rec/preprocess
 
 #[sun2cao/train.dat, valid.dat, test.dat, ... from sun2cao]
-ln -s ~/git/datasets/ml1m-sun2cao/ml1m/cao_train.dat ~/git/datasets/ml1m-summarized_sun/ml1m/cao_train.dat
-ln -s ~/git/datasets/ml1m-sun2cao/ml1m/cao_valid.dat ~/git/datasets/ml1m-summarized_sun/ml1m/cao_valid.dat
-ln -s ~/git/datasets/ml1m-sun2cao/ml1m/cao_test.dat ~/git/datasets/ml1m-summarized_sun/ml1m/cao_test.dat
+ln -s ~/git/datasets/ml1m-sun2cao/ml1m/train.dat ~/git/datasets/ml1m-summarized_sun/ml1m/train.dat
+ln -s ~/git/datasets/ml1m-sun2cao/ml1m/valid.dat ~/git/datasets/ml1m-summarized_sun/ml1m/valid.dat
+ln -s ~/git/datasets/ml1m-sun2cao/ml1m/test.dat ~/git/datasets/ml1m-summarized_sun/ml1m/test.dat
 ln -s ~/git/datasets/ml1m-sun2cao/ml1m/i_map.dat ~/git/datasets/ml1m-summarized_sun/ml1m/i_map.dat
 ln -s ~/git/datasets/ml1m-sun2cao/ml1m/u_map.dat ~/git/datasets/ml1m-summarized_sun/ml1m/u_map.dat
 ln -s ~/git/datasets/ml1m-sun2cao/ml1m/sun_training.txt ~/git/datasets/ml1m-summarized_sun/ml1m/sun_training.txt
