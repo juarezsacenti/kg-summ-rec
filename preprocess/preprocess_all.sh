@@ -148,5 +148,5 @@ cd ../../Recurrent-Knowledge-Graph-Embedding
 if no_exist "../../datasets/ml1m-summarized_sun/positive-path.txt" || no_exist "../../datasets/ml1m-summarized_sun/negative-path.txt"
 then
     python auxiliary-mapping-ml.py --auxiliary ../datasets/ml1m-summarized_sun/ml1m/sum_auxiliary.txt --mapping ../datasets/ml1m-summarized_sun/ml1m/auxiliary-mapping.txt
-    python path-extraction-ml.py --training ../datasets/ml1m-summarized_sun/ml1m/training.txt --negtive ../datasets/ml1m-summarized_sun/ml1m/negative.txt --auxiliary ../datasets/ml1m-summarized_sun/ml1m/auxiliary-mapping.txt --positivepath ../datasets/ml1m-summarized_sun/ml1m/positive-path.txt --negativepath ../datasets/ml1m-summarized_sun/ml1m/negative-path.txt --pathlength 3 --samplesize 5
+    python path-extraction-ml.py --training ../datasets/ml1m-summarized_sun/ml1m/sun_training.txt --negtive ../datasets/ml1m-summarized_sun/ml1m/negative.txt --auxiliary ../datasets/ml1m-summarized_sun/ml1m/auxiliary-mapping.txt --positivepath ../datasets/ml1m-summarized_sun/ml1m/positive-path.txt --negativepath ../datasets/ml1m-summarized_sun/ml1m/negative-path.txt --pathlength 3 --samplesize 5
 fi
