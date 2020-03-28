@@ -115,9 +115,9 @@ if __name__ == '__main__':
 
     cao_remain, cao_sets = cao_format(df_remain, sets)
 
-    cao_remain.to_csv(save_path+'cao_train.dat', sep='\t', header=False, encoding='utf-8', index=False)
-    cao_sets[0].to_csv(save_path+'cao_valid.dat', sep='\t', header=False, encoding='utf-8', index=False)
-    cao_sets[1].to_csv(save_path+'cao_test.dat', sep='\t', header=False, encoding='utf-8', index=False)
+    cao_remain.to_csv(save_path+'train.dat', sep='\t', header=False, encoding='utf-8', index=False)
+    cao_sets[0].to_csv(save_path+'valid.dat', sep='\t', header=False, encoding='utf-8', index=False)
+    cao_sets[1].to_csv(save_path+'test.dat', sep='\t', header=False, encoding='utf-8', index=False)
 
     sun_remain, sun_sets = sun_format(df_remain, sets)
 
