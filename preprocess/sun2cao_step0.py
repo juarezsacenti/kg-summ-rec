@@ -49,15 +49,15 @@ def summarize(df_auxiliary, fr_summarize):
 
     for index, row in df_auxiliary.iterrows():
         if pd.notnull(row['genre']):
-            new_genres = ''
+            new_genres = set()
             for genre in row['genre'].split(','):
                 if genre not in hierarchy.keys():
                     genres_not_found.add(genre)
-                    new_genres += genre + ','
+                    new_genres.add(genre)
                 else:
-                    new_genres += hierarchy[genre] + ','
-            new_genres = new_genres[:-1]
-            df_auxiliary.iloc[index, df_auxiliary.columns.get_loc('genre')] = new_genres
+                    new_genres.add(hierarchy[genre])
+            str_new_genres = ','.join(str(g) for g in new_genres)
+            df_auxiliary.iloc[index, df_auxiliary.columns.get_loc('genre')] = str_new_genres
 
         if len(genres_not_found) > 0:
             print('Not found genres in hierarchy: '+ str(genres_not_found))
@@ -79,7 +79,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=''' Map Auxiliary Information into ID''')
 
     parser.add_argument('--auxiliary', type=str, dest='auxiliary_file', default='../../datasets/ml1m-sun/ml1m/auxiliary.txt')
-    parser.add_argument('--summarize', type=str, dest='summarize_file', default=None)
+    parser.add_argument('--summarize', type=str, dest='summarize_file', default='../../datasets/ml1m-summarized_sun/ml1m/hierarchy.txt')
     parser.add_argument('--output', type=str, dest='output_file', default='../../datasets/ml1m-summarized_sun/ml1m/sum_auxiliary.txt')
 
     parsed_args = parser.parse_args()
