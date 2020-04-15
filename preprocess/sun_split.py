@@ -96,7 +96,7 @@ if __name__ == '__main__':
 
     parser.add_argument('--loadfile', type=str, dest='load_file', default='../../datasets/ml1m-sun/ml1m/rating-delete-missing-itemid.txt')
     parser.add_argument('--column', type=str, dest='column', default='user_id')
-    parser.add_argument('--frac', type=str, dest='frac', default='0.1,0.2')
+    parser.add_argument('--frac', type=str, dest='frac', default='0.2,0.2,0.2,0.2')
     parser.add_argument('--savepath', type=str, dest='save_path', default='../../datasets/ml1m-sun2cao/ml1m/')
 
     parsed_args = parser.parse_args()
@@ -104,23 +104,33 @@ if __name__ == '__main__':
     load_file = parsed_args.load_file
     column = parsed_args.column
     frac = np.fromstring(parsed_args.frac, dtype=float, sep=',')
-    #print(frac)
+    print(frac)
     save_path = parsed_args.save_path
     u_map_file = save_path + 'u_map.dat'
     i_map_file = save_path + 'i_map.dat'
 
     df = load_ml1m_sun_data(load_file)
     df = id_map(df, u_map_file, i_map_file)
-    df_remain, sets = sun2cao_split(df, column)
+    df_remain, sets = sun2cao_split(df, column, frac)
 
     cao_remain, cao_sets = cao_format(df_remain, sets)
 
-    cao_remain.to_csv(save_path+'train.dat', sep='\t', header=False, encoding='utf-8', index=False)
-    cao_sets[0].to_csv(save_path+'valid.dat', sep='\t', header=False, encoding='utf-8', index=False)
-    cao_sets[1].to_csv(save_path+'test.dat', sep='\t', header=False, encoding='utf-8', index=False)
+    if len(frac) < 3:
+        cao_remain.to_csv(save_path+'train.dat', sep='\t', header=False, encoding='utf-8', index=False)
+        cao_sets[0].to_csv(save_path+'valid.dat', sep='\t', header=False, encoding='utf-8', index=False)
+        cao_sets[1].to_csv(save_path+'test.dat', sep='\t', header=False, encoding='utf-8', index=False)
+    else:
+        cao_remain.to_csv(save_path+'fold0.dat', sep='\t', header=False, encoding='utf-8', index=False)
+        for i in range(len(cao_sets)):
+            cao_sets[i].to_csv(save_path+'fold'+str(i+1)+'.dat', sep='\t', header=False, encoding='utf-8', index=False)
 
     sun_remain, sun_sets = sun_format(df_remain, sets)
 
-    train = pd.concat([sun_remain, sun_sets[0]], sort=False)
-    train.to_csv(save_path+'sun_training.txt', sep='\t', header=False, encoding='utf-8', index=False)
-    sun_sets[1].to_csv(save_path+'sun_test.txt', sep='\t', header=False, encoding='utf-8', index=False)
+    if len(frac) < 3:
+        train = pd.concat([sun_remain, sun_sets[0]], sort=False)
+        train.to_csv(save_path+'sun_training.txt', sep='\t', header=False, encoding='utf-8', index=False)
+        sun_sets[1].to_csv(save_path+'sun_test.txt', sep='\t', header=False, encoding='utf-8', index=False)
+    else:
+        sun_remain.to_csv(save_path+'sun_fold0.txt', sep='\t', header=False, encoding='utf-8', index=False)
+        for i in range(len(sun_sets)):
+            sun_sets[i].to_csv(save_path+'sun_fold'+str(i+1)+'.txt', sep='\t', header=False, encoding='utf-8', index=False)
