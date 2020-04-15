@@ -70,7 +70,7 @@ def save_to_csv(df_auxiliary):
     df_auxiliary['director'] = 'director:' + df_auxiliary['director'].map(str)
     df_auxiliary['actors'] = 'actors:'+ df_auxiliary['actors'].map(str)
 
-    df_auxiliary.to_csv(output_file, sep='|', encoding='utf-8', index=False, header=False)
+    df_auxiliary.to_csv(output_file, sep='|', encoding='utf-8-sig', index=False, header=False)
 
 
 if __name__ == '__main__':
@@ -79,7 +79,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=''' Map Auxiliary Information into ID''')
 
     parser.add_argument('--auxiliary', type=str, dest='auxiliary_file', default='../../datasets/ml1m-sun/ml1m/auxiliary.txt')
-    parser.add_argument('--summarize', type=str, dest='summarize_file', default='../../datasets/ml1m-summarized_sun/ml1m/hierarchy.txt')
+    parser.add_argument('--summarize', type=str, dest='summarize_file', default=None)
     parser.add_argument('--output', type=str, dest='output_file', default='../../datasets/ml1m-summarized_sun/ml1m/sum_auxiliary.txt')
 
     parsed_args = parser.parse_args()
