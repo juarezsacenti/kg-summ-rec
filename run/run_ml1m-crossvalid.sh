@@ -49,9 +49,9 @@ python path-extraction-ml.py --training ../datasets/ml1m-summarized_sun/ml1m/sun
 
 #[activate jointrec]
 conda deactivate
-conda activate jointrec
+conda activate
 
-cd ../../joint-kg-recommender
+cd ../joint-kg-recommender
 
 #[TRANSE]
 if no_exist "../results/ml1m-sun/ml1m-transe-*.log"
