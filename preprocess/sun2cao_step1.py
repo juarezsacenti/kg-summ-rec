@@ -8,7 +8,7 @@ import pandas as pd # pandas is a data manipulation library
 def load_ml1m_sun_data(csv_path):
     # pass in column names for each CSV
     r_cols = ['movie_id', 'genre', 'director', 'actors']
-    auxiliary = pd.read_csv(csv_path, sep='|', engine="python", names=r_cols, encoding='utf-8', header=None)
+    auxiliary = pd.read_csv(csv_path, sep='|', engine="python", names=r_cols, encoding='utf-8-sig', header=None)
 
     auxiliary['movie_id'] = auxiliary['movie_id'].str.split(':').str[1]
     auxiliary['movie_id'] = pd.to_numeric(auxiliary['movie_id'])
