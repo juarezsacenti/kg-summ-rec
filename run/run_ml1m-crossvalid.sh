@@ -49,7 +49,7 @@ python path-extraction-ml.py --training ../datasets/ml1m-summarized_sun/ml1m/sun
 
 #[activate jointrec]
 conda deactivate
-conda activate
+conda activate jointrec
 
 cd ../joint-kg-recommender
 
