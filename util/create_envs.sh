@@ -27,6 +27,8 @@ conda deactivate
 conda create -n orbs python=3.6
 conda activate orbs
 
+sudo apt-get update
+sudo apt-get install gcc
 pip install numpy cython
 cd ~/git/ORBS
 python setup.py install
