@@ -12,5 +12,10 @@ rm ~/git/results/ml1m-sun/*.*
 
 #[Dataset ml1m-sun_sum0]
 rm ~/git/datasets/ml1m-sun_sum0/ml1m/*.*
-rm ~/git/datasets/ml1m-sun_sum0/kg/*.*
+rm ~/git/datasets/ml1m-sun_sum0/ml1m/kg/*.*
 rm ~/git/results/ml1m-sun_sum0/*.*
+
+#[Dataset ml1m-sun_sum1]
+rm ~/git/datasets/ml1m-sun_sum1/ml1m/*.*
+rm ~/git/datasets/ml1m-sun_sum1/ml1m/kg/*.*
+rm ~/git/results/ml1m-sun_sum1/*.*

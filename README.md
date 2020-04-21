@@ -30,6 +30,9 @@ git
 | └─ml1m-sun_sum0
 | | └─ml1m
 | | | └─kg
+| └─ml1m-sun_sum1
+| | └─ml1m
+| | | └─kg
 └─joint-kg-recommender
 └─know-rec
 └─ORBS
@@ -38,6 +41,7 @@ git
 | └─ml1m-cao
 | └─ml1m-sun
 | └─ml1m-sun_sum0
+| └─ml1m-sun_sum1
 ```
 
 4. Install cuda 7.5 from https://developer.nvidia.com/cuda-75-downloads-archive<br />

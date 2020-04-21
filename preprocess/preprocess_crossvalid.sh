@@ -153,3 +153,83 @@ then
     ## Removed because use train.dat
     #python path-extraction-ml.py --training ../datasets/ml1m-sun_sum0/ml1m/sun_training.txt --negtive ../datasets/ml1m-sun_sum0/ml1m/negative.txt --auxiliary ../datasets/ml1m-sun_sum0/ml1m/auxiliary-mapping.txt --positivepath ../datasets/ml1m-sun_sum0/ml1m/positive-path.txt --negativepath ../datasets/ml1m-sun_sum0/ml1m/negative-path.txt --pathlength 3 --samplesize 5
 fi
+
+###############
+#sun_sum1
+###############
+
+cd ../know-rec/preprocess
+
+#[sun2cao/train.dat, valid.dat, test.dat, ... from sun2cao]
+ln -s ~/git/datasets/ml1m-sun2cao/ml1m/i_map.dat ~/git/datasets/ml1m-sun_sum1/ml1m/i_map.dat
+ln -s ~/git/datasets/ml1m-sun2cao/ml1m/u_map.dat ~/git/datasets/ml1m-sun_sum1/ml1m/u_map.dat
+
+#[hierarchy.txt]
+if no_exist "../../datasets/ml1m-sun_sum1/ml1m/hierarchy.txt"
+then
+    touch ../../datasets/ml1m-sun_sum1/ml1m/hierarchy.txt
+    echo "Action,Actionreach" >> ../../datasets/ml1m-sun_sum1/ml1m/hierarchy.txt
+    echo "Adult,Experience" >> ../../datasets/ml1m-sun_sum1/ml1m/hierarchy.txt
+    echo "Adventure,Entertainment" >> ../../datasets/ml1m-sun_sum1/ml1m/hierarchy.txt
+    echo "Animation,SocialActive" >> ../../datasets/ml1m-sun_sum1/ml1m/hierarchy.txt
+    echo "Biography,Special_Info" >> ../../datasets/ml1m-sun_sum1/ml1m/hierarchy.txt
+    echo "Comedy,SocialActive" >> ../../datasets/ml1m-sun_sum1/ml1m/hierarchy.txt
+    echo "Crime,Thrilling" >> ../../datasets/ml1m-sun_sum1/ml1m/hierarchy.txt
+    echo "Documentary,Special_Info" >> ../../datasets/ml1m-sun_sum1/ml1m/hierarchy.txt
+    echo "Drama,Sensible" >> ../../datasets/ml1m-sun_sum1/ml1m/hierarchy.txt
+    echo "Family,SocialActive" >> ../../datasets/ml1m-sun_sum1/ml1m/hierarchy.txt
+    echo "Fantasy,Imaginational_Entertainment" >> ../../datasets/ml1m-sun_sum1/ml1m/hierarchy.txt
+    echo "Film-Noir,Sensible" >> ../../datasets/ml1m-sun_sum1/ml1m/hierarchy.txt
+    echo "History,Documentarial_Information" >> ../../datasets/ml1m-sun_sum1/ml1m/hierarchy.txt
+    echo "Horror,Imaginational_Entertainment" >> ../../datasets/ml1m-sun_sum1/ml1m/hierarchy.txt
+    echo "Music,Intelectual_Entertainment" >> ../../datasets/ml1m-sun_sum1/ml1m/hierarchy.txt
+    echo "Musical,Intelectual_Entertainment" >> ../../datasets/ml1m-sun_sum1/ml1m/hierarchy.txt
+    echo "Mystery,Thrilling" >> ../../datasets/ml1m-sun_sum1/ml1m/hierarchy.txt
+    echo "Romance,Sensible" >> ../../datasets/ml1m-sun_sum1/ml1m/hierarchy.txt
+    echo "Sci-Fi,Imaginational_Entertainment" >> ../../datasets/ml1m-sun_sum1/ml1m/hierarchy.txt
+    echo "Short,Genre" >> ../../datasets/ml1m-sun_sum1/ml1m/hierarchy.txt
+    echo "Sport,Entertainment" >> ../../datasets/ml1m-sun_sum1/ml1m/hierarchy.txt
+    echo "Thriller,Thrilling" >> ../../datasets/ml1m-sun_sum1/ml1m/hierarchy.txt
+    echo "War,Actionreach" >> ../../datasets/ml1m-sun_sum1/ml1m/hierarchy.txt
+    echo "Western,Actionreach" >> ../../datasets/ml1m-sun_sum1/ml1m/hierarchy.txt
+fi
+
+#[activate jointrec]
+conda deactivate
+conda activate jointrec
+
+#[sum_auxiliary.txt]
+if no_exist "../../datasets/ml1m-sun_sum1/ml1m/sum_auxiliary.txt"
+then
+    python sun2cao_step0.py --auxiliary '../../datasets/ml1m-sun/ml1m/auxiliary.txt' --summarize '../../datasets/ml1m-sun_sum1/ml1m/hierarchy.txt' --output '../../datasets/ml1m-sun_sum1/ml1m/sum_auxiliary.txt'
+    BACK_PID=$!
+    wait $BACK_PID
+fi
+
+#[sun2cao_step1]
+if no_exist "../../datasets/ml1m-sun_sum1/ml1m/kg/kg_hop0_sun.dat"
+then
+    python sun2cao_step1.py --auxiliary '../../datasets/ml1m-sun_sum1/ml1m/sum_auxiliary.txt' --i2kg_map '../../datasets/ml1m-cao/ml1m/i2kg_map.tsv' --mapping '../../datasets/ml1m-sun_sum1/ml1m/'
+    BACK_PID=$!
+    wait $BACK_PID
+fi
+
+#[sun2cao_step2]
+if no_exist "../../datasets/ml1m-sun_sum1/ml1m/kg/e_map.dat"
+then
+    python sun2cao_step2.py --data_path '../../datasets/ml1m-sun_sum1/' --dataset 'ml1m'
+    BACK_PID=$!
+    wait $BACK_PID
+fi
+
+#[activate rkge]
+conda deactivate
+conda activate rkge
+
+cd ../../Recurrent-Knowledge-Graph-Embedding
+
+#[rkge preprocessing]
+if no_exist "../../datasets/ml1m-sun_sum1/positive-path.txt" || no_exist "../../datasets/ml1m-sun_sum1/negative-path.txt"
+then
+    python auxiliary-mapping-ml.py --auxiliary ../datasets/ml1m-sun_sum1/ml1m/sum_auxiliary.txt --mapping ../datasets/ml1m-sun_sum1/ml1m/auxiliary-mapping.txt
+fi
