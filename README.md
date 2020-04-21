@@ -16,29 +16,28 @@ Git folder should have the follow structure:
 
 ```
 git
-└─know-rec
-| └─preprocess
-| | | cao2sun_step1.py
-| | | sun2cao_step1.py
-| | | sun2cao_step2.p
-| README.md
 └─datasets
-| └─ml1m-cao
+| └─ml1m-cao (with Cao's data)
 | | └─ml1m
-| | | | Cao's data
-| └─ml1m-sun
-| | └─ml1m
-| | | | Sun's data
-| └─ml1m-sun2cao
-| | └─ml1m
+| | | └─kg
 | └─ml1m-cao2sun
 | | └─ml1m
+| └─ml1m-sun (with Sun's data)
+| | └─ml1m
+| └─ml1m-sun2cao
+| | └─ml1m
+| | | └─kg
+| └─ml1m-sun_sum0
+| | └─ml1m
+| | | └─kg
 └─joint-kg-recommender
-└─orbs
+└─know-rec
+└─ORBS
 └─Recurrent-Knowledge-Graph-Embedding
 └─results
 | └─ml1m-cao
 | └─ml1m-sun
+| └─ml1m-sun_sum0
 ```
 
 4. Install cuda 7.5 from https://developer.nvidia.com/cuda-75-downloads-archive<br />
