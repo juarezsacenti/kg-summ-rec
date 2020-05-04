@@ -45,6 +45,8 @@ ln -s ~/git/datasets/ml1m-sun2cao/ml1m/sun_test.txt ~/git/datasets/ml1m-sun_sum2
 ln -s ~/git/datasets/ml1m-sun2cao/ml1m/negative.txt ~/git/datasets/ml1m-sun_sum2/ml1m/negative.txt
 
 #[rkge preprocessing]
+cd ../../Recurrent-Knowledge-Graph-Embedding
+
 python path-extraction-ml.py --training ../datasets/ml1m-sun_sum5/ml1m/sun_training.txt --negtive ../datasets/ml1m-sun_sum5/ml1m/negative.txt --auxiliary ../datasets/ml1m-sun_sum5/ml1m/auxiliary-mapping.txt --positivepath ../datasets/ml1m-sun_sum5/ml1m/positive-path.txt --negativepath ../datasets/ml1m-sun_sum5/ml1m/negative-path.txt --pathlength 3 --samplesize 5
 python path-extraction-ml.py --training ../datasets/ml1m-sun_sum4/ml1m/sun_training.txt --negtive ../datasets/ml1m-sun_sum4/ml1m/negative.txt --auxiliary ../datasets/ml1m-sun_sum4/ml1m/auxiliary-mapping.txt --positivepath ../datasets/ml1m-sun_sum4/ml1m/positive-path.txt --negativepath ../datasets/ml1m-sun_sum4/ml1m/negative-path.txt --pathlength 3 --samplesize 5
 python path-extraction-ml.py --training ../datasets/ml1m-sun_sum3/ml1m/sun_training.txt --negtive ../datasets/ml1m-sun_sum3/ml1m/negative.txt --auxiliary ../datasets/ml1m-sun_sum3/ml1m/auxiliary-mapping.txt --positivepath ../datasets/ml1m-sun_sum3/ml1m/positive-path.txt --negativepath ../datasets/ml1m-sun_sum3/ml1m/negative-path.txt --pathlength 3 --samplesize 5
@@ -166,10 +168,10 @@ fi
 ###############
 
 #[activate jointrec]
-conda deactivate
-conda activate jointrec
+#conda deactivate
+#conda activate jointrec
 
-cd ../joint-kg-recommender
+#cd ../joint-kg-recommender
 
 #[TRANSE]
 if no_exist "../results/ml1m-sun_sum4/ml1m-transe-*.log"
