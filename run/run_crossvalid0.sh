@@ -54,17 +54,17 @@ python path-extraction-ml.py --training ../datasets/ml1m-sun_sum2/ml1m/sun_train
 
 #[Running]
 
-###############
-#sun_sum5
-###############
-
 #[activate jointrec]
 conda deactivate
 conda activate jointrec
 
 cd ../joint-kg-recommender
 
-#[TRANSE]
+###############
+# transE
+###############
+
+#[ml1m-sun_sum5]
 if no_exist "../results/ml1m-sun_sum5/ml1m-transe-*.log"
 then
     CUDA_VISIBLE_DEVICES=0 nohup python run_knowledge_representation.py -data_path ~/git/datasets/ml1m-sun_sum5/ -log_path ~/git/results/ml1m-sun_sum5/ -kg_test_files valid.dat:test.dat -l2_lambda 0 -model_type transe -nohas_visualization -dataset ml1m -batch_size 256 -embedding_size 100 -learning_rate 0.001 -topn 10 -seed 3 -eval_interval_steps 9150 -training_steps 915000 -early_stopping_steps_to_wait 45750 -optimizer_type Adam -L1_flag -norm_lambda 1 -kg_lambda 1 &
@@ -72,6 +72,88 @@ then
     wait $BACK_PID
     mv ../results/ml1m-sun_sum5/ml1m-transe-*.ckpt_final ../results/ml1m-sun_sum5/ml1m-transe-pretrained.ckpt
 fi
+
+#[ml1m-sun_sum4]
+if no_exist "../results/ml1m-sun_sum4/ml1m-transe-*.log"
+then
+    CUDA_VISIBLE_DEVICES=0 nohup python run_knowledge_representation.py -data_path ~/git/datasets/ml1m-sun_sum4/ -log_path ~/git/results/ml1m-sun_sum4/ -kg_test_files valid.dat:test.dat -l2_lambda 0 -model_type transe -nohas_visualization -dataset ml1m -batch_size 256 -embedding_size 100 -learning_rate 0.001 -topn 10 -seed 3 -eval_interval_steps 9150 -training_steps 915000 -early_stopping_steps_to_wait 45750 -optimizer_type Adam -L1_flag -norm_lambda 1 -kg_lambda 1 &
+    BACK_PID=$!
+    wait $BACK_PID
+    mv ../results/ml1m-sun_sum4/ml1m-transe-*.ckpt_final ../results/ml1m-sun_sum4/ml1m-transe-pretrained.ckpt
+fi
+
+
+###############
+# bprmf
+###############
+#BPRMF - Steffen Rendle, Christoph Freudenthaler, Zeno Gantner, and Lars Schmidt-Thieme. 2009. BPR: Bayesian personalized ranking from implicit feedback. In UAI.
+
+#[ml1m-sun_sum5]
+if no_exist "../results/ml1m-sun_sum5/ml1m-bprmf-*.log"
+then
+    CUDA_VISIBLE_DEVICES=1 nohup python run_item_recommendation.py -data_path ~/git/datasets/ml1m-sun_sum5/ -log_path ~/git/results/ml1m-sun_sum5/ -rec_test_files valid.dat:test.dat -l2_lambda 1e-5 -negtive_samples 1 -model_type bprmf -nohas_visualization -dataset ml1m -batch_size 256 -embedding_size 100 -learning_rate 0.1 -topn 10 -seed 3 -eval_interval_steps 5000 -training_steps 500000 -early_stopping_steps_to_wait 25000 -optimizer_type Adagrad &
+    BACK_PID=$!
+    wait $BACK_PID
+    mv ../results/ml1m-sun_sum5/ml1m-bprmf-*.ckpt ../results/ml1m-sun_sum5/ml1m-bprmf-pretrained.ckpt
+fi
+
+#[ml1m-sun_sum4]
+if no_exist "../results/ml1m-sun_sum4/ml1m-bprmf-*.log"
+then
+    CUDA_VISIBLE_DEVICES=1 nohup python run_item_recommendation.py -data_path ~/git/datasets/ml1m-sun_sum4/ -log_path ~/git/results/ml1m-sun_sum4/ -rec_test_files valid.dat:test.dat -l2_lambda 1e-5 -negtive_samples 1 -model_type bprmf -nohas_visualization -dataset ml1m -batch_size 256 -embedding_size 100 -learning_rate 0.1 -topn 10 -seed 3 -eval_interval_steps 5000 -training_steps 500000 -early_stopping_steps_to_wait 25000 -optimizer_type Adagrad &
+    BACK_PID=$!
+    wait $BACK_PID
+    mv ../results/ml1m-sun_sum4/ml1m-bprmf-*.ckpt ../results/ml1m-sun_sum4/ml1m-bprmf-pretrained.ckpt
+fi
+
+###############
+# cofm
+###############
+#CoFM (FM+TransE) - Guangyuan Piao and John G. Breslin. 2018. Transfer Learning for Item Recommendations and Knowledge Graph Completion in Item Related Domains via a Co-Factorization Model. In ESWC.
+
+#[ml1m-sun_sum5]
+if no_exist "../results/ml1m-sun_sum5/ml1m-cofm-*.log"
+then
+    CUDA_VISIBLE_DEVICES=0 nohup python run_knowledgable_recommendation.py -data_path ~/git/datasets/ml1m-sun_sum5/ -log_path ~/git/results/ml1m-sun_sum5/ -rec_test_files valid.dat:test.dat -kg_test_files valid.dat:test.dat -l2_lambda 0 -model_type cofm -nohas_visualization -dataset ml1m -batch_size 256 -embedding_size 100 -learning_rate 0.1 -topn 10 -seed 3 -eval_interval_steps 19520 -training_steps 1952000 -early_stopping_steps_to_wait 97600 -optimizer_type Adam -joint_ratio 0.5 -load_ckpt_file ml1m-bprmf-pretrained.ckpt:ml1m-transe-pretrained.ckpt -noshare_embeddings -L1_flag -norm_lambda 1 -kg_lambda 1 &
+    BACK_PID=$!
+    wait $BACK_PID
+fi
+
+#[ml1m-sun_sum4]
+if no_exist "../results/ml1m-sun_sum4/ml1m-cofm-*.log"
+then
+    CUDA_VISIBLE_DEVICES=0 nohup python run_knowledgable_recommendation.py -data_path ~/git/datasets/ml1m-sun_sum4/ -log_path ~/git/results/ml1m-sun_sum4/ -rec_test_files valid.dat:test.dat -kg_test_files valid.dat:test.dat -l2_lambda 0 -model_type cofm -nohas_visualization -dataset ml1m -batch_size 256 -embedding_size 100 -learning_rate 0.1 -topn 10 -seed 3 -eval_interval_steps 19520 -training_steps 1952000 -early_stopping_steps_to_wait 97600 -optimizer_type Adam -joint_ratio 0.5 -load_ckpt_file ml1m-bprmf-pretrained.ckpt:ml1m-transe-pretrained.ckpt -noshare_embeddings -L1_flag -norm_lambda 1 -kg_lambda 1 &
+    BACK_PID=$!
+    wait $BACK_PID
+fi
+
+###############
+# cfkg
+###############
+#CFKG (TransE) - Yongfeng Zhang, Qingyao Ai, Xu Chen, and Pengfei Wang. 2018. Learning over Knowledge-Base Embeddings for Recommendation. In SIGIR.
+
+#[ml1m-sun_sum5]
+if no_exist "../results/ml1m-sun_sum5/ml1m-cfkg-*.log"
+then
+    CUDA_VISIBLE_DEVICES=0 nohup python run_knowledgable_recommendation.py -data_path ~/git/datasets/ml1m-sun_sum5/ -log_path ~/git/results/ml1m-sun_sum5/ -rec_test_files valid.dat:test.dat  -kg_test_files valid.dat:test.dat -l2_lambda 0 -model_type cfkg -nohas_visualization -dataset ml1m -batch_size 256 -embedding_size 100 -learning_rate 0.1 -topn 10 -seed 3 -eval_interval_steps 19520 -training_steps 1952000 -early_stopping_steps_to_wait 97600 -optimizer_type Adam -joint_ratio 0.5 -share_embeddings -L1_flag -norm_lambda 1 -kg_lambda 1 -use_st_gumbel -load_ckpt_file ml1m-transup-pretrained.ckpt:ml1m-transh-pretrained.ckpt &
+    BACK_PID=$!
+    wait $BACK_PID
+fi
+
+#[ml1m-sun_sum4]
+if no_exist "../results/ml1m-sun_sum4/ml1m-cfkg-*.log"
+then
+    CUDA_VISIBLE_DEVICES=0 nohup python run_knowledgable_recommendation.py -data_path ~/git/datasets/ml1m-sun_sum4/ -log_path ~/git/results/ml1m-sun_sum4/ -rec_test_files valid.dat:test.dat  -kg_test_files valid.dat:test.dat -l2_lambda 0 -model_type cfkg -nohas_visualization -dataset ml1m -batch_size 256 -embedding_size 100 -learning_rate 0.1 -topn 10 -seed 3 -eval_interval_steps 19520 -training_steps 1952000 -early_stopping_steps_to_wait 97600 -optimizer_type Adam -joint_ratio 0.5 -share_embeddings -L1_flag -norm_lambda 1 -kg_lambda 1 -use_st_gumbel -load_ckpt_file ml1m-transup-pretrained.ckpt:ml1m-transh-pretrained.ckpt &
+    BACK_PID=$!
+    wait $BACK_PID
+fi
+
+
+##########################################################################################
+
+###############
+# ml1m-sun_sum5
+###############
 
 #[TRANSR]
 #if no_exist "../results/ml1m-sun_sum5/ml1m-transr-*.log"
@@ -98,14 +180,7 @@ fi
 #    wait $BACK_PID
 #fi
 
-#BPRMF - Steffen Rendle, Christoph Freudenthaler, Zeno Gantner, and Lars Schmidt-Thieme. 2009. BPR: Bayesian personalized ranking from implicit feedback. In UAI.
-if no_exist "../results/ml1m-sun_sum5/ml1m-bprmf-*.log"
-then
-    CUDA_VISIBLE_DEVICES=1 nohup python run_item_recommendation.py -data_path ~/git/datasets/ml1m-sun_sum5/ -log_path ~/git/results/ml1m-sun_sum5/ -rec_test_files valid.dat:test.dat -l2_lambda 1e-5 -negtive_samples 1 -model_type bprmf -nohas_visualization -dataset ml1m -batch_size 256 -embedding_size 100 -learning_rate 0.1 -topn 10 -seed 3 -eval_interval_steps 5000 -training_steps 500000 -early_stopping_steps_to_wait 25000 -optimizer_type Adagrad &
-    BACK_PID=$!
-    wait $BACK_PID
-    mv ../results/ml1m-sun_sum5/ml1m-bprmf-*.ckpt ../results/ml1m-sun_sum5/ml1m-bprmf-pretrained.ckpt
-fi
+
 
 #TransUP
 #if no_exist "../results/ml1m-sun_sum5/ml1m-transup-*.log"
@@ -116,373 +191,327 @@ fi
 #    mv ../results/ml1m-sun_sum5/ml1m-transup-*.ckpt ../results/ml1m-sun_sum5/ml1m-transup-pretrained.ckpt
 #fi
 
-#CFKG (TransE) - Yongfeng Zhang, Qingyao Ai, Xu Chen, and Pengfei Wang. 2018. Learning over Knowledge-Base Embeddings for Recommendation. In SIGIR.
-#if no_exist "../results/ml1m-sun_sum5/ml1m-cfkg-*.log"
-#then
-#    CUDA_VISIBLE_DEVICES=0 nohup python run_knowledgable_recommendation.py -data_path ~/git/datasets/ml1m-sun_sum5/ -log_path ~/git/results/ml1m-sun_sum5/ -rec_test_files valid.dat:test.dat  -kg_test_files valid.dat:test.dat -l2_lambda 0 -model_type cfkg -nohas_visualization -dataset ml1m -batch_size 256 -embedding_size 100 -learning_rate 0.1 -topn 10 -seed 3 -eval_interval_steps 19520 -training_steps 1952000 -early_stopping_steps_to_wait 97600 -optimizer_type Adam -joint_ratio 0.5 -share_embeddings -L1_flag -norm_lambda 1 -kg_lambda 1 -use_st_gumbel -load_ckpt_file ml1m-transup-pretrained.ckpt:ml1m-transh-pretrained.ckpt &
-#    BACK_PID=$!
-#    wait $BACK_PID
-#fi
-
 #CKE (TransR) - Fuzheng Zhang, Nicholas Jing Yuan, Defu Lian, Xing Xie, and Wei-Ying Ma. 2016. Collaborative Knowledge Base Embedding for Recommender Systems. In SIGKDD.
-if no_exist "../results/ml1m-sun_sum5/ml1m-cke-*.log"
-then
-    CUDA_VISIBLE_DEVICES=0 nohup python run_knowledgable_recommendation.py -data_path ~/git/datasets/ml1m-sun_sum5/ -log_path ~/git/results/ml1m-sun_sum5/ -rec_test_files valid.dat:test.dat -kg_test_files valid.dat:test.dat -l2_lambda 0 -model_type cke -nohas_visualization -dataset ml1m -batch_size 256 -embedding_size 100 -learning_rate 0.1 -topn 10 -seed 3 -eval_interval_steps 19520 -training_steps 1952000 -early_stopping_steps_to_wait 97600 -optimizer_type Adam -joint_ratio 0.5 -noshare_embeddings -L1_flag -norm_lambda 1 -kg_lambda 1 -use_st_gumbel -load_ckpt_file ml1m-bprmf-pretrained.ckpt:ml1m-transe-pretrained.ckpt &
-    BACK_PID=$!
-    wait $BACK_PID
-fi
+# if no_exist "../results/ml1m-sun_sum5/ml1m-cke-*.log"
+# then
+#     CUDA_VISIBLE_DEVICES=0 nohup python run_knowledgable_recommendation.py -data_path ~/git/datasets/ml1m-sun_sum5/ -log_path ~/git/results/ml1m-sun_sum5/ -rec_test_files valid.dat:test.dat -kg_test_files valid.dat:test.dat -l2_lambda 0 -model_type cke -nohas_visualization -dataset ml1m -batch_size 256 -embedding_size 100 -learning_rate 0.1 -topn 10 -seed 3 -eval_interval_steps 19520 -training_steps 1952000 -early_stopping_steps_to_wait 97600 -optimizer_type Adam -joint_ratio 0.5 -noshare_embeddings -L1_flag -norm_lambda 1 -kg_lambda 1 -use_st_gumbel -load_ckpt_file ml1m-bprmf-pretrained.ckpt:ml1m-transe-pretrained.ckpt &
+#     BACK_PID=$!
+#     wait $BACK_PID
+# fi
 
-#CoFM (FM+TransE) - Guangyuan Piao and John G. Breslin. 2018. Transfer Learning for Item Recommendations and Knowledge Graph Completion in Item Related Domains via a Co-Factorization Model. In ESWC.
-if no_exist "../results/ml1m-sun_sum5/ml1m-cofm-*.log"
-then
-    CUDA_VISIBLE_DEVICES=0 nohup python run_knowledgable_recommendation.py -data_path ~/git/datasets/ml1m-sun_sum5/ -log_path ~/git/results/ml1m-sun_sum5/ -rec_test_files valid.dat:test.dat -kg_test_files valid.dat:test.dat -l2_lambda 0 -model_type cofm -nohas_visualization -dataset ml1m -batch_size 256 -embedding_size 100 -learning_rate 0.1 -topn 10 -seed 3 -eval_interval_steps 19520 -training_steps 1952000 -early_stopping_steps_to_wait 97600 -optimizer_type Adam -joint_ratio 0.5 -load_ckpt_file ml1m-bprmf-pretrained.ckpt:ml1m-transe-pretrained.ckpt -noshare_embeddings -L1_flag -norm_lambda 1 -kg_lambda 1 &
-    BACK_PID=$!
-    wait $BACK_PID
-fi
-
-#JTransUP
-if no_exist "../results/ml1m-sun_sum5/ml1m-jtransup-*.log"
-then
-    CUDA_VISIBLE_DEVICES=0 nohup python run_knowledgable_recommendation.py -data_path ~/git/datasets/ml1m-sun_sum5/ -log_path ~/git/results/ml1m-sun_sum5/ -rec_test_files valid.dat:test.dat -kg_test_files valid.dat:test.dat -l2_lambda 0 -model_type jtransup -nohas_visualization -dataset ml1m -batch_size 256 -embedding_size 100 -learning_rate 0.1 -topn 10 -seed 3 -eval_interval_steps 19520 -training_steps 1952000 -early_stopping_steps_to_wait 97600 -optimizer_type Adam -joint_ratio 0.5 -noshare_embeddings -L1_flag -norm_lambda 1 -kg_lambda 1 -nouse_st_gumbel -load_ckpt_file ml1m-bprmf-pretrained.ckpt:ml1m-transe-pretrained.ckpt &
-    BACK_PID=$!
-    wait $BACK_PID
-fi
-
-#[activate rkge]
-#conda deactivate
-#conda activate rkge
-
-#cd ../Recurrent-Knowledge-Graph-Embedding
-
-#[RKGE]
-#if no_exist "../results/ml1m-sun_sum5/ml1m-rkge-results.log"
-#then
-#    CUDA_VISIBLE_DEVICES=0 nohup python recurrent-neural-network.py --inputdim 10 --hiddendim 16 --outdim 1 --iteration 5 --learingrate 0.2 --positivepath ~/git/datasets/ml1m-sun_sum5/ml1m/positive-path.txt --negativepath ~/git/datasets/ml1m-sun_sum5/ml1m/negative-path.txt --pretrainuserembedding ~/git/datasets/ml1m-sun/ml1m/pre-train-user-embedding.txt --pretrainmovieembedding ~/git/datasets/ml1m-sun/ml1m/pre-train-item-embedding.txt --train ~/git/datasets/ml1m-sun_sum5/ml1m/sun_training.txt --test ~/git/datasets/ml1m-sun_sum5/ml1m/sun_test.txt --results ~/git/results/ml1m-sun_sum5/ml1m-rkge-results.log &
-#    BACK_PID=$!
-#    wait $BACK_PID
-#fi
-
-
-###############
-#sun_sum4
-###############
-
-#[activate jointrec]
-#conda deactivate
-#conda activate jointrec
-
-#cd ../joint-kg-recommender
-
-#[TRANSE]
-if no_exist "../results/ml1m-sun_sum4/ml1m-transe-*.log"
-then
-    CUDA_VISIBLE_DEVICES=0 nohup python run_knowledge_representation.py -data_path ~/git/datasets/ml1m-sun_sum4/ -log_path ~/git/results/ml1m-sun_sum4/ -kg_test_files valid.dat:test.dat -l2_lambda 0 -model_type transe -nohas_visualization -dataset ml1m -batch_size 256 -embedding_size 100 -learning_rate 0.001 -topn 10 -seed 3 -eval_interval_steps 9150 -training_steps 915000 -early_stopping_steps_to_wait 45750 -optimizer_type Adam -L1_flag -norm_lambda 1 -kg_lambda 1 &
-    BACK_PID=$!
-    wait $BACK_PID
-    mv ../results/ml1m-sun_sum4/ml1m-transe-*.ckpt_final ../results/ml1m-sun_sum4/ml1m-transe-pretrained.ckpt
-fi
-
-#[TRANSR]
-#if no_exist "../results/ml1m-sun_sum4/ml1m-transr-*.log"
-#then
-#    CUDA_VISIBLE_DEVICES=0 nohup python run_knowledge_representation.py -data_path ~/git/datasets/ml1m-sun_sum4/ -log_path ~/git/results/ml1m-sun_sum4/ -kg_test_files valid.dat:test.dat -l2_lambda 0 -model_type transr -nohas_visualization -dataset ml1m -batch_size 256 -embedding_size 100 -learning_rate 0.001 -topn 10 -seed 3 -eval_interval_steps 9150 -training_steps 915000 -early_stopping_steps_to_wait 45750 -optimizer_type Adam -L1_flag -norm_lambda 1 -kg_lambda 1 -load_ckpt_file ml1m-transe-pretrained.ckpt &
-#    BACK_PID=$!
-#    wait $BACK_PID
-#fi
-
-#[TRANSH]
-#if no_exist "../results/ml1m-sun_sum4/ml1m-transh-*.log"
-#then
-#    CUDA_VISIBLE_DEVICES=0 nohup python run_knowledge_representation.py -data_path ~/git/datasets/ml1m-sun_sum4/ -log_path ~/git/results/ml1m-sun_sum4/ -kg_test_files valid.dat:test.dat -l2_lambda 0 -model_type transh -nohas_visualization -dataset ml1m -batch_size 256 -embedding_size 100 -learning_rate 0.001 -topn 10 -seed 3 -eval_interval_steps 9150 -training_steps 915000 -early_stopping_steps_to_wait 45750 -optimizer_type Adam -L1_flag -norm_lambda 1 -kg_lambda 1 -load_ckpt_file ml1m-transe-pretrained.ckpt &
-#    BACK_PID=$!
-#    wait $BACK_PID
-#    mv ../results/ml1m-sun_sum4/ml1m-transh-*.ckpt_final ../results/ml1m-sun_sum4/ml1m-transh-pretrained.ckpt
-#fi
-
-#FM - Steffen Rendle. 2010. Factorization machines.
-#if no_exist "../results/ml1m-sun_sum4/ml1m-fm-*.log"
-#then
-#    CUDA_VISIBLE_DEVICES=1 nohup python run_item_recommendation.py -data_path ~/git/datasets/ml1m-sun_sum4/ -log_path ~/git/results/ml1m-sun_sum4/ -rec_test_files valid.dat:test.dat -l2_lambda 1e-5 -negtive_samples 1 -model_type fm -nohas_visualization -dataset ml1m -batch_size 256 -embedding_size 100 -learning_rate 0.1 -topn 10 -seed 3 -eval_interval_steps 500 -training_steps 50000 -early_stopping_steps_to_wait 2500 -optimizer_type Adagrad &
-#    BACK_PID=$!
-#    wait $BACK_PID
-#fi
-
-#BPRMF - Steffen Rendle, Christoph Freudenthaler, Zeno Gantner, and Lars Schmidt-Thieme. 2009. BPR: Bayesian personalized ranking from implicit feedback. In UAI.
-if no_exist "../results/ml1m-sun_sum4/ml1m-bprmf-*.log"
-then
-    CUDA_VISIBLE_DEVICES=1 nohup python run_item_recommendation.py -data_path ~/git/datasets/ml1m-sun_sum4/ -log_path ~/git/results/ml1m-sun_sum4/ -rec_test_files valid.dat:test.dat -l2_lambda 1e-5 -negtive_samples 1 -model_type bprmf -nohas_visualization -dataset ml1m -batch_size 256 -embedding_size 100 -learning_rate 0.1 -topn 10 -seed 3 -eval_interval_steps 5000 -training_steps 500000 -early_stopping_steps_to_wait 25000 -optimizer_type Adagrad &
-    BACK_PID=$!
-    wait $BACK_PID
-    mv ../results/ml1m-sun_sum4/ml1m-bprmf-*.ckpt ../results/ml1m-sun_sum4/ml1m-bprmf-pretrained.ckpt
-fi
-
-#TransUP
-#if no_exist "../results/ml1m-sun_sum4/ml1m-transup-*.log"
-#then
-#    CUDA_VISIBLE_DEVICES=0 nohup python run_item_recommendation.py -data_path ~/git/datasets/ml1m-sun_sum4/ -log_path ~/git/results/ml1m-sun_sum4/ -rec_test_files valid.dat:test.dat -l2_lambda 1e-5 -negtive_samples 1 -model_type transup -nohas_visualization -dataset ml1m -batch_size 256 -embedding_size 100 -learning_rate 0.1 -topn 10 -seed 3 -eval_interval_steps 500 -training_steps 50000 -early_stopping_steps_to_wait 2500 -optimizer_type Adagrad -L1_flag -num_preferences 20 -nouse_st_gumbel -load_ckpt_file ml1m-bprmf-pretrained.ckpt &
-#    BACK_PID=$!
-#    wait $BACK_PID
-#    mv ../results/ml1m-sun_sum4/ml1m-transup-*.ckpt ../results/ml1m-sun_sum4/ml1m-transup-pretrained.ckpt
-#fi
-
-#CFKG (TransE) - Yongfeng Zhang, Qingyao Ai, Xu Chen, and Pengfei Wang. 2018. Learning over Knowledge-Base Embeddings for Recommendation. In SIGIR.
-#if no_exist "../results/ml1m-sun_sum4/ml1m-cfkg-*.log"
-#then
-#    CUDA_VISIBLE_DEVICES=0 nohup python run_knowledgable_recommendation.py -data_path ~/git/datasets/ml1m-sun_sum4/ -log_path ~/git/results/ml1m-sun_sum4/ -rec_test_files valid.dat:test.dat  -kg_test_files valid.dat:test.dat -l2_lambda 0 -model_type cfkg -nohas_visualization -dataset ml1m -batch_size 256 -embedding_size 100 -learning_rate 0.1 -topn 10 -seed 3 -eval_interval_steps 19520 -training_steps 1952000 -early_stopping_steps_to_wait 97600 -optimizer_type Adam -joint_ratio 0.5 -share_embeddings -L1_flag -norm_lambda 1 -kg_lambda 1 -use_st_gumbel -load_ckpt_file ml1m-transup-pretrained.ckpt:ml1m-transh-pretrained.ckpt &
-#    BACK_PID=$!
-#    wait $BACK_PID
-#fi
-
-#CKE (TransR) - Fuzheng Zhang, Nicholas Jing Yuan, Defu Lian, Xing Xie, and Wei-Ying Ma. 2016. Collaborative Knowledge Base Embedding for Recommender Systems. In SIGKDD.
-if no_exist "../results/ml1m-sun_sum4/ml1m-cke-*.log"
-then
-    CUDA_VISIBLE_DEVICES=0 nohup python run_knowledgable_recommendation.py -data_path ~/git/datasets/ml1m-sun_sum4/ -log_path ~/git/results/ml1m-sun_sum4/ -rec_test_files valid.dat:test.dat -kg_test_files valid.dat:test.dat -l2_lambda 0 -model_type cke -nohas_visualization -dataset ml1m -batch_size 256 -embedding_size 100 -learning_rate 0.1 -topn 10 -seed 3 -eval_interval_steps 19520 -training_steps 1952000 -early_stopping_steps_to_wait 97600 -optimizer_type Adam -joint_ratio 0.5 -noshare_embeddings -L1_flag -norm_lambda 1 -kg_lambda 1 -use_st_gumbel -load_ckpt_file ml1m-bprmf-pretrained.ckpt:ml1m-transe-pretrained.ckpt &
-    BACK_PID=$!
-    wait $BACK_PID
-fi
-
-#CoFM (FM+TransE) - Guangyuan Piao and John G. Breslin. 2018. Transfer Learning for Item Recommendations and Knowledge Graph Completion in Item Related Domains via a Co-Factorization Model. In ESWC.
-if no_exist "../results/ml1m-sun_sum4/ml1m-cofm-*.log"
-then
-    CUDA_VISIBLE_DEVICES=0 nohup python run_knowledgable_recommendation.py -data_path ~/git/datasets/ml1m-sun_sum4/ -log_path ~/git/results/ml1m-sun_sum4/ -rec_test_files valid.dat:test.dat -kg_test_files valid.dat:test.dat -l2_lambda 0 -model_type cofm -nohas_visualization -dataset ml1m -batch_size 256 -embedding_size 100 -learning_rate 0.1 -topn 10 -seed 3 -eval_interval_steps 19520 -training_steps 1952000 -early_stopping_steps_to_wait 97600 -optimizer_type Adam -joint_ratio 0.5 -load_ckpt_file ml1m-bprmf-pretrained.ckpt:ml1m-transe-pretrained.ckpt -noshare_embeddings -L1_flag -norm_lambda 1 -kg_lambda 1 &
-    BACK_PID=$!
-    wait $BACK_PID
-fi
-
-#JTransUP
-if no_exist "../results/ml1m-sun_sum4/ml1m-jtransup-*.log"
-then
-    CUDA_VISIBLE_DEVICES=0 nohup python run_knowledgable_recommendation.py -data_path ~/git/datasets/ml1m-sun_sum4/ -log_path ~/git/results/ml1m-sun_sum4/ -rec_test_files valid.dat:test.dat -kg_test_files valid.dat:test.dat -l2_lambda 0 -model_type jtransup -nohas_visualization -dataset ml1m -batch_size 256 -embedding_size 100 -learning_rate 0.1 -topn 10 -seed 3 -eval_interval_steps 19520 -training_steps 1952000 -early_stopping_steps_to_wait 97600 -optimizer_type Adam -joint_ratio 0.5 -noshare_embeddings -L1_flag -norm_lambda 1 -kg_lambda 1 -nouse_st_gumbel -load_ckpt_file ml1m-bprmf-pretrained.ckpt:ml1m-transe-pretrained.ckpt &
-    BACK_PID=$!
-    wait $BACK_PID
-fi
-
-#[activate rkge]
-#conda deactivate
-#conda activate rkge
-
-#cd ../Recurrent-Knowledge-Graph-Embedding
-
-#[RKGE]
-#if no_exist "../results/ml1m-sun_sum4/ml1m-rkge-results.log"
-#then
-#    CUDA_VISIBLE_DEVICES=0 nohup python recurrent-neural-network.py --inputdim 10 --hiddendim 16 --outdim 1 --iteration 5 --learingrate 0.2 --positivepath ~/git/datasets/ml1m-sun_sum4/ml1m/positive-path.txt --negativepath ~/git/datasets/ml1m-sun_sum4/ml1m/negative-path.txt --pretrainuserembedding ~/git/datasets/ml1m-sun/ml1m/pre-train-user-embedding.txt --pretrainmovieembedding ~/git/datasets/ml1m-sun/ml1m/pre-train-item-embedding.txt --train ~/git/datasets/ml1m-sun_sum4/ml1m/sun_training.txt --test ~/git/datasets/ml1m-sun_sum4/ml1m/sun_test.txt --results ~/git/results/ml1m-sun_sum4/ml1m-rkge-results.log &
-#    BACK_PID=$!
-#    wait $BACK_PID
-#fi
-
-###############
-#sun_sum3
-###############
-
-#[activate jointrec]
-conda deactivate
-conda activate jointrec
-
-cd ../joint-kg-recommender
-
-#[TRANSE]
-if no_exist "../results/ml1m-sun_sum3/ml1m-transe-*.log"
-then
-    CUDA_VISIBLE_DEVICES=0 nohup python run_knowledge_representation.py -data_path ~/git/datasets/ml1m-sun_sum3/ -log_path ~/git/results/ml1m-sun_sum3/ -kg_test_files valid.dat:test.dat -l2_lambda 0 -model_type transe -nohas_visualization -dataset ml1m -batch_size 256 -embedding_size 100 -learning_rate 0.001 -topn 10 -seed 3 -eval_interval_steps 9150 -training_steps 915000 -early_stopping_steps_to_wait 45750 -optimizer_type Adam -L1_flag -norm_lambda 1 -kg_lambda 1 &
-    BACK_PID=$!
-    wait $BACK_PID
-    mv ../results/ml1m-sun_sum3/ml1m-transe-*.ckpt_final ../results/ml1m-sun_sum3/ml1m-transe-pretrained.ckpt
-fi
-
-#[TRANSR]
-#if no_exist "../results/ml1m-sun_sum3/ml1m-transr-*.log"
-#then
-#    CUDA_VISIBLE_DEVICES=0 nohup python run_knowledge_representation.py -data_path ~/git/datasets/ml1m-sun_sum3/ -log_path ~/git/results/ml1m-sun_sum3/ -kg_test_files valid.dat:test.dat -l2_lambda 0 -model_type transr -nohas_visualization -dataset ml1m -batch_size 256 -embedding_size 100 -learning_rate 0.001 -topn 10 -seed 3 -eval_interval_steps 9150 -training_steps 915000 -early_stopping_steps_to_wait 45750 -optimizer_type Adam -L1_flag -norm_lambda 1 -kg_lambda 1 -load_ckpt_file ml1m-transe-pretrained.ckpt &
-#    BACK_PID=$!
-#    wait $BACK_PID
-#fi
-
-#[TRANSH]
-#if no_exist "../results/ml1m-sun_sum3/ml1m-transh-*.log"
-#then
-#    CUDA_VISIBLE_DEVICES=0 nohup python run_knowledge_representation.py -data_path ~/git/datasets/ml1m-sun_sum3/ -log_path ~/git/results/ml1m-sun_sum3/ -kg_test_files valid.dat:test.dat -l2_lambda 0 -model_type transh -nohas_visualization -dataset ml1m -batch_size 256 -embedding_size 100 -learning_rate 0.001 -topn 10 -seed 3 -eval_interval_steps 9150 -training_steps 915000 -early_stopping_steps_to_wait 45750 -optimizer_type Adam -L1_flag -norm_lambda 1 -kg_lambda 1 -load_ckpt_file ml1m-transe-pretrained.ckpt &
-#    BACK_PID=$!
-#    wait $BACK_PID
-#    mv ../results/ml1m-sun_sum3/ml1m-transh-*.ckpt_final ../results/ml1m-sun_sum3/ml1m-transh-pretrained.ckpt
-#fi
-
-#FM - Steffen Rendle. 2010. Factorization machines.
-#if no_exist "../results/ml1m-sun_sum3/ml1m-fm-*.log"
-#then
-#    CUDA_VISIBLE_DEVICES=1 nohup python run_item_recommendation.py -data_path ~/git/datasets/ml1m-sun_sum3/ -log_path ~/git/results/ml1m-sun_sum3/ -rec_test_files valid.dat:test.dat -l2_lambda 1e-5 -negtive_samples 1 -model_type fm -nohas_visualization -dataset ml1m -batch_size 256 -embedding_size 100 -learning_rate 0.1 -topn 10 -seed 3 -eval_interval_steps 500 -training_steps 50000 -early_stopping_steps_to_wait 2500 -optimizer_type Adagrad &
-#    BACK_PID=$!
-#    wait $BACK_PID
-#fi
-
-#BPRMF - Steffen Rendle, Christoph Freudenthaler, Zeno Gantner, and Lars Schmidt-Thieme. 2009. BPR: Bayesian personalized ranking from implicit feedback. In UAI.
-if no_exist "../results/ml1m-sun_sum3/ml1m-bprmf-*.log"
-then
-    CUDA_VISIBLE_DEVICES=1 nohup python run_item_recommendation.py -data_path ~/git/datasets/ml1m-sun_sum3/ -log_path ~/git/results/ml1m-sun_sum3/ -rec_test_files valid.dat:test.dat -l2_lambda 1e-5 -negtive_samples 1 -model_type bprmf -nohas_visualization -dataset ml1m -batch_size 256 -embedding_size 100 -learning_rate 0.1 -topn 10 -seed 3 -eval_interval_steps 5000 -training_steps 500000 -early_stopping_steps_to_wait 25000 -optimizer_type Adagrad &
-    BACK_PID=$!
-    wait $BACK_PID
-    mv ../results/ml1m-sun_sum3/ml1m-bprmf-*.ckpt ../results/ml1m-sun_sum3/ml1m-bprmf-pretrained.ckpt
-fi
-
-#TransUP
-#if no_exist "../results/ml1m-sun_sum3/ml1m-transup-*.log"
-#then
-#    CUDA_VISIBLE_DEVICES=0 nohup python run_item_recommendation.py -data_path ~/git/datasets/ml1m-sun_sum3/ -log_path ~/git/results/ml1m-sun_sum3/ -rec_test_files valid.dat:test.dat -l2_lambda 1e-5 -negtive_samples 1 -model_type transup -nohas_visualization -dataset ml1m -batch_size 256 -embedding_size 100 -learning_rate 0.1 -topn 10 -seed 3 -eval_interval_steps 500 -training_steps 50000 -early_stopping_steps_to_wait 2500 -optimizer_type Adagrad -L1_flag -num_preferences 20 -nouse_st_gumbel -load_ckpt_file ml1m-bprmf-pretrained.ckpt &
-#    BACK_PID=$!
-#    wait $BACK_PID
-#    mv ../results/ml1m-sun_sum3/ml1m-transup-*.ckpt ../results/ml1m-sun_sum3/ml1m-transup-pretrained.ckpt
-#fi
-
-#CFKG (TransE) - Yongfeng Zhang, Qingyao Ai, Xu Chen, and Pengfei Wang. 2018. Learning over Knowledge-Base Embeddings for Recommendation. In SIGIR.
-#if no_exist "../results/ml1m-sun_sum3/ml1m-cfkg-*.log"
-#then
-#    CUDA_VISIBLE_DEVICES=0 nohup python run_knowledgable_recommendation.py -data_path ~/git/datasets/ml1m-sun_sum3/ -log_path ~/git/results/ml1m-sun_sum3/ -rec_test_files valid.dat:test.dat  -kg_test_files valid.dat:test.dat -l2_lambda 0 -model_type cfkg -nohas_visualization -dataset ml1m -batch_size 256 -embedding_size 100 -learning_rate 0.1 -topn 10 -seed 3 -eval_interval_steps 19520 -training_steps 1952000 -early_stopping_steps_to_wait 97600 -optimizer_type Adam -joint_ratio 0.5 -share_embeddings -L1_flag -norm_lambda 1 -kg_lambda 1 -use_st_gumbel -load_ckpt_file ml1m-transup-pretrained.ckpt:ml1m-transh-pretrained.ckpt &
-#    BACK_PID=$!
-#    wait $BACK_PID
-#fi
-
-#CKE (TransR) - Fuzheng Zhang, Nicholas Jing Yuan, Defu Lian, Xing Xie, and Wei-Ying Ma. 2016. Collaborative Knowledge Base Embedding for Recommender Systems. In SIGKDD.
-if no_exist "../results/ml1m-sun_sum3/ml1m-cke-*.log"
-then
-    CUDA_VISIBLE_DEVICES=0 nohup python run_knowledgable_recommendation.py -data_path ~/git/datasets/ml1m-sun_sum3/ -log_path ~/git/results/ml1m-sun_sum3/ -rec_test_files valid.dat:test.dat -kg_test_files valid.dat:test.dat -l2_lambda 0 -model_type cke -nohas_visualization -dataset ml1m -batch_size 256 -embedding_size 100 -learning_rate 0.1 -topn 10 -seed 3 -eval_interval_steps 19520 -training_steps 1952000 -early_stopping_steps_to_wait 97600 -optimizer_type Adam -joint_ratio 0.5 -noshare_embeddings -L1_flag -norm_lambda 1 -kg_lambda 1 -use_st_gumbel -load_ckpt_file ml1m-bprmf-pretrained.ckpt:ml1m-transe-pretrained.ckpt &
-    BACK_PID=$!
-    wait $BACK_PID
-fi
-
-#CoFM (FM+TransE) - Guangyuan Piao and John G. Breslin. 2018. Transfer Learning for Item Recommendations and Knowledge Graph Completion in Item Related Domains via a Co-Factorization Model. In ESWC.
-if no_exist "../results/ml1m-sun_sum3/ml1m-cofm-*.log"
-then
-    CUDA_VISIBLE_DEVICES=0 nohup python run_knowledgable_recommendation.py -data_path ~/git/datasets/ml1m-sun_sum3/ -log_path ~/git/results/ml1m-sun_sum3/ -rec_test_files valid.dat:test.dat -kg_test_files valid.dat:test.dat -l2_lambda 0 -model_type cofm -nohas_visualization -dataset ml1m -batch_size 256 -embedding_size 100 -learning_rate 0.1 -topn 10 -seed 3 -eval_interval_steps 19520 -training_steps 1952000 -early_stopping_steps_to_wait 97600 -optimizer_type Adam -joint_ratio 0.5 -load_ckpt_file ml1m-bprmf-pretrained.ckpt:ml1m-transe-pretrained.ckpt -noshare_embeddings -L1_flag -norm_lambda 1 -kg_lambda 1 &
-    BACK_PID=$!
-    wait $BACK_PID
-fi
-
-#JTransUP
-if no_exist "../results/ml1m-sun_sum3/ml1m-jtransup-*.log"
-then
-    CUDA_VISIBLE_DEVICES=0 nohup python run_knowledgable_recommendation.py -data_path ~/git/datasets/ml1m-sun_sum3/ -log_path ~/git/results/ml1m-sun_sum3/ -rec_test_files valid.dat:test.dat -kg_test_files valid.dat:test.dat -l2_lambda 0 -model_type jtransup -nohas_visualization -dataset ml1m -batch_size 256 -embedding_size 100 -learning_rate 0.1 -topn 10 -seed 3 -eval_interval_steps 19520 -training_steps 1952000 -early_stopping_steps_to_wait 97600 -optimizer_type Adam -joint_ratio 0.5 -noshare_embeddings -L1_flag -norm_lambda 1 -kg_lambda 1 -nouse_st_gumbel -load_ckpt_file ml1m-bprmf-pretrained.ckpt:ml1m-transe-pretrained.ckpt &
-    BACK_PID=$!
-    wait $BACK_PID
-fi
-
-#[activate rkge]
-#conda deactivate
-#conda activate rkge
-
-#cd ../Recurrent-Knowledge-Graph-Embedding
-
-#[RKGE]
-#if no_exist "../results/ml1m-sun_sum3/ml1m-rkge-results.log"
-#then
-#    CUDA_VISIBLE_DEVICES=0 nohup python recurrent-neural-network.py --inputdim 10 --hiddendim 16 --outdim 1 --iteration 5 --learingrate 0.2 --positivepath ~/git/datasets/ml1m-sun_sum3/ml1m/positive-path.txt --negativepath ~/git/datasets/ml1m-sun_sum3/ml1m/negative-path.txt --pretrainuserembedding ~/git/datasets/ml1m-sun/ml1m/pre-train-user-embedding.txt --pretrainmovieembedding ~/git/datasets/ml1m-sun/ml1m/pre-train-item-embedding.txt --train ~/git/datasets/ml1m-sun_sum3/ml1m/sun_training.txt --test ~/git/datasets/ml1m-sun_sum3/ml1m/sun_test.txt --results ~/git/results/ml1m-sun_sum3/ml1m-rkge-results.log &
-#    BACK_PID=$!
-#    wait $BACK_PID
-#fi
-
-###############
-#sun_sum2
-###############
-
-#[activate jointrec]
-conda deactivate
-conda activate jointrec
-
-cd ../joint-kg-recommender
-
-#[TRANSE]
-if no_exist "../results/ml1m-sun_sum2/ml1m-transe-*.log"
-then
-    CUDA_VISIBLE_DEVICES=0 nohup python run_knowledge_representation.py -data_path ~/git/datasets/ml1m-sun_sum2/ -log_path ~/git/results/ml1m-sun_sum2/ -kg_test_files valid.dat:test.dat -l2_lambda 0 -model_type transe -nohas_visualization -dataset ml1m -batch_size 256 -embedding_size 100 -learning_rate 0.001 -topn 10 -seed 3 -eval_interval_steps 9150 -training_steps 915000 -early_stopping_steps_to_wait 45750 -optimizer_type Adam -L1_flag -norm_lambda 1 -kg_lambda 1 &
-    BACK_PID=$!
-    wait $BACK_PID
-    mv ../results/ml1m-sun_sum2/ml1m-transe-*.ckpt_final ../results/ml1m-sun_sum2/ml1m-transe-pretrained.ckpt
-fi
-
-#[TRANSR]
-#if no_exist "../results/ml1m-sun_sum2/ml1m-transr-*.log"
-#then
-#    CUDA_VISIBLE_DEVICES=0 nohup python run_knowledge_representation.py -data_path ~/git/datasets/ml1m-sun_sum2/ -log_path ~/git/results/ml1m-sun_sum2/ -kg_test_files valid.dat:test.dat -l2_lambda 0 -model_type transr -nohas_visualization -dataset ml1m -batch_size 256 -embedding_size 100 -learning_rate 0.001 -topn 10 -seed 3 -eval_interval_steps 9150 -training_steps 915000 -early_stopping_steps_to_wait 45750 -optimizer_type Adam -L1_flag -norm_lambda 1 -kg_lambda 1 -load_ckpt_file ml1m-transe-pretrained.ckpt &
-#    BACK_PID=$!
-#    wait $BACK_PID
-#fi
-
-#[TRANSH]
-#if no_exist "../results/ml1m-sun_sum2/ml1m-transh-*.log"
-#then
-#    CUDA_VISIBLE_DEVICES=0 nohup python run_knowledge_representation.py -data_path ~/git/datasets/ml1m-sun_sum2/ -log_path ~/git/results/ml1m-sun_sum2/ -kg_test_files valid.dat:test.dat -l2_lambda 0 -model_type transh -nohas_visualization -dataset ml1m -batch_size 256 -embedding_size 100 -learning_rate 0.001 -topn 10 -seed 3 -eval_interval_steps 9150 -training_steps 915000 -early_stopping_steps_to_wait 45750 -optimizer_type Adam -L1_flag -norm_lambda 1 -kg_lambda 1 -load_ckpt_file ml1m-transe-pretrained.ckpt &
-#    BACK_PID=$!
-#    wait $BACK_PID
-#    mv ../results/ml1m-sun_sum2/ml1m-transh-*.ckpt_final ../results/ml1m-sun_sum2/ml1m-transh-pretrained.ckpt
-#fi
-
-#FM - Steffen Rendle. 2010. Factorization machines.
-#if no_exist "../results/ml1m-sun_sum2/ml1m-fm-*.log"
-#then
-#    CUDA_VISIBLE_DEVICES=1 nohup python run_item_recommendation.py -data_path ~/git/datasets/ml1m-sun_sum2/ -log_path ~/git/results/ml1m-sun_sum2/ -rec_test_files valid.dat:test.dat -l2_lambda 1e-5 -negtive_samples 1 -model_type fm -nohas_visualization -dataset ml1m -batch_size 256 -embedding_size 100 -learning_rate 0.1 -topn 10 -seed 3 -eval_interval_steps 500 -training_steps 50000 -early_stopping_steps_to_wait 2500 -optimizer_type Adagrad &
-#    BACK_PID=$!
-#    wait $BACK_PID
-#fi
-
-#BPRMF - Steffen Rendle, Christoph Freudenthaler, Zeno Gantner, and Lars Schmidt-Thieme. 2009. BPR: Bayesian personalized ranking from implicit feedback. In UAI.
-if no_exist "../results/ml1m-sun_sum2/ml1m-bprmf-*.log"
-then
-    CUDA_VISIBLE_DEVICES=1 nohup python run_item_recommendation.py -data_path ~/git/datasets/ml1m-sun_sum2/ -log_path ~/git/results/ml1m-sun_sum2/ -rec_test_files valid.dat:test.dat -l2_lambda 1e-5 -negtive_samples 1 -model_type bprmf -nohas_visualization -dataset ml1m -batch_size 256 -embedding_size 100 -learning_rate 0.1 -topn 10 -seed 3 -eval_interval_steps 5000 -training_steps 500000 -early_stopping_steps_to_wait 25000 -optimizer_type Adagrad &
-    BACK_PID=$!
-    wait $BACK_PID
-    mv ../results/ml1m-sun_sum2/ml1m-bprmf-*.ckpt ../results/ml1m-sun_sum2/ml1m-bprmf-pretrained.ckpt
-fi
-
-#TransUP
-#if no_exist "../results/ml1m-sun_sum2/ml1m-transup-*.log"
-#then
-#    CUDA_VISIBLE_DEVICES=0 nohup python run_item_recommendation.py -data_path ~/git/datasets/ml1m-sun_sum2/ -log_path ~/git/results/ml1m-sun_sum2/ -rec_test_files valid.dat:test.dat -l2_lambda 1e-5 -negtive_samples 1 -model_type transup -nohas_visualization -dataset ml1m -batch_size 256 -embedding_size 100 -learning_rate 0.1 -topn 10 -seed 3 -eval_interval_steps 500 -training_steps 50000 -early_stopping_steps_to_wait 2500 -optimizer_type Adagrad -L1_flag -num_preferences 20 -nouse_st_gumbel -load_ckpt_file ml1m-bprmf-pretrained.ckpt &
-#    BACK_PID=$!
-#    wait $BACK_PID
-#    mv ../results/ml1m-sun_sum2/ml1m-transup-*.ckpt ../results/ml1m-sun_sum2/ml1m-transup-pretrained.ckpt
-#fi
-
-#CFKG (TransE) - Yongfeng Zhang, Qingyao Ai, Xu Chen, and Pengfei Wang. 2018. Learning over Knowledge-Base Embeddings for Recommendation. In SIGIR.
-#if no_exist "../results/ml1m-sun_sum2/ml1m-cfkg-*.log"
-#then
-#    CUDA_VISIBLE_DEVICES=0 nohup python run_knowledgable_recommendation.py -data_path ~/git/datasets/ml1m-sun_sum2/ -log_path ~/git/results/ml1m-sun_sum2/ -rec_test_files valid.dat:test.dat  -kg_test_files valid.dat:test.dat -l2_lambda 0 -model_type cfkg -nohas_visualization -dataset ml1m -batch_size 256 -embedding_size 100 -learning_rate 0.1 -topn 10 -seed 3 -eval_interval_steps 19520 -training_steps 1952000 -early_stopping_steps_to_wait 97600 -optimizer_type Adam -joint_ratio 0.5 -share_embeddings -L1_flag -norm_lambda 1 -kg_lambda 1 -use_st_gumbel -load_ckpt_file ml1m-transup-pretrained.ckpt:ml1m-transh-pretrained.ckpt &
-#    BACK_PID=$!
-#    wait $BACK_PID
-#fi
-
-#CKE (TransR) - Fuzheng Zhang, Nicholas Jing Yuan, Defu Lian, Xing Xie, and Wei-Ying Ma. 2016. Collaborative Knowledge Base Embedding for Recommender Systems. In SIGKDD.
-if no_exist "../results/ml1m-sun_sum2/ml1m-cke-*.log"
-then
-    CUDA_VISIBLE_DEVICES=0 nohup python run_knowledgable_recommendation.py -data_path ~/git/datasets/ml1m-sun_sum2/ -log_path ~/git/results/ml1m-sun_sum2/ -rec_test_files valid.dat:test.dat -kg_test_files valid.dat:test.dat -l2_lambda 0 -model_type cke -nohas_visualization -dataset ml1m -batch_size 256 -embedding_size 100 -learning_rate 0.1 -topn 10 -seed 3 -eval_interval_steps 19520 -training_steps 1952000 -early_stopping_steps_to_wait 97600 -optimizer_type Adam -joint_ratio 0.5 -noshare_embeddings -L1_flag -norm_lambda 1 -kg_lambda 1 -use_st_gumbel -load_ckpt_file ml1m-bprmf-pretrained.ckpt:ml1m-transe-pretrained.ckpt &
-    BACK_PID=$!
-    wait $BACK_PID
-fi
-
-#CoFM (FM+TransE) - Guangyuan Piao and John G. Breslin. 2018. Transfer Learning for Item Recommendations and Knowledge Graph Completion in Item Related Domains via a Co-Factorization Model. In ESWC.
-if no_exist "../results/ml1m-sun_sum2/ml1m-cofm-*.log"
-then
-    CUDA_VISIBLE_DEVICES=0 nohup python run_knowledgable_recommendation.py -data_path ~/git/datasets/ml1m-sun_sum2/ -log_path ~/git/results/ml1m-sun_sum2/ -rec_test_files valid.dat:test.dat -kg_test_files valid.dat:test.dat -l2_lambda 0 -model_type cofm -nohas_visualization -dataset ml1m -batch_size 256 -embedding_size 100 -learning_rate 0.1 -topn 10 -seed 3 -eval_interval_steps 19520 -training_steps 1952000 -early_stopping_steps_to_wait 97600 -optimizer_type Adam -joint_ratio 0.5 -load_ckpt_file ml1m-bprmf-pretrained.ckpt:ml1m-transe-pretrained.ckpt -noshare_embeddings -L1_flag -norm_lambda 1 -kg_lambda 1 &
-    BACK_PID=$!
-    wait $BACK_PID
-fi
-
-#JTransUP
-if no_exist "../results/ml1m-sun_sum2/ml1m-jtransup-*.log"
-then
-    CUDA_VISIBLE_DEVICES=0 nohup python run_knowledgable_recommendation.py -data_path ~/git/datasets/ml1m-sun_sum2/ -log_path ~/git/results/ml1m-sun_sum2/ -rec_test_files valid.dat:test.dat -kg_test_files valid.dat:test.dat -l2_lambda 0 -model_type jtransup -nohas_visualization -dataset ml1m -batch_size 256 -embedding_size 100 -learning_rate 0.1 -topn 10 -seed 3 -eval_interval_steps 19520 -training_steps 1952000 -early_stopping_steps_to_wait 97600 -optimizer_type Adam -joint_ratio 0.5 -noshare_embeddings -L1_flag -norm_lambda 1 -kg_lambda 1 -nouse_st_gumbel -load_ckpt_file ml1m-bprmf-pretrained.ckpt:ml1m-transe-pretrained.ckpt &
-    BACK_PID=$!
-    wait $BACK_PID
-fi
-
-#[activate rkge]
-#conda deactivate
-#conda activate rkge
-
-#cd ../Recurrent-Knowledge-Graph-Embedding
-
-#[RKGE]
-#if no_exist "../results/ml1m-sun_sum2/ml1m-rkge-results.log"
-#then
-#    CUDA_VISIBLE_DEVICES=0 nohup python recurrent-neural-network.py --inputdim 10 --hiddendim 16 --outdim 1 --iteration 5 --learingrate 0.2 --positivepath ~/git/datasets/ml1m-sun_sum2/ml1m/positive-path.txt --negativepath ~/git/datasets/ml1m-sun_sum2/ml1m/negative-path.txt --pretrainuserembedding ~/git/datasets/ml1m-sun/ml1m/pre-train-user-embedding.txt --pretrainmovieembedding ~/git/datasets/ml1m-sun/ml1m/pre-train-item-embedding.txt --train ~/git/datasets/ml1m-sun_sum2/ml1m/sun_training.txt --test ~/git/datasets/ml1m-sun_sum2/ml1m/sun_test.txt --results ~/git/results/ml1m-sun_sum2/ml1m-rkge-results.log &
-#    BACK_PID=$!
-#    wait $BACK_PID
-#fi
+#
+# #JTransUP
+# if no_exist "../results/ml1m-sun_sum5/ml1m-jtransup-*.log"
+# then
+#     CUDA_VISIBLE_DEVICES=0 nohup python run_knowledgable_recommendation.py -data_path ~/git/datasets/ml1m-sun_sum5/ -log_path ~/git/results/ml1m-sun_sum5/ -rec_test_files valid.dat:test.dat -kg_test_files valid.dat:test.dat -l2_lambda 0 -model_type jtransup -nohas_visualization -dataset ml1m -batch_size 256 -embedding_size 100 -learning_rate 0.1 -topn 10 -seed 3 -eval_interval_steps 19520 -training_steps 1952000 -early_stopping_steps_to_wait 97600 -optimizer_type Adam -joint_ratio 0.5 -noshare_embeddings -L1_flag -norm_lambda 1 -kg_lambda 1 -nouse_st_gumbel -load_ckpt_file ml1m-bprmf-pretrained.ckpt:ml1m-transe-pretrained.ckpt &
+#     BACK_PID=$!
+#     wait $BACK_PID
+# fi
+#
+# #[activate rkge]
+# #conda deactivate
+# #conda activate rkge
+#
+# #cd ../Recurrent-Knowledge-Graph-Embedding
+#
+# #[RKGE]
+# #if no_exist "../results/ml1m-sun_sum5/ml1m-rkge-results.log"
+# #then
+# #    CUDA_VISIBLE_DEVICES=0 nohup python recurrent-neural-network.py --inputdim 10 --hiddendim 16 --outdim 1 --iteration 5 --learingrate 0.2 --positivepath ~/git/datasets/ml1m-sun_sum5/ml1m/positive-path.txt --negativepath ~/git/datasets/ml1m-sun_sum5/ml1m/negative-path.txt --pretrainuserembedding ~/git/datasets/ml1m-sun/ml1m/pre-train-user-embedding.txt --pretrainmovieembedding ~/git/datasets/ml1m-sun/ml1m/pre-train-item-embedding.txt --train ~/git/datasets/ml1m-sun_sum5/ml1m/sun_training.txt --test ~/git/datasets/ml1m-sun_sum5/ml1m/sun_test.txt --results ~/git/results/ml1m-sun_sum5/ml1m-rkge-results.log &
+# #    BACK_PID=$!
+# #    wait $BACK_PID
+# #fi
+#
+#
+# ###############
+# #sun_sum4
+# ###############
+#
+# #[activate jointrec]
+# #conda deactivate
+# #conda activate jointrec
+#
+# #cd ../joint-kg-recommender
+#
+# #[TRANSR]
+# #if no_exist "../results/ml1m-sun_sum4/ml1m-transr-*.log"
+# #then
+# #    CUDA_VISIBLE_DEVICES=0 nohup python run_knowledge_representation.py -data_path ~/git/datasets/ml1m-sun_sum4/ -log_path ~/git/results/ml1m-sun_sum4/ -kg_test_files valid.dat:test.dat -l2_lambda 0 -model_type transr -nohas_visualization -dataset ml1m -batch_size 256 -embedding_size 100 -learning_rate 0.001 -topn 10 -seed 3 -eval_interval_steps 9150 -training_steps 915000 -early_stopping_steps_to_wait 45750 -optimizer_type Adam -L1_flag -norm_lambda 1 -kg_lambda 1 -load_ckpt_file ml1m-transe-pretrained.ckpt &
+# #    BACK_PID=$!
+# #    wait $BACK_PID
+# #fi
+#
+# #[TRANSH]
+# #if no_exist "../results/ml1m-sun_sum4/ml1m-transh-*.log"
+# #then
+# #    CUDA_VISIBLE_DEVICES=0 nohup python run_knowledge_representation.py -data_path ~/git/datasets/ml1m-sun_sum4/ -log_path ~/git/results/ml1m-sun_sum4/ -kg_test_files valid.dat:test.dat -l2_lambda 0 -model_type transh -nohas_visualization -dataset ml1m -batch_size 256 -embedding_size 100 -learning_rate 0.001 -topn 10 -seed 3 -eval_interval_steps 9150 -training_steps 915000 -early_stopping_steps_to_wait 45750 -optimizer_type Adam -L1_flag -norm_lambda 1 -kg_lambda 1 -load_ckpt_file ml1m-transe-pretrained.ckpt &
+# #    BACK_PID=$!
+# #    wait $BACK_PID
+# #    mv ../results/ml1m-sun_sum4/ml1m-transh-*.ckpt_final ../results/ml1m-sun_sum4/ml1m-transh-pretrained.ckpt
+# #fi
+#
+# #FM - Steffen Rendle. 2010. Factorization machines.
+# #if no_exist "../results/ml1m-sun_sum4/ml1m-fm-*.log"
+# #then
+# #    CUDA_VISIBLE_DEVICES=1 nohup python run_item_recommendation.py -data_path ~/git/datasets/ml1m-sun_sum4/ -log_path ~/git/results/ml1m-sun_sum4/ -rec_test_files valid.dat:test.dat -l2_lambda 1e-5 -negtive_samples 1 -model_type fm -nohas_visualization -dataset ml1m -batch_size 256 -embedding_size 100 -learning_rate 0.1 -topn 10 -seed 3 -eval_interval_steps 500 -training_steps 50000 -early_stopping_steps_to_wait 2500 -optimizer_type Adagrad &
+# #    BACK_PID=$!
+# #    wait $BACK_PID
+# #fi
+#
+# #TransUP
+# #if no_exist "../results/ml1m-sun_sum4/ml1m-transup-*.log"
+# #then
+# #    CUDA_VISIBLE_DEVICES=0 nohup python run_item_recommendation.py -data_path ~/git/datasets/ml1m-sun_sum4/ -log_path ~/git/results/ml1m-sun_sum4/ -rec_test_files valid.dat:test.dat -l2_lambda 1e-5 -negtive_samples 1 -model_type transup -nohas_visualization -dataset ml1m -batch_size 256 -embedding_size 100 -learning_rate 0.1 -topn 10 -seed 3 -eval_interval_steps 500 -training_steps 50000 -early_stopping_steps_to_wait 2500 -optimizer_type Adagrad -L1_flag -num_preferences 20 -nouse_st_gumbel -load_ckpt_file ml1m-bprmf-pretrained.ckpt &
+# #    BACK_PID=$!
+# #    wait $BACK_PID
+# #    mv ../results/ml1m-sun_sum4/ml1m-transup-*.ckpt ../results/ml1m-sun_sum4/ml1m-transup-pretrained.ckpt
+# #fi
+#
+#
+# #CKE (TransR) - Fuzheng Zhang, Nicholas Jing Yuan, Defu Lian, Xing Xie, and Wei-Ying Ma. 2016. Collaborative Knowledge Base Embedding for Recommender Systems. In SIGKDD.
+# if no_exist "../results/ml1m-sun_sum4/ml1m-cke-*.log"
+# then
+#     CUDA_VISIBLE_DEVICES=0 nohup python run_knowledgable_recommendation.py -data_path ~/git/datasets/ml1m-sun_sum4/ -log_path ~/git/results/ml1m-sun_sum4/ -rec_test_files valid.dat:test.dat -kg_test_files valid.dat:test.dat -l2_lambda 0 -model_type cke -nohas_visualization -dataset ml1m -batch_size 256 -embedding_size 100 -learning_rate 0.1 -topn 10 -seed 3 -eval_interval_steps 19520 -training_steps 1952000 -early_stopping_steps_to_wait 97600 -optimizer_type Adam -joint_ratio 0.5 -noshare_embeddings -L1_flag -norm_lambda 1 -kg_lambda 1 -use_st_gumbel -load_ckpt_file ml1m-bprmf-pretrained.ckpt:ml1m-transe-pretrained.ckpt &
+#     BACK_PID=$!
+#     wait $BACK_PID
+# fi
+#
+#
+#
+# #JTransUP
+# if no_exist "../results/ml1m-sun_sum4/ml1m-jtransup-*.log"
+# then
+#     CUDA_VISIBLE_DEVICES=0 nohup python run_knowledgable_recommendation.py -data_path ~/git/datasets/ml1m-sun_sum4/ -log_path ~/git/results/ml1m-sun_sum4/ -rec_test_files valid.dat:test.dat -kg_test_files valid.dat:test.dat -l2_lambda 0 -model_type jtransup -nohas_visualization -dataset ml1m -batch_size 256 -embedding_size 100 -learning_rate 0.1 -topn 10 -seed 3 -eval_interval_steps 19520 -training_steps 1952000 -early_stopping_steps_to_wait 97600 -optimizer_type Adam -joint_ratio 0.5 -noshare_embeddings -L1_flag -norm_lambda 1 -kg_lambda 1 -nouse_st_gumbel -load_ckpt_file ml1m-bprmf-pretrained.ckpt:ml1m-transe-pretrained.ckpt &
+#     BACK_PID=$!
+#     wait $BACK_PID
+# fi
+#
+# #[activate rkge]
+# #conda deactivate
+# #conda activate rkge
+#
+# #cd ../Recurrent-Knowledge-Graph-Embedding
+#
+# #[RKGE]
+# #if no_exist "../results/ml1m-sun_sum4/ml1m-rkge-results.log"
+# #then
+# #    CUDA_VISIBLE_DEVICES=0 nohup python recurrent-neural-network.py --inputdim 10 --hiddendim 16 --outdim 1 --iteration 5 --learingrate 0.2 --positivepath ~/git/datasets/ml1m-sun_sum4/ml1m/positive-path.txt --negativepath ~/git/datasets/ml1m-sun_sum4/ml1m/negative-path.txt --pretrainuserembedding ~/git/datasets/ml1m-sun/ml1m/pre-train-user-embedding.txt --pretrainmovieembedding ~/git/datasets/ml1m-sun/ml1m/pre-train-item-embedding.txt --train ~/git/datasets/ml1m-sun_sum4/ml1m/sun_training.txt --test ~/git/datasets/ml1m-sun_sum4/ml1m/sun_test.txt --results ~/git/results/ml1m-sun_sum4/ml1m-rkge-results.log &
+# #    BACK_PID=$!
+# #    wait $BACK_PID
+# #fi
+#
+# ###############
+# #sun_sum3
+# ###############
+#
+# #[activate jointrec]
+# conda deactivate
+# conda activate jointrec
+#
+# cd ../joint-kg-recommender
+#
+# #[TRANSE]
+# if no_exist "../results/ml1m-sun_sum3/ml1m-transe-*.log"
+# then
+#     CUDA_VISIBLE_DEVICES=0 nohup python run_knowledge_representation.py -data_path ~/git/datasets/ml1m-sun_sum3/ -log_path ~/git/results/ml1m-sun_sum3/ -kg_test_files valid.dat:test.dat -l2_lambda 0 -model_type transe -nohas_visualization -dataset ml1m -batch_size 256 -embedding_size 100 -learning_rate 0.001 -topn 10 -seed 3 -eval_interval_steps 9150 -training_steps 915000 -early_stopping_steps_to_wait 45750 -optimizer_type Adam -L1_flag -norm_lambda 1 -kg_lambda 1 &
+#     BACK_PID=$!
+#     wait $BACK_PID
+#     mv ../results/ml1m-sun_sum3/ml1m-transe-*.ckpt_final ../results/ml1m-sun_sum3/ml1m-transe-pretrained.ckpt
+# fi
+#
+# #[TRANSR]
+# #if no_exist "../results/ml1m-sun_sum3/ml1m-transr-*.log"
+# #then
+# #    CUDA_VISIBLE_DEVICES=0 nohup python run_knowledge_representation.py -data_path ~/git/datasets/ml1m-sun_sum3/ -log_path ~/git/results/ml1m-sun_sum3/ -kg_test_files valid.dat:test.dat -l2_lambda 0 -model_type transr -nohas_visualization -dataset ml1m -batch_size 256 -embedding_size 100 -learning_rate 0.001 -topn 10 -seed 3 -eval_interval_steps 9150 -training_steps 915000 -early_stopping_steps_to_wait 45750 -optimizer_type Adam -L1_flag -norm_lambda 1 -kg_lambda 1 -load_ckpt_file ml1m-transe-pretrained.ckpt &
+# #    BACK_PID=$!
+# #    wait $BACK_PID
+# #fi
+#
+# #[TRANSH]
+# #if no_exist "../results/ml1m-sun_sum3/ml1m-transh-*.log"
+# #then
+# #    CUDA_VISIBLE_DEVICES=0 nohup python run_knowledge_representation.py -data_path ~/git/datasets/ml1m-sun_sum3/ -log_path ~/git/results/ml1m-sun_sum3/ -kg_test_files valid.dat:test.dat -l2_lambda 0 -model_type transh -nohas_visualization -dataset ml1m -batch_size 256 -embedding_size 100 -learning_rate 0.001 -topn 10 -seed 3 -eval_interval_steps 9150 -training_steps 915000 -early_stopping_steps_to_wait 45750 -optimizer_type Adam -L1_flag -norm_lambda 1 -kg_lambda 1 -load_ckpt_file ml1m-transe-pretrained.ckpt &
+# #    BACK_PID=$!
+# #    wait $BACK_PID
+# #    mv ../results/ml1m-sun_sum3/ml1m-transh-*.ckpt_final ../results/ml1m-sun_sum3/ml1m-transh-pretrained.ckpt
+# #fi
+#
+# #FM - Steffen Rendle. 2010. Factorization machines.
+# #if no_exist "../results/ml1m-sun_sum3/ml1m-fm-*.log"
+# #then
+# #    CUDA_VISIBLE_DEVICES=1 nohup python run_item_recommendation.py -data_path ~/git/datasets/ml1m-sun_sum3/ -log_path ~/git/results/ml1m-sun_sum3/ -rec_test_files valid.dat:test.dat -l2_lambda 1e-5 -negtive_samples 1 -model_type fm -nohas_visualization -dataset ml1m -batch_size 256 -embedding_size 100 -learning_rate 0.1 -topn 10 -seed 3 -eval_interval_steps 500 -training_steps 50000 -early_stopping_steps_to_wait 2500 -optimizer_type Adagrad &
+# #    BACK_PID=$!
+# #    wait $BACK_PID
+# #fi
+#
+# #BPRMF - Steffen Rendle, Christoph Freudenthaler, Zeno Gantner, and Lars Schmidt-Thieme. 2009. BPR: Bayesian personalized ranking from implicit feedback. In UAI.
+# if no_exist "../results/ml1m-sun_sum3/ml1m-bprmf-*.log"
+# then
+#     CUDA_VISIBLE_DEVICES=1 nohup python run_item_recommendation.py -data_path ~/git/datasets/ml1m-sun_sum3/ -log_path ~/git/results/ml1m-sun_sum3/ -rec_test_files valid.dat:test.dat -l2_lambda 1e-5 -negtive_samples 1 -model_type bprmf -nohas_visualization -dataset ml1m -batch_size 256 -embedding_size 100 -learning_rate 0.1 -topn 10 -seed 3 -eval_interval_steps 5000 -training_steps 500000 -early_stopping_steps_to_wait 25000 -optimizer_type Adagrad &
+#     BACK_PID=$!
+#     wait $BACK_PID
+#     mv ../results/ml1m-sun_sum3/ml1m-bprmf-*.ckpt ../results/ml1m-sun_sum3/ml1m-bprmf-pretrained.ckpt
+# fi
+#
+# #TransUP
+# #if no_exist "../results/ml1m-sun_sum3/ml1m-transup-*.log"
+# #then
+# #    CUDA_VISIBLE_DEVICES=0 nohup python run_item_recommendation.py -data_path ~/git/datasets/ml1m-sun_sum3/ -log_path ~/git/results/ml1m-sun_sum3/ -rec_test_files valid.dat:test.dat -l2_lambda 1e-5 -negtive_samples 1 -model_type transup -nohas_visualization -dataset ml1m -batch_size 256 -embedding_size 100 -learning_rate 0.1 -topn 10 -seed 3 -eval_interval_steps 500 -training_steps 50000 -early_stopping_steps_to_wait 2500 -optimizer_type Adagrad -L1_flag -num_preferences 20 -nouse_st_gumbel -load_ckpt_file ml1m-bprmf-pretrained.ckpt &
+# #    BACK_PID=$!
+# #    wait $BACK_PID
+# #    mv ../results/ml1m-sun_sum3/ml1m-transup-*.ckpt ../results/ml1m-sun_sum3/ml1m-transup-pretrained.ckpt
+# #fi
+#
+# #CFKG (TransE) - Yongfeng Zhang, Qingyao Ai, Xu Chen, and Pengfei Wang. 2018. Learning over Knowledge-Base Embeddings for Recommendation. In SIGIR.
+# #if no_exist "../results/ml1m-sun_sum3/ml1m-cfkg-*.log"
+# #then
+# #    CUDA_VISIBLE_DEVICES=0 nohup python run_knowledgable_recommendation.py -data_path ~/git/datasets/ml1m-sun_sum3/ -log_path ~/git/results/ml1m-sun_sum3/ -rec_test_files valid.dat:test.dat  -kg_test_files valid.dat:test.dat -l2_lambda 0 -model_type cfkg -nohas_visualization -dataset ml1m -batch_size 256 -embedding_size 100 -learning_rate 0.1 -topn 10 -seed 3 -eval_interval_steps 19520 -training_steps 1952000 -early_stopping_steps_to_wait 97600 -optimizer_type Adam -joint_ratio 0.5 -share_embeddings -L1_flag -norm_lambda 1 -kg_lambda 1 -use_st_gumbel -load_ckpt_file ml1m-transup-pretrained.ckpt:ml1m-transh-pretrained.ckpt &
+# #    BACK_PID=$!
+# #    wait $BACK_PID
+# #fi
+#
+# #CKE (TransR) - Fuzheng Zhang, Nicholas Jing Yuan, Defu Lian, Xing Xie, and Wei-Ying Ma. 2016. Collaborative Knowledge Base Embedding for Recommender Systems. In SIGKDD.
+# if no_exist "../results/ml1m-sun_sum3/ml1m-cke-*.log"
+# then
+#     CUDA_VISIBLE_DEVICES=0 nohup python run_knowledgable_recommendation.py -data_path ~/git/datasets/ml1m-sun_sum3/ -log_path ~/git/results/ml1m-sun_sum3/ -rec_test_files valid.dat:test.dat -kg_test_files valid.dat:test.dat -l2_lambda 0 -model_type cke -nohas_visualization -dataset ml1m -batch_size 256 -embedding_size 100 -learning_rate 0.1 -topn 10 -seed 3 -eval_interval_steps 19520 -training_steps 1952000 -early_stopping_steps_to_wait 97600 -optimizer_type Adam -joint_ratio 0.5 -noshare_embeddings -L1_flag -norm_lambda 1 -kg_lambda 1 -use_st_gumbel -load_ckpt_file ml1m-bprmf-pretrained.ckpt:ml1m-transe-pretrained.ckpt &
+#     BACK_PID=$!
+#     wait $BACK_PID
+# fi
+#
+# #CoFM (FM+TransE) - Guangyuan Piao and John G. Breslin. 2018. Transfer Learning for Item Recommendations and Knowledge Graph Completion in Item Related Domains via a Co-Factorization Model. In ESWC.
+# if no_exist "../results/ml1m-sun_sum3/ml1m-cofm-*.log"
+# then
+#     CUDA_VISIBLE_DEVICES=0 nohup python run_knowledgable_recommendation.py -data_path ~/git/datasets/ml1m-sun_sum3/ -log_path ~/git/results/ml1m-sun_sum3/ -rec_test_files valid.dat:test.dat -kg_test_files valid.dat:test.dat -l2_lambda 0 -model_type cofm -nohas_visualization -dataset ml1m -batch_size 256 -embedding_size 100 -learning_rate 0.1 -topn 10 -seed 3 -eval_interval_steps 19520 -training_steps 1952000 -early_stopping_steps_to_wait 97600 -optimizer_type Adam -joint_ratio 0.5 -load_ckpt_file ml1m-bprmf-pretrained.ckpt:ml1m-transe-pretrained.ckpt -noshare_embeddings -L1_flag -norm_lambda 1 -kg_lambda 1 &
+#     BACK_PID=$!
+#     wait $BACK_PID
+# fi
+#
+# #JTransUP
+# if no_exist "../results/ml1m-sun_sum3/ml1m-jtransup-*.log"
+# then
+#     CUDA_VISIBLE_DEVICES=0 nohup python run_knowledgable_recommendation.py -data_path ~/git/datasets/ml1m-sun_sum3/ -log_path ~/git/results/ml1m-sun_sum3/ -rec_test_files valid.dat:test.dat -kg_test_files valid.dat:test.dat -l2_lambda 0 -model_type jtransup -nohas_visualization -dataset ml1m -batch_size 256 -embedding_size 100 -learning_rate 0.1 -topn 10 -seed 3 -eval_interval_steps 19520 -training_steps 1952000 -early_stopping_steps_to_wait 97600 -optimizer_type Adam -joint_ratio 0.5 -noshare_embeddings -L1_flag -norm_lambda 1 -kg_lambda 1 -nouse_st_gumbel -load_ckpt_file ml1m-bprmf-pretrained.ckpt:ml1m-transe-pretrained.ckpt &
+#     BACK_PID=$!
+#     wait $BACK_PID
+# fi
+#
+# #[activate rkge]
+# #conda deactivate
+# #conda activate rkge
+#
+# #cd ../Recurrent-Knowledge-Graph-Embedding
+#
+# #[RKGE]
+# #if no_exist "../results/ml1m-sun_sum3/ml1m-rkge-results.log"
+# #then
+# #    CUDA_VISIBLE_DEVICES=0 nohup python recurrent-neural-network.py --inputdim 10 --hiddendim 16 --outdim 1 --iteration 5 --learingrate 0.2 --positivepath ~/git/datasets/ml1m-sun_sum3/ml1m/positive-path.txt --negativepath ~/git/datasets/ml1m-sun_sum3/ml1m/negative-path.txt --pretrainuserembedding ~/git/datasets/ml1m-sun/ml1m/pre-train-user-embedding.txt --pretrainmovieembedding ~/git/datasets/ml1m-sun/ml1m/pre-train-item-embedding.txt --train ~/git/datasets/ml1m-sun_sum3/ml1m/sun_training.txt --test ~/git/datasets/ml1m-sun_sum3/ml1m/sun_test.txt --results ~/git/results/ml1m-sun_sum3/ml1m-rkge-results.log &
+# #    BACK_PID=$!
+# #    wait $BACK_PID
+# #fi
+#
+# ###############
+# #sun_sum2
+# ###############
+#
+# #[activate jointrec]
+# conda deactivate
+# conda activate jointrec
+#
+# cd ../joint-kg-recommender
+#
+# #[TRANSE]
+# if no_exist "../results/ml1m-sun_sum2/ml1m-transe-*.log"
+# then
+#     CUDA_VISIBLE_DEVICES=0 nohup python run_knowledge_representation.py -data_path ~/git/datasets/ml1m-sun_sum2/ -log_path ~/git/results/ml1m-sun_sum2/ -kg_test_files valid.dat:test.dat -l2_lambda 0 -model_type transe -nohas_visualization -dataset ml1m -batch_size 256 -embedding_size 100 -learning_rate 0.001 -topn 10 -seed 3 -eval_interval_steps 9150 -training_steps 915000 -early_stopping_steps_to_wait 45750 -optimizer_type Adam -L1_flag -norm_lambda 1 -kg_lambda 1 &
+#     BACK_PID=$!
+#     wait $BACK_PID
+#     mv ../results/ml1m-sun_sum2/ml1m-transe-*.ckpt_final ../results/ml1m-sun_sum2/ml1m-transe-pretrained.ckpt
+# fi
+#
+# #[TRANSR]
+# #if no_exist "../results/ml1m-sun_sum2/ml1m-transr-*.log"
+# #then
+# #    CUDA_VISIBLE_DEVICES=0 nohup python run_knowledge_representation.py -data_path ~/git/datasets/ml1m-sun_sum2/ -log_path ~/git/results/ml1m-sun_sum2/ -kg_test_files valid.dat:test.dat -l2_lambda 0 -model_type transr -nohas_visualization -dataset ml1m -batch_size 256 -embedding_size 100 -learning_rate 0.001 -topn 10 -seed 3 -eval_interval_steps 9150 -training_steps 915000 -early_stopping_steps_to_wait 45750 -optimizer_type Adam -L1_flag -norm_lambda 1 -kg_lambda 1 -load_ckpt_file ml1m-transe-pretrained.ckpt &
+# #    BACK_PID=$!
+# #    wait $BACK_PID
+# #fi
+#
+# #[TRANSH]
+# #if no_exist "../results/ml1m-sun_sum2/ml1m-transh-*.log"
+# #then
+# #    CUDA_VISIBLE_DEVICES=0 nohup python run_knowledge_representation.py -data_path ~/git/datasets/ml1m-sun_sum2/ -log_path ~/git/results/ml1m-sun_sum2/ -kg_test_files valid.dat:test.dat -l2_lambda 0 -model_type transh -nohas_visualization -dataset ml1m -batch_size 256 -embedding_size 100 -learning_rate 0.001 -topn 10 -seed 3 -eval_interval_steps 9150 -training_steps 915000 -early_stopping_steps_to_wait 45750 -optimizer_type Adam -L1_flag -norm_lambda 1 -kg_lambda 1 -load_ckpt_file ml1m-transe-pretrained.ckpt &
+# #    BACK_PID=$!
+# #    wait $BACK_PID
+# #    mv ../results/ml1m-sun_sum2/ml1m-transh-*.ckpt_final ../results/ml1m-sun_sum2/ml1m-transh-pretrained.ckpt
+# #fi
+#
+# #FM - Steffen Rendle. 2010. Factorization machines.
+# #if no_exist "../results/ml1m-sun_sum2/ml1m-fm-*.log"
+# #then
+# #    CUDA_VISIBLE_DEVICES=1 nohup python run_item_recommendation.py -data_path ~/git/datasets/ml1m-sun_sum2/ -log_path ~/git/results/ml1m-sun_sum2/ -rec_test_files valid.dat:test.dat -l2_lambda 1e-5 -negtive_samples 1 -model_type fm -nohas_visualization -dataset ml1m -batch_size 256 -embedding_size 100 -learning_rate 0.1 -topn 10 -seed 3 -eval_interval_steps 500 -training_steps 50000 -early_stopping_steps_to_wait 2500 -optimizer_type Adagrad &
+# #    BACK_PID=$!
+# #    wait $BACK_PID
+# #fi
+#
+# #BPRMF - Steffen Rendle, Christoph Freudenthaler, Zeno Gantner, and Lars Schmidt-Thieme. 2009. BPR: Bayesian personalized ranking from implicit feedback. In UAI.
+# if no_exist "../results/ml1m-sun_sum2/ml1m-bprmf-*.log"
+# then
+#     CUDA_VISIBLE_DEVICES=1 nohup python run_item_recommendation.py -data_path ~/git/datasets/ml1m-sun_sum2/ -log_path ~/git/results/ml1m-sun_sum2/ -rec_test_files valid.dat:test.dat -l2_lambda 1e-5 -negtive_samples 1 -model_type bprmf -nohas_visualization -dataset ml1m -batch_size 256 -embedding_size 100 -learning_rate 0.1 -topn 10 -seed 3 -eval_interval_steps 5000 -training_steps 500000 -early_stopping_steps_to_wait 25000 -optimizer_type Adagrad &
+#     BACK_PID=$!
+#     wait $BACK_PID
+#     mv ../results/ml1m-sun_sum2/ml1m-bprmf-*.ckpt ../results/ml1m-sun_sum2/ml1m-bprmf-pretrained.ckpt
+# fi
+#
+# #TransUP
+# #if no_exist "../results/ml1m-sun_sum2/ml1m-transup-*.log"
+# #then
+# #    CUDA_VISIBLE_DEVICES=0 nohup python run_item_recommendation.py -data_path ~/git/datasets/ml1m-sun_sum2/ -log_path ~/git/results/ml1m-sun_sum2/ -rec_test_files valid.dat:test.dat -l2_lambda 1e-5 -negtive_samples 1 -model_type transup -nohas_visualization -dataset ml1m -batch_size 256 -embedding_size 100 -learning_rate 0.1 -topn 10 -seed 3 -eval_interval_steps 500 -training_steps 50000 -early_stopping_steps_to_wait 2500 -optimizer_type Adagrad -L1_flag -num_preferences 20 -nouse_st_gumbel -load_ckpt_file ml1m-bprmf-pretrained.ckpt &
+# #    BACK_PID=$!
+# #    wait $BACK_PID
+# #    mv ../results/ml1m-sun_sum2/ml1m-transup-*.ckpt ../results/ml1m-sun_sum2/ml1m-transup-pretrained.ckpt
+# #fi
+#
+# #CFKG (TransE) - Yongfeng Zhang, Qingyao Ai, Xu Chen, and Pengfei Wang. 2018. Learning over Knowledge-Base Embeddings for Recommendation. In SIGIR.
+# #if no_exist "../results/ml1m-sun_sum2/ml1m-cfkg-*.log"
+# #then
+# #    CUDA_VISIBLE_DEVICES=0 nohup python run_knowledgable_recommendation.py -data_path ~/git/datasets/ml1m-sun_sum2/ -log_path ~/git/results/ml1m-sun_sum2/ -rec_test_files valid.dat:test.dat  -kg_test_files valid.dat:test.dat -l2_lambda 0 -model_type cfkg -nohas_visualization -dataset ml1m -batch_size 256 -embedding_size 100 -learning_rate 0.1 -topn 10 -seed 3 -eval_interval_steps 19520 -training_steps 1952000 -early_stopping_steps_to_wait 97600 -optimizer_type Adam -joint_ratio 0.5 -share_embeddings -L1_flag -norm_lambda 1 -kg_lambda 1 -use_st_gumbel -load_ckpt_file ml1m-transup-pretrained.ckpt:ml1m-transh-pretrained.ckpt &
+# #    BACK_PID=$!
+# #    wait $BACK_PID
+# #fi
+#
+# #CKE (TransR) - Fuzheng Zhang, Nicholas Jing Yuan, Defu Lian, Xing Xie, and Wei-Ying Ma. 2016. Collaborative Knowledge Base Embedding for Recommender Systems. In SIGKDD.
+# if no_exist "../results/ml1m-sun_sum2/ml1m-cke-*.log"
+# then
+#     CUDA_VISIBLE_DEVICES=0 nohup python run_knowledgable_recommendation.py -data_path ~/git/datasets/ml1m-sun_sum2/ -log_path ~/git/results/ml1m-sun_sum2/ -rec_test_files valid.dat:test.dat -kg_test_files valid.dat:test.dat -l2_lambda 0 -model_type cke -nohas_visualization -dataset ml1m -batch_size 256 -embedding_size 100 -learning_rate 0.1 -topn 10 -seed 3 -eval_interval_steps 19520 -training_steps 1952000 -early_stopping_steps_to_wait 97600 -optimizer_type Adam -joint_ratio 0.5 -noshare_embeddings -L1_flag -norm_lambda 1 -kg_lambda 1 -use_st_gumbel -load_ckpt_file ml1m-bprmf-pretrained.ckpt:ml1m-transe-pretrained.ckpt &
+#     BACK_PID=$!
+#     wait $BACK_PID
+# fi
+#
+# #CoFM (FM+TransE) - Guangyuan Piao and John G. Breslin. 2018. Transfer Learning for Item Recommendations and Knowledge Graph Completion in Item Related Domains via a Co-Factorization Model. In ESWC.
+# if no_exist "../results/ml1m-sun_sum2/ml1m-cofm-*.log"
+# then
+#     CUDA_VISIBLE_DEVICES=0 nohup python run_knowledgable_recommendation.py -data_path ~/git/datasets/ml1m-sun_sum2/ -log_path ~/git/results/ml1m-sun_sum2/ -rec_test_files valid.dat:test.dat -kg_test_files valid.dat:test.dat -l2_lambda 0 -model_type cofm -nohas_visualization -dataset ml1m -batch_size 256 -embedding_size 100 -learning_rate 0.1 -topn 10 -seed 3 -eval_interval_steps 19520 -training_steps 1952000 -early_stopping_steps_to_wait 97600 -optimizer_type Adam -joint_ratio 0.5 -load_ckpt_file ml1m-bprmf-pretrained.ckpt:ml1m-transe-pretrained.ckpt -noshare_embeddings -L1_flag -norm_lambda 1 -kg_lambda 1 &
+#     BACK_PID=$!
+#     wait $BACK_PID
+# fi
+#
+# #JTransUP
+# if no_exist "../results/ml1m-sun_sum2/ml1m-jtransup-*.log"
+# then
+#     CUDA_VISIBLE_DEVICES=0 nohup python run_knowledgable_recommendation.py -data_path ~/git/datasets/ml1m-sun_sum2/ -log_path ~/git/results/ml1m-sun_sum2/ -rec_test_files valid.dat:test.dat -kg_test_files valid.dat:test.dat -l2_lambda 0 -model_type jtransup -nohas_visualization -dataset ml1m -batch_size 256 -embedding_size 100 -learning_rate 0.1 -topn 10 -seed 3 -eval_interval_steps 19520 -training_steps 1952000 -early_stopping_steps_to_wait 97600 -optimizer_type Adam -joint_ratio 0.5 -noshare_embeddings -L1_flag -norm_lambda 1 -kg_lambda 1 -nouse_st_gumbel -load_ckpt_file ml1m-bprmf-pretrained.ckpt:ml1m-transe-pretrained.ckpt &
+#     BACK_PID=$!
+#     wait $BACK_PID
+# fi
+#
+# #[activate rkge]
+# #conda deactivate
+# #conda activate rkge
+#
+# #cd ../Recurrent-Knowledge-Graph-Embedding
+#
+# #[RKGE]
+# #if no_exist "../results/ml1m-sun_sum2/ml1m-rkge-results.log"
+# #then
+# #    CUDA_VISIBLE_DEVICES=0 nohup python recurrent-neural-network.py --inputdim 10 --hiddendim 16 --outdim 1 --iteration 5 --learingrate 0.2 --positivepath ~/git/datasets/ml1m-sun_sum2/ml1m/positive-path.txt --negativepath ~/git/datasets/ml1m-sun_sum2/ml1m/negative-path.txt --pretrainuserembedding ~/git/datasets/ml1m-sun/ml1m/pre-train-user-embedding.txt --pretrainmovieembedding ~/git/datasets/ml1m-sun/ml1m/pre-train-item-embedding.txt --train ~/git/datasets/ml1m-sun_sum2/ml1m/sun_training.txt --test ~/git/datasets/ml1m-sun_sum2/ml1m/sun_test.txt --results ~/git/results/ml1m-sun_sum2/ml1m-rkge-results.log &
+# #    BACK_PID=$!
+# #    wait $BACK_PID
+# #fi
