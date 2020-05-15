@@ -18,6 +18,12 @@ mkdir datasets/ml1m-sun_sum0/ml1m/kg
 mkdir datasets/ml1m-sun_sum1
 mkdir datasets/ml1m-sun_sum1/ml1m
 mkdir datasets/ml1m-sun_sum1/ml1m/kg
+mkdir datasets/ml1m-sun_sum5
+mkdir datasets/ml1m-sun_sum5/ml1m
+mkdir datasets/ml1m-sun_sum5/ml1m/kg
+mkdir datasets/ml1m-sun_sum4
+mkdir datasets/ml1m-sun_sum4/ml1m
+mkdir datasets/ml1m-sun_sum4/ml1m/kg
 
 git clone https://github.com/TaoMiner/joint-kg-recommender.git
 git clone https://github.com/juarezsacenti/ORBS.git
@@ -29,3 +35,5 @@ mkdir results/ml1m-cao
 mkdir results/ml1m-sun
 mkdir results/ml1m-sun_sum0
 mkdir results/ml1m-sun_sum1
+mkdir results/ml1m-sun_sum5
+mkdir results/ml1m-sun_sum4
