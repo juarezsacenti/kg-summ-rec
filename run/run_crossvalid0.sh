@@ -15,19 +15,19 @@ done
 }
 
 #[sun2cao/train.dat, valid.dat, test.dat, ... from sun2cao]
-# ln -s ~/git/datasets/ml1m-sun2cao/ml1m/train.dat ~/git/datasets/ml1m-sun_sum5/ml1m/train.dat
-# ln -s ~/git/datasets/ml1m-sun2cao/ml1m/valid.dat ~/git/datasets/ml1m-sun_sum5/ml1m/valid.dat
-# ln -s ~/git/datasets/ml1m-sun2cao/ml1m/test.dat ~/git/datasets/ml1m-sun_sum5/ml1m/test.dat
-# ln -s ~/git/datasets/ml1m-sun2cao/ml1m/sun_training.txt ~/git/datasets/ml1m-sun_sum5/ml1m/sun_training.txt
-# ln -s ~/git/datasets/ml1m-sun2cao/ml1m/sun_test.txt ~/git/datasets/ml1m-sun_sum5/ml1m/sun_test.txt
-# ln -s ~/git/datasets/ml1m-sun2cao/ml1m/negative.txt ~/git/datasets/ml1m-sun_sum5/ml1m/negative.txt
-#
-# ln -s ~/git/datasets/ml1m-sun2cao/ml1m/train.dat ~/git/datasets/ml1m-sun_sum4/ml1m/train.dat
-# ln -s ~/git/datasets/ml1m-sun2cao/ml1m/valid.dat ~/git/datasets/ml1m-sun_sum4/ml1m/valid.dat
-# ln -s ~/git/datasets/ml1m-sun2cao/ml1m/test.dat ~/git/datasets/ml1m-sun_sum4/ml1m/test.dat
-# ln -s ~/git/datasets/ml1m-sun2cao/ml1m/sun_training.txt ~/git/datasets/ml1m-sun_sum4/ml1m/sun_training.txt
-# ln -s ~/git/datasets/ml1m-sun2cao/ml1m/sun_test.txt ~/git/datasets/ml1m-sun_sum4/ml1m/sun_test.txt
-# ln -s ~/git/datasets/ml1m-sun2cao/ml1m/negative.txt ~/git/datasets/ml1m-sun_sum4/ml1m/negative.txt
+ln -s ~/git/datasets/ml1m-sun2cao/ml1m/train.dat ~/git/datasets/ml1m-sun_sum5/ml1m/train.dat
+ln -s ~/git/datasets/ml1m-sun2cao/ml1m/valid.dat ~/git/datasets/ml1m-sun_sum5/ml1m/valid.dat
+ln -s ~/git/datasets/ml1m-sun2cao/ml1m/test.dat ~/git/datasets/ml1m-sun_sum5/ml1m/test.dat
+ln -s ~/git/datasets/ml1m-sun2cao/ml1m/sun_training.txt ~/git/datasets/ml1m-sun_sum5/ml1m/sun_training.txt
+ln -s ~/git/datasets/ml1m-sun2cao/ml1m/sun_test.txt ~/git/datasets/ml1m-sun_sum5/ml1m/sun_test.txt
+ln -s ~/git/datasets/ml1m-sun2cao/ml1m/negative.txt ~/git/datasets/ml1m-sun_sum5/ml1m/negative.txt
+
+ln -s ~/git/datasets/ml1m-sun2cao/ml1m/train.dat ~/git/datasets/ml1m-sun_sum4/ml1m/train.dat
+ln -s ~/git/datasets/ml1m-sun2cao/ml1m/valid.dat ~/git/datasets/ml1m-sun_sum4/ml1m/valid.dat
+ln -s ~/git/datasets/ml1m-sun2cao/ml1m/test.dat ~/git/datasets/ml1m-sun_sum4/ml1m/test.dat
+ln -s ~/git/datasets/ml1m-sun2cao/ml1m/sun_training.txt ~/git/datasets/ml1m-sun_sum4/ml1m/sun_training.txt
+ln -s ~/git/datasets/ml1m-sun2cao/ml1m/sun_test.txt ~/git/datasets/ml1m-sun_sum4/ml1m/sun_test.txt
+ln -s ~/git/datasets/ml1m-sun2cao/ml1m/negative.txt ~/git/datasets/ml1m-sun_sum4/ml1m/negative.txt
 #
 # ln -s ~/git/datasets/ml1m-sun2cao/ml1m/train.dat ~/git/datasets/ml1m-sun_sum3/ml1m/train.dat
 # ln -s ~/git/datasets/ml1m-sun2cao/ml1m/valid.dat ~/git/datasets/ml1m-sun_sum3/ml1m/valid.dat
