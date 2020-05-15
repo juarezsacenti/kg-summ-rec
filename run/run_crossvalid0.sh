@@ -14,7 +14,6 @@ do
 done
 }
 
-
 #[sun2cao/train.dat, valid.dat, test.dat, ... from sun2cao]
 # ln -s ~/git/datasets/ml1m-sun2cao/ml1m/train.dat ~/git/datasets/ml1m-sun_sum5/ml1m/train.dat
 # ln -s ~/git/datasets/ml1m-sun2cao/ml1m/valid.dat ~/git/datasets/ml1m-sun_sum5/ml1m/valid.dat
@@ -45,7 +44,7 @@ done
 # ln -s ~/git/datasets/ml1m-sun2cao/ml1m/negative.txt ~/git/datasets/ml1m-sun_sum2/ml1m/negative.txt
 
 #[rkge preprocessing]
-cd ../../Recurrent-Knowledge-Graph-Embedding
+#cd ../../Recurrent-Knowledge-Graph-Embedding
 #
 # python path-extraction-ml.py --training ../datasets/ml1m-sun_sum5/ml1m/sun_training.txt --negtive ../datasets/ml1m-sun_sum5/ml1m/negative.txt --auxiliary ../datasets/ml1m-sun_sum5/ml1m/auxiliary-mapping.txt --positivepath ../datasets/ml1m-sun_sum5/ml1m/positive-path.txt --negativepath ../datasets/ml1m-sun_sum5/ml1m/negative-path.txt --pathlength 3 --samplesize 5
 # python path-extraction-ml.py --training ../datasets/ml1m-sun_sum4/ml1m/sun_training.txt --negtive ../datasets/ml1m-sun_sum4/ml1m/negative.txt --auxiliary ../datasets/ml1m-sun_sum4/ml1m/auxiliary-mapping.txt --positivepath ../datasets/ml1m-sun_sum4/ml1m/positive-path.txt --negativepath ../datasets/ml1m-sun_sum4/ml1m/negative-path.txt --pathlength 3 --samplesize 5
@@ -112,7 +111,7 @@ fi
 #[ml1m-sun_sum5]
 if no_exist "../results/ml1m-sun_sum5/ml1m-bprmf-*.log"
 then
-    CUDA_VISIBLE_DEVICES=1 nohup python run_item_recommendation.py -data_path ~/git/datasets/ml1m-sun_sum5/ -log_path ~/git/results/ml1m-sun_sum5/ -rec_test_files valid.dat:test.dat -l2_lambda 1e-5 -negtive_samples 1 -model_type bprmf -nohas_visualization -dataset ml1m -batch_size 256 -embedding_size 100 -learning_rate 0.1 -topn 10 -seed 3 -eval_interval_steps 5000 -training_steps 500000 -early_stopping_steps_to_wait 25000 -optimizer_type Adagrad &
+    CUDA_VISIBLE_DEVICES=0 nohup python run_item_recommendation.py -data_path ~/git/datasets/ml1m-sun_sum5/ -log_path ~/git/results/ml1m-sun_sum5/ -rec_test_files valid.dat:test.dat -l2_lambda 1e-5 -negtive_samples 1 -model_type bprmf -nohas_visualization -dataset ml1m -batch_size 256 -embedding_size 100 -learning_rate 0.1 -topn 10 -seed 3 -eval_interval_steps 5000 -training_steps 500000 -early_stopping_steps_to_wait 25000 -optimizer_type Adagrad &
     BACK_PID=$!
     wait $BACK_PID
     mv ../results/ml1m-sun_sum5/ml1m-bprmf-*.ckpt ../results/ml1m-sun_sum5/ml1m-bprmf-pretrained.ckpt
@@ -121,7 +120,7 @@ fi
 #[ml1m-sun_sum4]
 if no_exist "../results/ml1m-sun_sum4/ml1m-bprmf-*.log"
 then
-    CUDA_VISIBLE_DEVICES=1 nohup python run_item_recommendation.py -data_path ~/git/datasets/ml1m-sun_sum4/ -log_path ~/git/results/ml1m-sun_sum4/ -rec_test_files valid.dat:test.dat -l2_lambda 1e-5 -negtive_samples 1 -model_type bprmf -nohas_visualization -dataset ml1m -batch_size 256 -embedding_size 100 -learning_rate 0.1 -topn 10 -seed 3 -eval_interval_steps 5000 -training_steps 500000 -early_stopping_steps_to_wait 25000 -optimizer_type Adagrad &
+    CUDA_VISIBLE_DEVICES=0 nohup python run_item_recommendation.py -data_path ~/git/datasets/ml1m-sun_sum4/ -log_path ~/git/results/ml1m-sun_sum4/ -rec_test_files valid.dat:test.dat -l2_lambda 1e-5 -negtive_samples 1 -model_type bprmf -nohas_visualization -dataset ml1m -batch_size 256 -embedding_size 100 -learning_rate 0.1 -topn 10 -seed 3 -eval_interval_steps 5000 -training_steps 500000 -early_stopping_steps_to_wait 25000 -optimizer_type Adagrad &
     BACK_PID=$!
     wait $BACK_PID
     mv ../results/ml1m-sun_sum4/ml1m-bprmf-*.ckpt ../results/ml1m-sun_sum4/ml1m-bprmf-pretrained.ckpt
