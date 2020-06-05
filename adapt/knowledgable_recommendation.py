@@ -104,11 +104,11 @@ def case_rec_evaluateRec(FLAGS, model, eval_iter, eval_dict, all_dicts, i_map, l
 
     print_list = []
     for u_id in predictions:
-        for i_id in predicions[u_id]:
+        for i_id in predictions[u_id]:
             print_list.append((u_id, i_id, predictions[u_id][i_id]))
-
     WriteFile('./rankings.dat', data=print_list, sep='\t').write()
-    
+
+
     # Using CaseRecommender ReadFile class to read test_set from file
     dataset_path = os.path.join(FLAGS.data_path, FLAGS.dataset)
     eval_files = FLAGS.rec_test_files.split(':')
