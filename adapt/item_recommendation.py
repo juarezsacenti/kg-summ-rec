@@ -68,6 +68,7 @@ def case_rec_evaluate(FLAGS, model, eval_iter, eval_dict, all_dicts, logger, eva
     evaluator = RatingPredictionEvaluation(sep = '\t', n_rank = [10], as_rank = True, metrics = ['PREC'])
 
     # Getting evaluation
+    print(str(predictions))
     item_rec_metrics = evaluator.evaluate(predictions, test_set)
 
     print ('\nItem Recommendation Metrics:\n', item_rec_metrics)
