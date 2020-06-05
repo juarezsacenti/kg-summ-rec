@@ -23,7 +23,7 @@ from jTransUP.utils.visuliazer import Visualizer
 from jTransUP.utils.data import getTrainTripleBatch, getNegRatings
 import jTransUP.utils.loss as loss
 
-from caserec.utils.process_data import ReadFile
+from caserec.utils.process_data import ReadFile, WriteFile
 from caserec.evaluation.rating_prediction import RatingPredictionEvaluation
 
 FLAGS = gflags.FLAGS

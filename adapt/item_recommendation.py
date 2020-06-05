@@ -22,7 +22,7 @@ from jTransUP.utils.loss import bprLoss, orthogonalLoss, normLoss
 from jTransUP.utils.visuliazer import Visualizer
 from jTransUP.utils.data import getNegRatings
 
-from caserec.utils.process_data import ReadFile
+from caserec.utils.process_data import ReadFile, WriteFile
 from caserec.evaluation.rating_prediction import RatingPredictionEvaluation
 
 FLAGS = gflags.FLAGS
