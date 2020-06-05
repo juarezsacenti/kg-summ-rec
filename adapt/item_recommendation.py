@@ -80,8 +80,7 @@ def case_rec_evaluate(FLAGS, model, eval_iter, eval_dict, all_dicts, logger, eva
         pbar.update(1)
     pbar.close()
 
-    print(len(predictions.keys()))
-    print(str(all_dicts))
+    print('EVAL_DICT USERS: '+str(len(eval_dict.keys()))+' PREDICTIONS USERS: '+str(len(predictions.keys())))
     print_list = []
     for u_id in predictions:
         for i_id in predictions[u_id]:
