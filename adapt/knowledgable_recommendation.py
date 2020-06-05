@@ -74,9 +74,10 @@ def case_rec_evaluateRec(FLAGS, model, eval_iter, eval_dict, all_dicts, i_map, l
         ###preds = zip(u_ids, scores.data.cpu().numpy()) # From there, you'll want to copy its tensor to the CPU with cpu() and convert it into a numpy array with numpy().
         pred_scores = list(zip(u_ids, scores.data.cpu().numpy())) # From there, you'll want to copy its tensor to the CPU with cpu() and convert it into a numpy array with numpy().
         ###results.extend( evalRecProcess(list(preds), eval_dict, all_dicts=all_dicts, descending=eval_descending, num_processes=FLAGS.num_processes, topn=FLAGS.topn, queue_limit=FLAGS.max_queue) )
+        preds = {}
         for pred in pred_scores:
             # Filtering viewed movies in train and valid or test
-            if pred[0] not in eval_dict: continue
+            ###if pred[0] not in eval_dict: continue
             ###gold = eval_dict[pred[0]]
             # ids to be filtered
             fliter_samples = None
@@ -94,10 +95,14 @@ def case_rec_evaluateRec(FLAGS, model, eval_iter, eval_dict, all_dicts, i_map, l
                 if i_id not in fliter_samples:
                     u_preds[i_id] = per_scores[i_id]
 
-            predictions[pred[0]] = u_preds
+            preds[pred[0]] = u_preds
+
+        predictions.update(preds)
 
         pbar.update(1)
     pbar.close()
+
+    WriteFile('./rankings.dat', data=predictions, sep='\t').write()
 
     # Using CaseRecommender ReadFile class to read test_set from file
     dataset_path = os.path.join(FLAGS.data_path, FLAGS.dataset)
