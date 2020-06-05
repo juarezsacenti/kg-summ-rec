@@ -33,9 +33,9 @@ mkdir datasets/ml1m-sun_sum4/ml1m/kg
 ################################################################################
 git clone https://github.com/TaoMiner/joint-kg-recommender.git
 mv joint-kg-recommender/jTransUP/models/item_recommendation.py joint-kg-recommender/jTransUP/models/item_recommendation.py_ORIG
-ln -sf know-rec/adapt/item_recommendation.py joint-kg-recommender/jTransUP/models/item_recommendation.py
+cp know-rec/adapt/item_recommendation.py joint-kg-recommender/jTransUP/models/item_recommendation.py
 mv joint-kg-recommender/jTransUP/models/knowledgable_recommendation.py joint-kg-recommender/jTransUP/models/knowledgable_recommendation.py_ORIG
-ln -sf know-rec/adapt/knowledgable_recommendation.py joint-kg-recommender/jTransUP/models/knowledgable_recommendation.py
+cp know-rec/adapt/knowledgable_recommendation.py joint-kg-recommender/jTransUP/models/knowledgable_recommendation.py
 
 git clone https://github.com/sunzhuntu/Recurrent-Knowledge-Graph-Embedding.git
 cp Recurrent-Knowledge-Graph-Embedding/data/ml/* datasets/ml1m-sun/ml1m/
