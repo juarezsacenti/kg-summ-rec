@@ -77,7 +77,7 @@ def case_rec_evaluateRec(FLAGS, model, eval_iter, eval_dict, all_dicts, i_map, l
         preds = {}
         for pred in pred_scores:
             # Filtering viewed movies in train and valid or test
-            ###if pred[0] not in eval_dict: continue
+            if pred[0] not in eval_dict: continue
             ###gold = eval_dict[pred[0]]
             # ids to be filtered
             fliter_samples = None
