@@ -80,25 +80,27 @@ def case_rec_evaluate(FLAGS, model, eval_iter, eval_dict, all_dicts, logger, eva
         pbar.update(1)
     pbar.close()
 
+    predictions_output_filepath='./rankings.dat'
     print('EVAL_DICT USERS: '+str(len(eval_dict.keys()))+' PREDICTIONS USERS: '+str(len(predictions.keys())))
     print_list = []
     for u_id in predictions:
         for i_id in predictions[u_id]:
             print_list.append((u_id, i_id, predictions[u_id][i_id]))
-    WriteFile('./rankings.dat', data=print_list, sep='\t').write()
+    WriteFile(predictions_output_filepath, data=print_list, sep='\t').write()
 
     # Using CaseRecommender ReadFile class to read test_set from file
     dataset_path = os.path.join(FLAGS.data_path, FLAGS.dataset)
     eval_files = FLAGS.rec_test_files.split(':')
     test_path = os.path.join(dataset_path, eval_files[1])
     test_set = ReadFile(input_file=test_path).read()
+    fr_predictions = ReadFile(input_file=predictions_output_filepath).read()
 
     # Creating CaseRecommender evaluator with item-recommendation parameters
     evaluator = RatingPredictionEvaluation(sep = '\t', n_rank = [10], as_rank = True, metrics = ['PREC'])
 
     # Getting evaluation
     ### print(str(predictions))
-    item_rec_metrics = evaluator.evaluate(predictions, test_set)
+    item_rec_metrics = evaluator.evaluate(fr_predictions['feedback'], test_set)
 
     ### print ('\nItem Recommendation Metrics:\n', item_rec_metrics)
     logger.info("From CaseRecommender evaluator: {}.".format(str(item_rec_metrics)))
