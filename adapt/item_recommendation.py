@@ -50,7 +50,8 @@ def case_rec_evaluate(FLAGS, model, eval_iter, eval_dict, all_dicts, logger, eva
         # batch * item
         scores = model.evaluate(u_var) # This gives you batch users u_var * all itens tensor.
         #preds = zip(u_ids, scores.data.cpu().numpy()) # From there, you'll want to copy its tensor to the CPU with cpu() and convert it into a numpy array with numpy().
-        preds = dict(zip(u_ids, scores.data.cpu().numpy())) # From there, you'll want to copy its tensor to the CPU with cpu() and convert it into a numpy array with numpy().
+        pred_ranks = np.argsort(scores.data.cpu().numpy())
+        preds = dict(zip(u_ids, pred_ranks)) # From there, you'll want to copy its tensor to the CPU with cpu() and convert it into a numpy array with numpy().
 
         #results.extend( evalRecProcess(list(preds), eval_dict, all_dicts=all_dicts, descending=eval_descending, num_processes=FLAGS.num_processes, topn=FLAGS.topn, queue_limit=FLAGS.max_queue) )
         predictions.update(preds)
