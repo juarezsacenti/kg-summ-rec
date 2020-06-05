@@ -50,37 +50,32 @@ def case_rec_evaluate(FLAGS, model, eval_iter, eval_dict, all_dicts, logger, eva
         # batch * item
         scores = model.evaluate(u_var) # This gives you batch users u_var * all itens tensor.
         ###preds = zip(u_ids, scores.data.cpu().numpy()) # From there, you'll want to copy its tensor to the CPU with cpu() and convert it into a numpy array with numpy().
-        pred = scores.data.cpu().numpy()
-        per_scores = pred if not eval_descending else -pred
-        pred_ranks = np.argsort(per_scores)
-        preds = dict(zip(u_ids, pred_ranks)) # From there, you'll want to copy its tensor to the CPU with cpu() and convert it into a numpy array with numpy().
-
+        pred_scores = list(zip(u_ids, nd_scores)) # From there, you'll want to copy its tensor to the CPU with cpu() and convert it into a numpy array with numpy().
         ###results.extend( evalRecProcess(list(preds), eval_dict, all_dicts=all_dicts, descending=eval_descending, num_processes=FLAGS.num_processes, topn=FLAGS.topn, queue_limit=FLAGS.max_queue) )
-        predictions.update(preds)
+        for pred in pred_scores:
+            # Filtering viewed movies in train and valid or test
+            if pred[0] not in eval_dict: continue
+            ###gold = eval_dict[pred[0]]
+            # ids to be filtered
+            fliter_samples = None
+            if all_dicts is not None:
+                fliter_samples = set()
+                for dic in all_dicts:
+                    if pred[0] in dic:
+                        fliter_samples.update(dic[pred[0]])
+
+            per_scores = pred[1] if not eval_descending else -pred[1]
+            ordered_ranks = np.argsort(per_scores)
+
+            u_preds = {}
+            for i_id in ordered_ranks:
+                if i_id not in fliter_samples:
+                    u_preds[i_id] = per_scores[i_id]
+
+            predictions[pred[0]] = u_preds
 
         pbar.update(1)
     pbar.close()
-
-    # Filtering viewed movies in train and valid or test
-    for u_id in predictions.keys():
-        if u_id not in eval_dict: continue
-        ###gold = eval_dict[pred[0]]
-        # ids to be filtered
-        fliter_samples = None
-        if all_dicts is not None:
-            fliter_samples = set()
-            for dic in all_dicts:
-                if u_id in dic:
-                    fliter_samples.update(dic[u_id])
-
-        filter_arr = []
-        for pred_rank in predictions[u_id]:
-            if pred_rank in fliter_samples:
-                filter_arr.append(False)
-            else:
-                filter_arr.append(True)
-
-        predictions[u_id] = predictions[u_id][filter_arr]
 
     # Using CaseRecommender ReadFile class to read test_set from file
     dataset_path = os.path.join(FLAGS.data_path, FLAGS.dataset)
@@ -95,7 +90,7 @@ def case_rec_evaluate(FLAGS, model, eval_iter, eval_dict, all_dicts, logger, eva
     ### print(str(predictions))
     item_rec_metrics = evaluator.evaluate(predictions, test_set)
 
-    print ('\nItem Recommendation Metrics:\n', item_rec_metrics)
+    ### print ('\nItem Recommendation Metrics:\n', item_rec_metrics)
     logger.info("From CaseRecommender evaluator: {}.".format(str(item_rec_metrics)))
 
     model.enable_grad()
