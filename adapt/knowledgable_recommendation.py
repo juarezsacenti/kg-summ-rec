@@ -95,7 +95,7 @@ def case_rec_evaluateRec(FLAGS, model, eval_iter, eval_dict, all_dicts, i_map, l
     evaluator = RatingPredictionEvaluation(sep = '\t', n_rank = [10], as_rank = True, metrics = ['PREC'])
 
     # Getting evaluation
-    item_rec_metrics = evaluator.evaluate(predictions['feedback'], test_set)
+    item_rec_metrics = evaluator.evaluate(predictions, test_set)
 
     print ('\nItem Recommendation Metrics:\n', item_rec_metrics)
     logger.info("From CaseRecommender evaluator: {}:{:.4f}, {}:{:.4f}, {}:{:.4f}, {}:{:.4f}, {}:{:.4f}.".format(item_rec_metrics.keys[0],item_rec_metrics[0],item_rec_metrics.keys[1],item_rec_metrics[1],item_rec_metrics.keys[2],item_rec_metrics[2],item_rec_metrics.keys[3],item_rec_metrics[3],item_rec_metrics.keys[4],item_rec_metrics[4]))
