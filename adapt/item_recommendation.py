@@ -80,7 +80,12 @@ def case_rec_evaluate(FLAGS, model, eval_iter, eval_dict, all_dicts, logger, eva
         pbar.update(1)
     pbar.close()
 
-    WriteFile('./rankings.dat', data=predictions, sep='\t').write()
+    print_list = []
+    for u_id in predictions:
+        for i_id in predicions[u_id]:
+            print_list.append((u_id, i_id, predictions[u_id][i_id])) 
+
+    WriteFile('./rankings.dat', data=print_list, sep='\t').write()
 
     # Using CaseRecommender ReadFile class to read test_set from file
     dataset_path = os.path.join(FLAGS.data_path, FLAGS.dataset)
