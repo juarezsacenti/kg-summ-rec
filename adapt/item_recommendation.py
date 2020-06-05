@@ -50,7 +50,9 @@ def case_rec_evaluate(FLAGS, model, eval_iter, eval_dict, all_dicts, logger, eva
         # batch * item
         scores = model.evaluate(u_var) # This gives you batch users u_var * all itens tensor.
         #preds = zip(u_ids, scores.data.cpu().numpy()) # From there, you'll want to copy its tensor to the CPU with cpu() and convert it into a numpy array with numpy().
-        pred_ranks = np.argsort(scores.data.cpu().numpy())
+        pred = scores.data.cpu().numpy()
+        per_scores = pred if not self.descending else -pred
+        pred_ranks = np.argsort(per_scores)
         preds = dict(zip(u_ids, pred_ranks)) # From there, you'll want to copy its tensor to the CPU with cpu() and convert it into a numpy array with numpy().
 
         #results.extend( evalRecProcess(list(preds), eval_dict, all_dicts=all_dicts, descending=eval_descending, num_processes=FLAGS.num_processes, topn=FLAGS.topn, queue_limit=FLAGS.max_queue) )
@@ -69,11 +71,11 @@ def case_rec_evaluate(FLAGS, model, eval_iter, eval_dict, all_dicts, logger, eva
     evaluator = RatingPredictionEvaluation(sep = '\t', n_rank = [10], as_rank = True, metrics = ['PREC'])
 
     # Getting evaluation
-    print(str(predictions))
+    # print(str(predictions))
     item_rec_metrics = evaluator.evaluate(predictions, test_set)
 
     print ('\nItem Recommendation Metrics:\n', item_rec_metrics)
-    logger.info("From CaseRecommender evaluator: {}:{:.4f}, {}:{:.4f}, {}:{:.4f}, {}:{:.4f}, {}:{:.4f}.".format(item_rec_metrics.keys[0],item_rec_metrics[0],item_rec_metrics.keys[1],item_rec_metrics[1],item_rec_metrics.keys[2],item_rec_metrics[2],item_rec_metrics.keys[3],item_rec_metrics[3],item_rec_metrics.keys[4],item_rec_metrics[4]))
+    logger.info("From CaseRecommender evaluator: {}.".format(str(item_rec_metrics)))
 
     model.enable_grad()
     return item_rec_metrics
