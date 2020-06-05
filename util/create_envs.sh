@@ -11,6 +11,7 @@ conda install python-gflags
 pip install visdom
 conda install -c conda-forge tqdm
 conda install pandas
+pip install -U git+git://github.com/caserec/CaseRecommender.git
 
 conda deactivate
 
@@ -20,17 +21,18 @@ conda activate rkge
 
 conda install pytorch=0.4.1 cuda75 -c pytorch
 conda install networkx
+pip install -U git+git://github.com/caserec/CaseRecommender.git
 
 conda deactivate
 
 # juarezsacenti/orbs environment:
-conda create -n orbs python=3.6
-conda activate orbs
+#conda create -n orbs python=3.6
+#conda activate orbs
 
-sudo apt-get update
-sudo apt-get install gcc
-pip install numpy cython
-cd ~/git/ORBS
-python setup.py install
+#sudo apt-get update
+#sudo apt-get install gcc
+#pip install numpy cython
+#cd ~/git/ORBS
+#python setup.py install
 
-conda deactivate
+#conda deactivate
