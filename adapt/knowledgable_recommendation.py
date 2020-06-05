@@ -73,7 +73,7 @@ def case_rec_evaluateRec(FLAGS, model, eval_iter, eval_dict, all_dicts, i_map, l
         scores = model.evaluateRec(u_var, all_i_ids=all_i_var) # This gives you batch users u_var * all itens tensor.
         #preds = zip(u_ids, scores.data.cpu().numpy())
         pred = scores.data.cpu().numpy()
-        per_scores = pred if not self.descending else -pred
+        per_scores = pred if not eval_descending else -pred
         pred_ranks = np.argsort(per_scores)
         preds = dict(zip(u_ids, pred_ranks)) # From there, you'll want to copy its tensor to the CPU with cpu() and convert it into a numpy array with numpy().
 
