@@ -88,6 +88,27 @@ def case_rec_evaluateRec(FLAGS, model, eval_iter, eval_dict, all_dicts, i_map, l
         pbar.update(1)
     pbar.close()
 
+    # Filtering viewed movies in train and valid or test
+    for u_id in predictions.keys():
+        if u_id not in eval_dict: continue
+        ###gold = eval_dict[pred[0]]
+        # ids to be filtered
+        fliter_samples = None
+        if all_dicts is not None:
+            fliter_samples = set()
+            for dic in all_dicts:
+                if u_id in dic:
+                    fliter_samples.update(dic[u_id])
+
+        filter_arr = []
+        for pred_rank in predictions[u_id]:
+            if pred_rank in fliter_samples:
+                filter_arr.append(False)
+            else:
+                filter_arr.append(True)
+
+        predictions[u_id] = predictions[u_id][filter_arr]
+
     # Using CaseRecommender ReadFile class to read test_set from file
     dataset_path = os.path.join(FLAGS.data_path, FLAGS.dataset)
     eval_files = FLAGS.rec_test_files.split(':')
