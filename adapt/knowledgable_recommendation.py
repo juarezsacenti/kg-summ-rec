@@ -103,6 +103,7 @@ def case_rec_evaluateRec(FLAGS, model, eval_iter, eval_dict, all_dicts, i_map, l
     pbar.close()
 
     print(len(predictions.keys()))
+    print(str(all_dicts))
     print_list = []
     for u_id in predictions:
         for i_id in predictions[u_id]:
