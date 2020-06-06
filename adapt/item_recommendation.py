@@ -150,8 +150,8 @@ def case_rec_evaluate2(FLAGS, model, eval_iter, eval_dict, all_dicts, logger, i,
         top_ids = triple[1]
         #gold = triple[2]
         for i_id in top_ids:
-            np_arr = next(s[1] for s in pred_score if s[0] == u_id)
-            score = np_arr[i_id]
+            np_arr = [s[1] for s in pred_score if s[0] == u_id]
+            score = np_arr[0][i_id]
             print_list.append((u_id, i_id, score))
     WriteFile(predictions_output_filepath, data=print_list, sep='\t').write()
 
