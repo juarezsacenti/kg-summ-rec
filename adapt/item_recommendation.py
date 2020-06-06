@@ -123,7 +123,8 @@ def case_rec_evaluate2(FLAGS, model, eval_iter, eval_dict, all_dicts, logger, i,
     model.disable_grad()
 
     results = []
-    score_dict = {}
+    pred_score = []
+#    score_dict = {}
     for u_ids in eval_iter:
         u_var = to_gpu(V(torch.LongTensor(u_ids)))
         # batch * item
@@ -132,8 +133,10 @@ def case_rec_evaluate2(FLAGS, model, eval_iter, eval_dict, all_dicts, logger, i,
 
         results.extend( evalRecProcess(list(preds), eval_dict, all_dicts=all_dicts, descending=eval_descending, num_processes=FLAGS.num_processes, topn=FLAGS.topn, queue_limit=FLAGS.max_queue) )
 
-        for pred in preds:
-            score_dict[pred[0]] = pred[1]
+        pred_score.extend(preds)
+#        for pred in preds:
+#            s_dict[pred[0]] = pred[1]
+#        score_dict.update(s)
 
         pbar.update(1)
     pbar.close()
@@ -147,7 +150,7 @@ def case_rec_evaluate2(FLAGS, model, eval_iter, eval_dict, all_dicts, logger, i,
         top_ids = triple[1]
         #gold = triple[2]
         for i_id in top_ids:
-            np_arr = score_dict[u_id]
+            np_arr = s[1] for s in pred_score if s[0] == u_id
             score = np_arr[i_id]
             print_list.append((u_id, i_id, score))
     WriteFile(predictions_output_filepath, data=print_list, sep='\t').write()
