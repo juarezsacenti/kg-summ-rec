@@ -24,6 +24,7 @@ from jTransUP.utils.data import getNegRatings
 
 from caserec.utils.process_data import ReadFile, WriteFile
 from caserec.evaluation.rating_prediction import RatingPredictionEvaluation
+from caserec.evaluation.item_recommendation import ItemRecommendationEvaluation
 
 FLAGS = gflags.FLAGS
 
