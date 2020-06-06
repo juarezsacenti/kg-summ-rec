@@ -23,96 +23,11 @@ from jTransUP.utils.visuliazer import Visualizer
 from jTransUP.utils.data import getNegRatings
 
 from caserec.utils.process_data import ReadFile, WriteFile
-from caserec.evaluation.rating_prediction import RatingPredictionEvaluation
 from caserec.evaluation.item_recommendation import ItemRecommendationEvaluation
 
 FLAGS = gflags.FLAGS
 
-def case_rec_evaluate(FLAGS, model, eval_iter, eval_dict, all_dicts, logger, eval_descending=True, is_report=False):
-    """
-    This function evaluates joint-kg-recommender using CaseRecommender evaluator with item-recommendation parameters,
-    inspired by ranking_rating_based_algorithm.py example.
-
-    """
-
-    # Evaluate
-    total_batches = len(eval_iter)
-    # processing bar
-    pbar = tqdm(total=total_batches)
-    pbar.set_description("Run Eval")
-
-    model.eval()
-    model.disable_grad()
-
-    ###results = []
-    predictions = {}
-    for u_ids in eval_iter:
-        u_var = to_gpu(V(torch.LongTensor(u_ids))) # This gives you a Variable, probably on the GPU.
-        # batch * item
-        scores = model.evaluate(u_var) # This gives you batch users u_var * all itens tensor.
-        ###preds = zip(u_ids, scores.data.cpu().numpy()) # From there, you'll want to copy its tensor to the CPU with cpu() and convert it into a numpy array with numpy().
-        pred_scores = list(zip(u_ids, scores.data.cpu().numpy())) # From there, you'll want to copy its tensor to the CPU with cpu() and convert it into a numpy array with numpy().
-        ###results.extend( evalRecProcess(list(preds), eval_dict, all_dicts=all_dicts, descending=eval_descending, num_processes=FLAGS.num_processes, topn=FLAGS.topn, queue_limit=FLAGS.max_queue) )
-        preds = {}
-        for pred in pred_scores:
-            # Filtering viewed movies in train and valid or test
-            if pred[0] not in eval_dict: continue
-            ###gold = eval_dict[pred[0]]
-            # ids to be filtered
-            fliter_samples = None
-            if all_dicts is not None:
-                fliter_samples = set()
-                for dic in all_dicts:
-                    if pred[0] in dic:
-                        fliter_samples.update(dic[pred[0]])
-
-            per_scores = pred[1] if not eval_descending else -pred[1]
-            ordered_ranks = np.argsort(per_scores)
-
-            u_preds = {}
-            for i_id in ordered_ranks:
-                if fliter_samples is not None and i_id in fliter_samples :
-                    if current_rank < topn : topn_to_skip += 1
-                    continue
-                u_preds[i_id] = per_scores[i_id]
-
-            preds[pred[0]] = u_preds
-
-        predictions.update(preds)
-
-        pbar.update(1)
-    pbar.close()
-
-    predictions_output_filepath = os.path.join(FLAGS.log_path, FLAGS.experiment_name+'_predictions.dat')
-    print('EVAL_DICT USERS: '+str(len(eval_dict.keys()))+' PREDICTIONS USERS: '+str(len(predictions.keys())))
-    print_list = []
-    for u_id in predictions:
-        for i_id in predictions[u_id]:
-            print_list.append((u_id, i_id, predictions[u_id][i_id]))
-    WriteFile(predictions_output_filepath, data=print_list, sep='\t').write()
-
-    # Using CaseRecommender ReadFile class to read test_set from file
-    dataset_path = os.path.join(FLAGS.data_path, FLAGS.dataset)
-    eval_files = FLAGS.rec_test_files.split(':')
-    test_path = os.path.join(dataset_path, eval_files[1])
-    test_set = ReadFile(input_file=test_path).read()
-    fr_predictions = ReadFile(input_file=predictions_output_filepath).read()
-
-    # Creating CaseRecommender evaluator with item-recommendation parameters
-    evaluator = RatingPredictionEvaluation(sep = '\t', n_rank = [10], as_rank = True, metrics = ['PREC'])
-
-    # Getting evaluation
-    ### print(str(predictions))
-    item_rec_metrics = evaluator.evaluate(fr_predictions['feedback'], test_set)
-
-    ### print ('\nItem Recommendation Metrics:\n', item_rec_metrics)
-    logger.info("From CaseRecommender evaluator: {}.".format(str(item_rec_metrics)))
-
-    model.enable_grad()
-    return item_rec_metrics
-
-
-def case_rec_evaluate2(FLAGS, model, eval_iter, eval_dict, all_dicts, logger, i, eval_descending=True, is_report=False):
+def case_rec_evaluate(FLAGS, model, eval_iter, eval_dict, all_dicts, logger, i, eval_descending=True, is_report=False):
 
     # Evaluate
     total_batches = len(eval_iter)
@@ -124,7 +39,6 @@ def case_rec_evaluate2(FLAGS, model, eval_iter, eval_dict, all_dicts, logger, i,
     model.disable_grad()
 
     results = []
-    score_dict = {}
     for u_ids in eval_iter:
         u_var = to_gpu(V(torch.LongTensor(u_ids)))
         # batch * item
@@ -132,12 +46,6 @@ def case_rec_evaluate2(FLAGS, model, eval_iter, eval_dict, all_dicts, logger, i,
         preds = zip(u_ids, scores.data.cpu().numpy())
 
         results.extend( evalRecProcess(list(preds), eval_dict, all_dicts=all_dicts, descending=eval_descending, num_processes=FLAGS.num_processes, topn=FLAGS.topn, queue_limit=FLAGS.max_queue) )
-
-        s_dict = {}
-        for pred in preds:
-            if pred[0] == 195: print('OHOOUAWE! 195\n')
-            s_dict[pred[0]] = list(pred[1])
-        score_dict.update(s_dict)
 
         pbar.update(1)
     pbar.close()
@@ -163,7 +71,7 @@ def case_rec_evaluate2(FLAGS, model, eval_iter, eval_dict, all_dicts, logger, i,
     predictions_data = ReadFile(input_file=predictions_output_filepath).read()
 
     # Creating CaseRecommender evaluator with item-recommendation parameters
-    evaluator = ItemRecommendationEvaluation()
+    evaluator = ItemRecommendationEvaluation(n_ranks=[10])
 
     # Getting evaluation
     ### print(str(predictions))
@@ -409,7 +317,7 @@ def run(only_forward=False):
                 logger,
                 eval_descending=True if trainer.model_target == 1 else False,
                 is_report=FLAGS.is_report)
-            case_rec_evaluate2(
+            case_rec_evaluate(
                 FLAGS,
                 model,
                 eval_data[0],
