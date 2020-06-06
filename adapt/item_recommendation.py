@@ -72,7 +72,7 @@ def case_rec_evaluate(FLAGS, model, eval_iter, eval_dict, all_dicts, logger, eva
             for i_id in ordered_ranks:
                 if fliter_samples is not None and i_id in fliter_samples :
                     if current_rank < topn : topn_to_skip += 1
-                        continue
+                    continue
                 u_preds[i_id] = per_scores[i_id]
 
             preds[pred[0]] = u_preds
