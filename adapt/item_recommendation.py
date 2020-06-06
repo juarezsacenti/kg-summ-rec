@@ -150,8 +150,7 @@ def case_rec_evaluate2(FLAGS, model, eval_iter, eval_dict, all_dicts, logger, i,
         top_ids = triple[1]
         #gold = triple[2]
         for i_id in top_ids:
-            i_list = score_dict[u_id]
-            score = i_list[i_id]
+            score = 1.0 / (top_ids.index(i_id) + 1)
             print_list.append((u_id, i_id, score))
     WriteFile(predictions_output_filepath, data=print_list, sep='\t').write()
 
