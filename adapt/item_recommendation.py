@@ -129,10 +129,10 @@ def case_rec_evaluate2(i, FLAGS, model, eval_iter, eval_dict, all_dicts, logger,
         # batch * item
         scores = model.evaluate(u_var)
         preds = zip(u_ids, scores.data.cpu().numpy())
+        for pred in preds:
+            score_dict[pred[0]] = pred[1]
 
         results.extend( evalRecProcess(list(preds), eval_dict, all_dicts=all_dicts, descending=eval_descending, num_processes=FLAGS.num_processes, topn=FLAGS.topn, queue_limit=FLAGS.max_queue) )
-
-        score_dict.update(dict(preds))
 
         pbar.update(1)
     pbar.close()
