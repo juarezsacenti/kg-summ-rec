@@ -163,7 +163,7 @@ def case_rec_evaluate2(FLAGS, model, eval_iter, eval_dict, all_dicts, logger, i,
     predictions_data = ReadFile(input_file=predictions_output_filepath).read()
 
     # Creating CaseRecommender evaluator with item-recommendation parameters
-    evaluator = ItemRecommendationEvaluation(sep = '\t', n_rank = [10], as_rank = True)
+    evaluator = ItemRecommendationEvaluation()
 
     # Getting evaluation
     ### print(str(predictions))
