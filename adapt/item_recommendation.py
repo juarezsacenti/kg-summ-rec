@@ -111,7 +111,7 @@ def case_rec_evaluate(FLAGS, model, eval_iter, eval_dict, all_dicts, logger, eva
     return item_rec_metrics
 
 
-def case_rec_evaluate2(i, FLAGS, model, eval_iter, eval_dict, all_dicts, logger, eval_descending=True, is_report=False):
+def case_rec_evaluate2(FLAGS, model, eval_iter, eval_dict, all_dicts, logger, i, eval_descending=True, is_report=False):
 
     # Evaluate
     total_batches = len(eval_iter)
@@ -129,10 +129,11 @@ def case_rec_evaluate2(i, FLAGS, model, eval_iter, eval_dict, all_dicts, logger,
         # batch * item
         scores = model.evaluate(u_var)
         preds = zip(u_ids, scores.data.cpu().numpy())
-        for pred in preds:
-            score_dict[pred[0]] = pred[1]
 
         results.extend( evalRecProcess(list(preds), eval_dict, all_dicts=all_dicts, descending=eval_descending, num_processes=FLAGS.num_processes, topn=FLAGS.topn, queue_limit=FLAGS.max_queue) )
+
+        for pred in preds:
+            score_dict[pred[0]] = pred[1]
 
         pbar.update(1)
     pbar.close()
@@ -406,13 +407,13 @@ def run(only_forward=False):
                 eval_descending=True if trainer.model_target == 1 else False,
                 is_report=FLAGS.is_report)
             case_rec_evaluate2(
-                i,
                 FLAGS,
                 model,
                 eval_data[0],
                 eval_data[3],
                 all_dicts,
                 logger,
+                i,
                 eval_descending=True if trainer.model_target == 1 else False,
                 is_report=FLAGS.is_report)
     else:
