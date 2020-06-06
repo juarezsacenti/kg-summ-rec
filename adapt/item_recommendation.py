@@ -142,8 +142,13 @@ def case_rec_evaluate2(i, FLAGS, model, eval_iter, eval_dict, all_dicts, logger,
     predictions_output_filepath = os.path.join(FLAGS.log_path, FLAGS.experiment_name+'_predictions.dat')
     print_list = []
     for triple in predictions:
-        for top_id in triple[1]:
-            print_list.append((triple[0], top_id, score_dict[triple[0]][top_id]))
+        u_id = triple[0]
+        top_ids = triple[1]
+        #gold = triple[2]
+        for i_id in top_ids:
+            np_arr = score_dict[u_id]
+            score = np_arr[i_id]
+            print_list.append((u_id, i_id, score))
     WriteFile(predictions_output_filepath, data=print_list, sep='\t').write()
 
     # Using CaseRecommender ReadFile class to read test_set from file
