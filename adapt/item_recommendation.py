@@ -109,7 +109,7 @@ def case_rec_evaluate(FLAGS, model, eval_iter, eval_dict, all_dicts, logger, eva
 
     model.enable_grad()
     return item_rec_metrics
-    
+
 
 def case_rec_evaluate2(i, FLAGS, model, eval_iter, eval_dict, all_dicts, logger, eval_descending=True, is_report=False):
 
@@ -137,7 +137,7 @@ def case_rec_evaluate2(i, FLAGS, model, eval_iter, eval_dict, all_dicts, logger,
         pbar.update(1)
     pbar.close()
 
-    predictions = [result[6] for result in results] # [(pred[0], top_ids, gold), ...], gold is test
+    predictions = [result[5] for result in results] # [(pred[0], top_ids, gold), ...], gold is test
 
     predictions_output_filepath = os.path.join(FLAGS.log_path, FLAGS.experiment_name+'_predictions.dat')
     print_list = []
