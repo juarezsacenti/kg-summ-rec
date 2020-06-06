@@ -134,6 +134,7 @@ def case_rec_evaluate2(FLAGS, model, eval_iter, eval_dict, all_dicts, logger, i,
 
         s_dict = {}
         for pred in preds:
+            if pred[0] == 195: print('OHOOUAWE! 195\n')
             s_dict[pred[0]] = list(pred[1])
         score_dict.update(s_dict)
 
