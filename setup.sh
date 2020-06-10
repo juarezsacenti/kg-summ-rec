@@ -39,6 +39,8 @@ cp know-rec/adapt/knowledgable_recommendation.py joint-kg-recommender/jTransUP/m
 
 git clone https://github.com/sunzhuntu/Recurrent-Knowledge-Graph-Embedding.git
 cp Recurrent-Knowledge-Graph-Embedding/data/ml/* datasets/ml1m-sun/ml1m/
+mv Recurrent-Knowledge-Graph-Embedding/recurrent-neural-network.py Recurrent-Knowledge-Graph-Embedding/recurrent-neural-network.py_ORIG
+cp know-rec/adapt/recurrent-neural-network.py Recurrent-Knowledge-Graph-Embedding/recurrent-neural-network.py
 
 # git clone https://github.com/juarezsacenti/ORBS.git
 

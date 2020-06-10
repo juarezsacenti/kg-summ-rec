@@ -16,7 +16,7 @@ from caserec.utils.process_data import ReadFile, WriteFile
 from caserec.evaluation.item_recommendation import ItemRecommendationEvaluation
 
 
-def case-rec-evaluator(test_file, predictions_file, top_score_dict):
+def case_rec_evaluator(test_file, predictions_file, top_score_dict):
         print_list = []
         for user, item_list in top_score_dict.items():
             for item in item_list:
@@ -254,7 +254,7 @@ if __name__ == '__main__':
 	print ('the duration for loading item embedding is ' + str(duration) + '\n')
 
     predictions_file = os.path.join(results_file[:-4], '_predictions.dat')
-    case-rec-evaluator(test_file, predictions_file, top_score_dict)
+    case_rec_evaluator(test_file, predictions_file, top_score_dict)
 
 	fr_postive.close()
 	fr_negative.close()

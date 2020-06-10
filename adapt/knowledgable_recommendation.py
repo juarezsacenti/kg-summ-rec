@@ -50,6 +50,7 @@ def getMappedItems(e_ids, e_remap, new_map):
         new_e_ids.append(new_index[0])
     return new_e_ids, i_ids
 
+# CUDA_VISIBLE_DEVICES=0 nohup python run_knowledgable_recommendation.py -data_path ~/git/datasets/ml1m-sun_sum4/ -log_path ~/git/results/ml1m-sun_sum4/ -rec_test_files valid.dat:test.dat -kg_test_files valid.dat:test.dat -model_type cofm -nohas_visualization -dataset ml1m -embedding_size 100 -topn 10 -seed 3 -eval_only_mode -load_experiment_name ml1m-cofm-1589557836 -load_ckpt_file ml1m-cofm-1589557836.ckpt &
 def case_rec_evaluateRec(FLAGS, model, eval_iter, eval_dict, all_dicts, i_map, logger, i, eval_descending=True, is_report=False):
     # Evaluate
     total_batches = len(eval_iter)
