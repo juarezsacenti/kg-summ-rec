@@ -253,7 +253,7 @@ if __name__ == '__main__':
 	duration = end_time - start_time
 	print ('the duration for loading item embedding is ' + str(duration) + '\n')
 
-    predictions_file = results_file[:-4] + '_pred.dat'
+    predictions_file = results_file + '_pred.dat'
     print(predictions_file)
     case_rec_evaluator(test_file, predictions_file, top_score_dict)
 
