@@ -52,7 +52,7 @@ def case_rec_evaluate(FLAGS, model, eval_iter, eval_dict, all_dicts, logger, i, 
 
     predictions = [result[5] for result in results] # [(pred[0], top_ids, gold), ...], gold is test
 
-    predictions_output_filepath = os.path.join(FLAGS.log_path, FLAGS.experiment_name+'_predictions.dat')
+    predictions_output_filepath = os.path.join(FLAGS.log_path, FLAGS.experiment_name+'_pred.dat')
     print_list = []
     for triple in predictions:
         u_id = triple[0]
