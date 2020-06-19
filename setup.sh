@@ -15,6 +15,7 @@ mkdir datasets/ml1m-sun/ml1m
 mkdir datasets/ml1m-sun2cao
 mkdir datasets/ml1m-sun2cao/ml1m
 mkdir datasets/ml1m-sun2cao/ml1m/kg
+mkdir datasets/ml1m-sun2kgat
 mkdir datasets/ml1m-sun_sum0
 mkdir datasets/ml1m-sun_sum0/ml1m
 mkdir datasets/ml1m-sun_sum0/ml1m/kg
@@ -43,6 +44,13 @@ mv Recurrent-Knowledge-Graph-Embedding/recurrent-neural-network.py Recurrent-Kno
 cp know-rec/adapt/recurrent-neural-network.py Recurrent-Knowledge-Graph-Embedding/recurrent-neural-network.py
 
 # git clone https://github.com/juarezsacenti/ORBS.git
+
+# xiangwang1223/knowledge_graph_attention_network
+git clone https://github.com/xiangwang1223/knowledge_graph_attention_network.git
+mkdir knowledge_graph_attention_network/Data/ml1m-sun2kgat
+
+# hwwang55/RippleNet
+git clone https://github.com/hwwang55/RippleNet.git
 
 ################################################################################
 ###                                 Results                                  ###
