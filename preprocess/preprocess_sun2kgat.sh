@@ -33,8 +33,8 @@ then
     sed 's/\t/ /g' ~/git/datasets/ml1m-sun2kgat/kg_final.txt
 
     mkdir ~/git/knowledge_graph_attention_network/Data/ml1m-sun2kgat/
-    ln -s ~/git/datasets/ml1m-sun2kgat/train.txt ~/git/knowledge_graph_attention_network/Data/ml1m-sun2kgat/train.txt
-    ln -s ~/git/datasets/ml1m-sun2kgat/test.txt ~/git/knowledge_graph_attention_network/Data/ml1m-sun2kgat/test.txt
+    ln -s ~/git/datasets/ml1m-sun2kgat/kgat_train.txt ~/git/knowledge_graph_attention_network/Data/ml1m-sun2kgat/train.txt
+    ln -s ~/git/datasets/ml1m-sun2kgat/kgat_test.txt ~/git/knowledge_graph_attention_network/Data/ml1m-sun2kgat/test.txt
     ln -s ~/git/datasets/ml1m-sun2kgat/kg_final.txt ~/git/knowledge_graph_attention_network/Data/ml1m-sun2kgat/kg_final.txt
 fi
 

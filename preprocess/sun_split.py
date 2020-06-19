@@ -107,6 +107,7 @@ def kgat_write(df, file_path, sep=' ', encoding='utf-8'):
         for index, row in df.iterrows():
             f.write('%s%s%s\r\n' % (row['user_id'], sep, row['movies_str']))
 
+
 if __name__ == '__main__':
 
     #print(os.getcwd())
@@ -157,9 +158,9 @@ if __name__ == '__main__':
 
     if len(frac) < 3:
         train = pd.concat([kgat_remain, kgat_sets[0]], sort=False)
-        kgat_write(train, save_path+'train.txt', sep=' ', encoding='utf-8')
-        kgat_write(kgat_sets[1], save_path+'test.txt', sep=' ', encoding='utf-8')
+        kgat_write(train, '~/git/datasets/ml1m-sun2kgat/kgat_train.txt', sep=' ', encoding='utf-8')
+        kgat_write(kgat_sets[1], '~/git/datasets/ml1m-sun2kgat/kgat_test.txt', sep=' ', encoding='utf-8')
     else:
-        kgat_write(kgat_remain, save_path+'fold0.dat', sep=' ', encoding='utf-8')
+        kgat_write(kgat_remain, '~/git/datasets/ml1m-sun2kgat/kgat_fold0.txt', sep=' ', encoding='utf-8')
         for i in range(len(kgat_sets)):
-            kgat_write(kgat_sets[i], save_path++'fold'+str(i+1)+'.dat', sep=' ', encoding='utf-8')
+            kgat_write(kgat_sets[i], '~/git/datasets/ml1m-sun2kgat/kgat_fold'+str(i+1)+'.txt', sep=' ', encoding='utf-8')
