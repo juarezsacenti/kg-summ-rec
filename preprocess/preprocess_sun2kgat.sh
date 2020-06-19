@@ -27,12 +27,13 @@ then
     wait $BACK_PID
 
     #[kg_final.txt by joining sun2cao/ train.dat, valid.dat, test.dat]
-    cat ~/git/datasets/ml1m-sun2cao/ml1m/kg/train.dat >> ~/git/datasets/ml1m-sun2kgat/kg_final.txt
-    cat ~/git/datasets/ml1m-sun2cao/ml1m/kg/valid.dat >> ~/git/datasets/ml1m-sun2kgat/kg_final.txt
-    cat ~/git/datasets/ml1m-sun2cao/ml1m/kg/test.dat >> ~/git/datasets/ml1m-sun2kgat/kg_final.txt
-    sed 's/\t/ /g' ~/git/datasets/ml1m-sun2kgat/kg_final.txt
+    cat ~/git/datasets/ml1m-sun2cao/ml1m/kg/train.dat > ~/git/datasets/ml1m-sun2kgat/kg.txt
+    cat ~/git/datasets/ml1m-sun2cao/ml1m/kg/valid.dat >> ~/git/datasets/ml1m-sun2kgat/kg.txt
+    cat ~/git/datasets/ml1m-sun2cao/ml1m/kg/test.dat >> ~/git/datasets/ml1m-sun2kgat/kg.txt
+    awk '{print $1 $3 $2}' ~/git/datasets/ml1m-sun2kgat/kg.txt > ~/git/datasets/ml1m-sun2kgat/kg_final.txt
+    rm ~/git/datasets/ml1m-sun2kgat/kg.txt
+    #sed 's/\t/ /g' ~/git/datasets/ml1m-sun2kgat/kg_final.txt
 
-    mkdir ~/git/knowledge_graph_attention_network/Data/ml1m-sun2kgat/
     ln -s ~/git/datasets/ml1m-sun2kgat/kgat_train.txt ~/git/knowledge_graph_attention_network/Data/ml1m-sun2kgat/train.txt
     ln -s ~/git/datasets/ml1m-sun2kgat/kgat_test.txt ~/git/knowledge_graph_attention_network/Data/ml1m-sun2kgat/test.txt
     ln -s ~/git/datasets/ml1m-sun2kgat/kg_final.txt ~/git/knowledge_graph_attention_network/Data/ml1m-sun2kgat/kg_final.txt
