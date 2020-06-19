@@ -89,6 +89,24 @@ def cao_format(df_remain, sets):
         cao_sets[i] = cao_sets[i].drop(columns=['timestamp'])
     return cao_remain, cao_sets
 
+def kgat_format(df_remain, sets):
+    kgat_remain = df_remain.copy()
+    kgat_remain = kgat_remain.groupby('user_id')['movie_id'].apply(list).reset_index(name='movies_list')
+    kgat_remain['movies_str'] = [' '.join(map(str, m)) for m in kgat_remain['movies_list']]
+    kgat_remain = kgat_remain.drop(columns=['movies_list'])
+    kgat_sets = []
+    for i in range(len(sets)):
+        kgat_sets.append(sets[i].copy())
+        kgat_sets[i] = kgat_sets[i].groupby('user_id')['movie_id'].apply(list).reset_index(name='movies_list')
+        kgat_sets[i]['movies_str'] = [' '.join(map(str, m)) for m in kgat_sets[i]['movies_list']]
+        kgat_sets[i] = kgat_sets[i].drop(columns=['movies_list'])
+    return kgat_remain, kgat_sets
+
+def kgat_write(df, file_path, sep=' ', encoding='utf-8'):
+    with open(file_path, 'w', newline=' ', encoding=encoding) as f:
+        for index, row in df.iterrows():
+            f.write('%s%s%s\r\n' % (row['user_id'], sep, row['movies_str']))
+
 if __name__ == '__main__':
 
     #print(os.getcwd())
@@ -134,3 +152,14 @@ if __name__ == '__main__':
         sun_remain.to_csv(save_path+'sun_fold0.txt', sep='\t', header=False, encoding='utf-8', index=False)
         for i in range(len(sun_sets)):
             sun_sets[i].to_csv(save_path+'sun_fold'+str(i+1)+'.txt', sep='\t', header=False, encoding='utf-8', index=False)
+
+    kgat_remain, kgat_sets = kgat_format(df_remain, sets)
+
+    if len(frac) < 3:
+        train = pd.concat([kgat_remain, kgat_sets[0]], sort=False)
+        kgat_write(train, save_path+'train.txt', sep=' ', encoding='utf-8')
+        kgat_write(kgat_sets[1], save_path+'test.txt', sep=' ', encoding='utf-8')
+    else:
+        kgat_write(kgat_remain, save_path+'fold0.dat', sep=' ', encoding='utf-8')
+        for i in range(len(kgat_sets)):
+            kgat_write(kgat_sets[i], save_path++'fold'+str(i+1)+'.dat', sep=' ', encoding='utf-8')
