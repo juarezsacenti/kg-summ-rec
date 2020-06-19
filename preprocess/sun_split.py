@@ -103,7 +103,7 @@ def kgat_format(df_remain, sets):
     return kgat_remain, kgat_sets
 
 def kgat_write(df, file_path, sep=' ', encoding='utf-8'):
-    with open(file_path, 'w', newline=' ', encoding=encoding) as f:
+    with open(file_path, 'w', encoding=encoding) as f:
         for index, row in df.iterrows():
             f.write('%s%s%s\r\n' % (row['user_id'], sep, row['movies_str']))
 
