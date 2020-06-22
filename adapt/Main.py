@@ -15,7 +15,6 @@ from CFKG import CFKG
 from NFM import NFM
 from KGAT import KGAT
 
-
 import os
 import sys
 os.environ['TF_CPP_MIN_LOG_LEVEL']='2'
@@ -23,7 +22,7 @@ os.environ['TF_CPP_MIN_LOG_LEVEL']='2'
 from caserec.utils.process_data import ReadFile, WriteFile
 from caserec.evaluation.item_recommendation import ItemRecommendationEvaluation
 
-
+# inspired on function test in utility/batch_test.py
 def case_rec_evaluation(sess, model, users_to_test, drop_flag=False, batch_test_flag=False):
     ### Added:
     predictions_output_filepath = '../Data/ml1m-sun2kgat/kgat_pred.txt'
@@ -91,10 +90,10 @@ def case_rec_evaluation(sess, model, users_to_test, drop_flag=False, batch_test_
             rate_batch = rate_batch.reshape((-1, len(item_batch)))
 
         user_batch_rating_uid = zip(rate_batch, user_batch)
-        ### Removed:
-        ### batch_result = pool.map(test_one_user, user_batch_rating_uid)
+        ### Removed: from function: test in utility/batch_test.py
+        ## batch_result = pool.map(test_one_user, user_batch_rating_uid)
         ### Removed-
-        ### Added:
+        ### Added: from function test_one_user in utility/batch_test.py:
         print_list = []
         for rating, u in user_batch_rating_uid:
             try:
@@ -120,19 +119,19 @@ def case_rec_evaluation(sess, model, users_to_test, drop_flag=False, batch_test_
                 print_list.append((u, i, score))
 
         WriteFile(predictions_output_filepath, data=print_list, sep='\t').write()
+
         ### Added-
-        count += len(batch_result)
-
-        for re in batch_result:
-            result['precision'] += re['precision']/n_test_users
-            result['recall'] += re['recall']/n_test_users
-            result['ndcg'] += re['ndcg']/n_test_users
-            result['hit_ratio'] += re['hit_ratio']/n_test_users
-            result['auc'] += re['auc']/n_test_users
-
-
-    assert count == n_test_users
     ### Removed:
+    ###    count += len(batch_result)
+
+    ###for re in batch_result: result['precision'] +=
+    ###    re['precision']/n_test_users result['recall'] +=
+    ###    re['recall']/n_test_users result['ndcg'] += re['ndcg']/n_test_users
+    ###    result['hit_ratio'] += re['hit_ratio']/n_test_users result['auc'] +=
+    ###    re['auc']/n_test_users
+
+    ###assert count == n_test_users
+
     ### pool.close()
     ### Removed:
 
