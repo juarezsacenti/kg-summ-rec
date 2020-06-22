@@ -1,0 +1,22 @@
+# sudo docker build -t know-rec:know-rec  .
+FROM nvcr.io/nvidia/pytorch:20.03-py3
+
+# 1. Download project
+RUN git clone https://github.com/xiangwang1223/knowledge_graph_attention_network.git
+
+# 2. Unzip data
+RUN cd knowledge_graph_attention_network/Data/amazon-book/
+RUN unzip kg_final.txt.zip
+
+# 2. Install dependencies
+RUN conda install numpy=1.15.4
+RUN conda install scipy=1.1.0
+RUN conda install scikit-learn=0.20.0
+#RUN conda install tensorflow-gpu=1.12.0
+RUN conda install tensorflow=1.12.0
+
+################################################################################
+#                                     RUNS                                     #
+################################################################################
+RUN cd ../../Model/
+RUN python Main.py --model_type kgat --alg_type bi --dataset amazon-book --regs [1e-5,1e-5] --layer_size [64,32,16] --embed_size 64 --lr 0.0001 --epoch 1 --verbose 50 --save_flag 1 --pretrain -1 --batch_size 1024 --node_dropout [0.1] --mess_dropout [0.1,0.1,0.1] --use_att True --use_kge True

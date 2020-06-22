@@ -1,0 +1,34 @@
+# sudo docker build -t know-rec
+FROM nvcr.io/nvidia/pytorch:20.03-py3
+RUN mkdir git/
+RUN cd git
+RUN git clone https://juarezsacenti:T1Zzh%2F9%3B@github.com/juarezsacenti/know-rec.git
+
+# ... actually using know-rec
+# 1. Run setup script
+RUN ls
+RUN cd git/know-rec
+RUN bash setup.sh
+
+# 2. Download Cao's datasets
+RUN cd ../datasets
+RUN wget --no-check-certificate 'https://docs.google.com/uc?export=download&id=1FIbaWzP6AWUNG2-8q6SKQ3b9yTiiLvGW' -O datasets.zip
+RUN unzip datasets.zip
+
+# 3. Move Cao's ml1m data to ~/git/datasets/ml1m-cao
+RUN mv datasets的副本/ml1m/kg/*.* ../datasets/ml1m-cao/ml1m/kg/
+RUN mv datasets的副本/ml1m/*.* ../datasets/ml1m-cao/ml1m/
+
+# 4. and 5. Cuda and Conda are already installed
+# 6. Create python environment for each project
+RUN cd ../know-rec
+RUN bash util/create_envs.sh
+
+################################################################################
+#                                     RUNS                                     #
+################################################################################
+RUN cd preprocess/
+RUN bash preprocess_crossvalid.sh
+
+RUN cd ../run/
+RUN bash -i run_ml1m-crossvalid.sh

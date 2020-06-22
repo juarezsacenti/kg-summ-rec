@@ -1,0 +1,53 @@
+# sudo docker build --build-arg SSH_PRIVATE_KEY="./id_rsa_colab_ssh.ppk" -t know-rec:know-rec  .
+# this is our first build stage, it will not persist in the final image
+FROM ubuntu as intermediate
+
+# install git
+RUN apt-get update
+RUN apt-get install -y git
+
+# add credentials on build
+ARG SSH_PRIVATE_KEY
+RUN mkdir /root/.ssh/
+RUN echo "${SSH_PRIVATE_KEY}" > /root/.ssh/id_rsa
+
+# make sure your domain is accepted
+RUN touch /root/.ssh/known_hosts
+RUN ssh-keyscan github.com >> /root/.ssh/known_hosts
+
+RUN git clone git@github.com:juarezsacenti/know-rec.git
+
+# this is our second build stage, it will persist in the final image
+FROM nvcr.io/nvidia/pytorch:20.03-py3
+# copy the repository form the previous image
+RUN mkdir git/
+COPY --from=intermediate /know-rec /srv/git/know-rec
+
+# ... actually using know-rec
+# 1. Run setup script
+RUN ls
+RUN cd git/know-rec
+RUN bash setup.sh
+
+# 2. Download Cao's datasets
+RUN cd ../datasets
+RUN wget --no-check-certificate 'https://docs.google.com/uc?export=download&id=1FIbaWzP6AWUNG2-8q6SKQ3b9yTiiLvGW' -O datasets.zip
+RUN unzip datasets.zip
+
+# 3. Move Cao's ml1m data to ~/git/datasets/ml1m-cao
+RUN mv datasets的副本/ml1m/kg/*.* ../datasets/ml1m-cao/ml1m/kg/
+RUN mv datasets的副本/ml1m/*.* ../datasets/ml1m-cao/ml1m/
+
+# 4. and 5. Cuda and Conda are already installed
+# 6. Create python environment for each project
+RUN cd ../know-rec
+RUN bash util/create_envs.sh
+
+################################################################################
+#                                     RUNS                                     #
+################################################################################
+RUN cd preprocess/
+RUN bash preprocess_crossvalid.sh
+
+RUN cd ../run/
+RUN bash -i run_ml1m-crossvalid.sh
