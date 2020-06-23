@@ -121,13 +121,13 @@ def case_rec_evaluation(sess, model, users_to_test, drop_flag=False, batch_test_
 
         WriteFile(preds_output_filepath, data=print_preds, sep='\t').write()
 
-        for u in user_batch_rating_uid:
+        for rating, u in user_batch_rating_uid:
             #user u's items in the test set
             user_pos_test = data_generator.test_user_dict[u]
             for i in user_pos_test:
-                print_tests.append((u, i, 1))
+                print_tests.append((u, i))
 
-        WriteFile(test_output_filepath, data=print_tests, sep='\t').write()
+        WriteFile(test_output_filepath, data=print_tests, sep='\t', as_binary=True).write()
 
         ### Added-
     ### Removed:
