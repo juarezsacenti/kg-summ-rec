@@ -25,7 +25,8 @@ from caserec.evaluation.item_recommendation import ItemRecommendationEvaluation
 # inspired on function test in utility/batch_test.py
 def case_rec_evaluation(sess, model, users_to_test, drop_flag=False, batch_test_flag=False):
     ### Added:
-    predictions_output_filepath = '../Data/ml1m-sun2kgat/kgat_pred.txt'
+    preds_output_filepath = '../Data/ml1m-sun2kgat/kgat_pred.txt'
+    test_output_filepath = '../Data/ml1m-sun2kgat/kgat_test.txt'
     ### Added-
     result = {'precision': np.zeros(len(Ks)), 'recall': np.zeros(len(Ks)), 'ndcg': np.zeros(len(Ks)),
               'hit_ratio': np.zeros(len(Ks)), 'auc': 0.}
@@ -94,7 +95,8 @@ def case_rec_evaluation(sess, model, users_to_test, drop_flag=False, batch_test_
         ## batch_result = pool.map(test_one_user, user_batch_rating_uid)
         ### Removed-
         ### Added: from function test_one_user in utility/batch_test.py:
-        print_list = []
+        print_preds = []
+        print_tests = []
         for rating, u in user_batch_rating_uid:
             try:
                 training_items = data_generator.train_user_dict[u]
@@ -116,9 +118,13 @@ def case_rec_evaluation(sess, model, users_to_test, drop_flag=False, batch_test_
 
             for i in K_max_item_score:
                 score = item_score[i]
-                print_list.append((u, i, score))
+                print_preds.append((u, i, score))
 
-        WriteFile(predictions_output_filepath, data=print_list, sep='\t').write()
+            for i in user_pos_test:
+                print_tests.append((u, i, 1.0))
+
+        WriteFile(preds_output_filepath, data=print_preds, sep='\t').write()
+        WriteFile(test_output_filepath, data=print_tests, sep='\t').write()
 
         ### Added-
     ### Removed:
@@ -136,9 +142,8 @@ def case_rec_evaluation(sess, model, users_to_test, drop_flag=False, batch_test_
     ### Removed:
 
     # Using CaseRecommender ReadFile class to read test_set from file
-    test_path = '../Data/ml1m-sun2kgat/kgat_test.dat'
-    eval_data = ReadFile(input_file=test_path).read()
-    predictions_data = ReadFile(input_file=predictions_output_filepath).read()
+    eval_data = ReadFile(input_file=test_output_filepath, as_binary=True).read()
+    predictions_data = ReadFile(input_file=preds_output_filepath).read()
 
     # Creating CaseRecommender evaluator with item-recommendation parameters
     evaluator = ItemRecommendationEvaluation(n_ranks=[10])
