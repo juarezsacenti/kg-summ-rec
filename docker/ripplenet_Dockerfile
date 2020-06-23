@@ -3,6 +3,8 @@
 FROM nvidia/cuda:8.0-cudnn5-runtime-ubuntu16.04
 
 # 1. Download project
+sudo apt-get update
+sudo apt-get install git-all
 RUN git clone https://github.com/hwwang55/RippleNet.git
 
 # 2. Unzip data
