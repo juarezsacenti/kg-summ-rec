@@ -1,0 +1,23 @@
+# sudo docker build -t rippelnet:ripplenet  .
+#FROM nvcr.io/nvidia/pytorch:20.03-py3
+FROM nvidia/nvidia/cuda:8.0-cudnn5-runtime-ubuntu16.04
+
+# 1. Download project
+RUN git clone https://github.com/hwwang55/RippleNet.git
+
+# 2. Unzip data
+RUN wget -O cuda_8.0_linux.run https://developer.nvidia.com/compute/cuda/8.0/Prod2/local_installers/cuda_8.0.61_375.26_linux-run
+RUN chmod +x cuda_8.0_linux.run
+RUN sudo sh cuda_8.0_linux.run --silent --toolkit --toolkitpath=/usr/local/cuda-8.0
+
+# 3. Install dependencies
+RUN conda install numpy=1.14.5
+RUN conda install scikit-learn=0.19.1
+RUN pip install tensorflow-gpu==1.4.0
+
+################################################################################
+#                                     RUNS                                     #
+################################################################################
+RUN cd src
+RUN python preprocess.py --dataset movie #(or --dataset book)
+RUN python main.py --dataset movie #(note: use -h to check optional arguments)
