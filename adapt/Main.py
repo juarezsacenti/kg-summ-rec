@@ -95,6 +95,7 @@ def case_rec_evaluation(sess, model, users_to_test, drop_flag=False, batch_test_
         ## batch_result = pool.map(test_one_user, user_batch_rating_uid)
         ### Removed-
         ### Added: from function test_one_user in utility/batch_test.py:
+
         print_preds = []
         print_tests = []
         for rating, u in user_batch_rating_uid:
@@ -102,8 +103,6 @@ def case_rec_evaluation(sess, model, users_to_test, drop_flag=False, batch_test_
                 training_items = data_generator.train_user_dict[u]
             except Exception:
                 training_items = []
-            #user u's items in the test set
-            user_pos_test = data_generator.test_user_dict[u]
 
             all_items = set(range(data_generator.n_items))
 
@@ -120,10 +119,14 @@ def case_rec_evaluation(sess, model, users_to_test, drop_flag=False, batch_test_
                 score = item_score[i]
                 print_preds.append((u, i, score))
 
-            for i in user_pos_test:
-                print_tests.append((u, i, 1.0))
-
         WriteFile(preds_output_filepath, data=print_preds, sep='\t').write()
+
+        for u in user_batch_rating_uid:
+            #user u's items in the test set
+            user_pos_test = data_generator.test_user_dict[u]
+            for i in user_pos_test:
+                print_tests.append((u, i, 1))
+
         WriteFile(test_output_filepath, data=print_tests, sep='\t').write()
 
         ### Added-
