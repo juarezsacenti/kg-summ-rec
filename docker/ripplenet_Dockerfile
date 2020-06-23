@@ -1,6 +1,6 @@
 # sudo docker build -t rippelnet:ripplenet  .
 #FROM nvcr.io/nvidia/pytorch:20.03-py3
-FROM nvidia/nvidia/cuda:8.0-cudnn5-runtime-ubuntu16.04
+FROM nvidia/cuda:8.0-cudnn5-runtime-ubuntu16.04
 
 # 1. Download project
 RUN git clone https://github.com/hwwang55/RippleNet.git
