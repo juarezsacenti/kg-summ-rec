@@ -59,7 +59,7 @@ def case_rec_evaluation(sess, model, users_to_test, drop_flag=False, batch_test_
 
         user_batch = test_users[start: end]
 
-        if batch_test_flag:
+#        if batch_test_flag:
 
 #            n_item_batchs = ITEM_NUM // i_batch_size + 1
 #            rate_batch = np.zeros(shape=(len(user_batch), ITEM_NUM))
@@ -83,14 +83,14 @@ def case_rec_evaluation(sess, model, users_to_test, drop_flag=False, batch_test_
 #
 #            assert i_count == ITEM_NUM
 
-        else:
-            item_batch = range(ITEM_NUM)
-            feed_dict = data_generator.generate_test_feed_dict(model=model,
-                                                               user_batch=user_batch,
-                                                               item_batch=item_batch,
-                                                               drop_flag=drop_flag)
-            rate_batch = model.eval(sess, feed_dict=feed_dict)
-            rate_batch = rate_batch.reshape((-1, len(item_batch)))
+#        else:
+        item_batch = range(ITEM_NUM)
+        feed_dict = data_generator.generate_test_feed_dict(model=model,
+                                                           user_batch=user_batch,
+                                                           item_batch=item_batch,
+                                                           drop_flag=drop_flag)
+        rate_batch = model.eval(sess, feed_dict=feed_dict)
+        rate_batch = rate_batch.reshape((-1, len(item_batch)))
 
         user_batch_rating_uid = zip(rate_batch, user_batch)
         ### Removed: from function: test in utility/batch_test.py
