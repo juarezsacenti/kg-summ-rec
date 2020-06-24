@@ -496,5 +496,5 @@ if __name__ == '__main__':
 
     ### Added:
     users_to_test = list(data_generator.test_user_dict.keys())
-    case_rec_evaluation(sess, model, users_to_test, drop_flag=False, batch_test_flag=batch_test_flag)
+    case_rec_evaluation(sess, model, users_to_test, drop_flag=False, batch_test_flag=False)
     ### Added-
