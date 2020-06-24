@@ -36,6 +36,8 @@ if __name__ == '__main__':
     output_file = parsed_args.output_file
     output_format = parsed_args.output_format
 
+    user_dict = dict()
+
     if input_format == 'kgat':
         user_dict = load_kgat_data(file_name)
 
