@@ -23,7 +23,7 @@ from caserec.utils.process_data import ReadFile, WriteFile
 from caserec.evaluation.item_recommendation import ItemRecommendationEvaluation
 
 # inspired on function test in utility/batch_test.py
-def case_rec_evaluation(sess, model, users_to_test, drop_flag=False, batch_test_flag=False, Ks):
+def case_rec_evaluation(sess, model, users_to_test, Ks, drop_flag=False, batch_test_flag=False):
     batch_test_flag=False
     ### Added:
     preds_output_filepath = '../Data/ml1m-sun2kgat/kgat_pred.txt'
@@ -496,5 +496,5 @@ if __name__ == '__main__':
 
     ### Added:
     users_to_test = list(data_generator.test_user_dict.keys())
-    case_rec_evaluation(sess, model, users_to_test, drop_flag=False, batch_test_flag=False, eval(args.Ks))
+    case_rec_evaluation(sess, model, users_to_test, eval(args.Ks), drop_flag=False, batch_test_flag=False)
     ### Added-
