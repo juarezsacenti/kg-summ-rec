@@ -5,9 +5,9 @@ FROM tensorflow/tensorflow:1.4.0-gpu
 #ENV PATH="/root/anaconda3/bin:${PATH}"
 #ARG PATH="/root/anaconda3/bin:${PATH}"
 
-#RUN apt-get update
+RUN apt-get update
 #RUN apt-get install -y wget
-#RUN apt-get install -y git
+RUN apt-get install -y git
 #RUN apt-get install -y python3-pip
 
 # 1. Download project
