@@ -1,10 +1,10 @@
 import argparse
 from caserec.utils.process_data import WriteFile
 
-def load_kgat_data(file_name):
+def load_kgat_data(input_file):
     user_dict = dict()
 
-    lines = open(file_name, 'r').readlines()
+    lines = open(input_file, 'r').readlines()
     for l in lines:
         tmps = l.strip()
         ids = [int(i) for i in tmps.split(' ')]
@@ -17,16 +17,21 @@ def load_kgat_data(file_name):
 
     return user_dict
 
-def save_case_rec_data(file_name, data=user_dict):
-    WriteFile(file_name, data=user_dict, sep='\t', mode='w', as_binary=False).write_with_dict()
+
+def save_case_rec_data(output_file, user_dict):
+#    WriteFile(file_name, data=user_dict, sep='\t', mode='w', as_binary=False).write_with_dict()
+    with open(output_file, 'w') as infile:
+        for user in user_dict:
+            for item in user_dict[user]:
+                infile.write('%d%s%d%s%f\n' % (user, self.sep, item, self.sep, user_dict[user][item]))
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=''' Selecting folds' roles (train, valid, test)''')
 
-    parser.add_argument('--input_file', type=str, dest='input_file', default='../../git/knowledge_graph_attention_network/Data/ml1m-sun2kgat/test.txt')
+    parser.add_argument('--input_file', type=str, dest='input_file', default='../../knowledge_graph_attention_network/Data/ml1m-sun2kgat/test.txt')
     parser.add_argument('--input_format', type=str, dest='input_format', default='kgat')
-    parser.add_argument('--output_file', type=str, dest='output_file', default='../../git/knowledge_graph_attention_network/Data/ml1m-sun2kgat/case_rec_test.txt')
+    parser.add_argument('--output_file', type=str, dest='output_file', default='../../knowledge_graph_attention_network/Data/ml1m-sun2kgat/case_rec_test.txt')
     parser.add_argument('--output_format', type=str, dest='output_format', default='case_rec')
 
     parsed_args = parser.parse_args()
@@ -39,7 +44,7 @@ if __name__ == '__main__':
     user_dict = dict()
 
     if input_format == 'kgat':
-        user_dict = load_kgat_data(file_name)
+        user_dict = load_kgat_data(input_file)
 
     if output_format == 'case_rec':
-        save_case_rec_data(output_file, data=user_dict)
+        save_case_rec_data(output_file, user_dict)
