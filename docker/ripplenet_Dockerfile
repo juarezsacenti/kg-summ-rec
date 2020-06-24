@@ -1,33 +1,33 @@
 # sudo docker build -t rippelnet:ripplenet  .
 #FROM nvcr.io/nvidia/pytorch:20.03-py3
-FROM nvidia/cuda:8.0-cudnn5-runtime-ubuntu16.04
-ENV PATH="/root/anaconda3/bin:${PATH}"
-ARG PATH="/root/anaconda3/bin:${PATH}"
+#FROM nvidia/cuda:8.0-cudnn5-runtime-ubuntu16.04
+FROM tensorflow/tensorflow:1.4.0-gpu
+#ENV PATH="/root/anaconda3/bin:${PATH}"
+#ARG PATH="/root/anaconda3/bin:${PATH}"
 
-RUN apt-get update
-RUN apt-get install -y wget
-RUN apt-get install -y git
-
+#RUN apt-get update
+#RUN apt-get install -y wget
+#RUN apt-get install -y git
+#RUN apt-get install -y python3-pip
 
 # 1. Download project
 RUN git clone https://github.com/hwwang55/RippleNet.git
 
 # 2. Install dependencies
-RUN wget \
-    https://repo.anaconda.com/archive/Anaconda3-2020.02-Linux-x86_64.sh \
-    && mkdir /root/.conda \
-    && bash Anaconda3-2020.02-Linux-x86_64.sh -b \
-    && rm -f Anaconda3-2020.02-Linux-x86_64.sh
+#RUN wget \
+#    https://repo.anaconda.com/archive/Anaconda3-2020.02-Linux-x86_64.sh \
+#    && mkdir /root/.conda \
+#    && bash Anaconda3-2020.02-Linux-x86_64.sh -b \
+#    && rm -f Anaconda3-2020.02-Linux-x86_64.sh
+#RUN conda update -n base -c defaults conda
+#RUN conda install numpy=1.14.5
+#RUN conda install scikit-learn=0.19.1
 
-RUN conda update -n base -c defaults conda
-
-RUN conda install numpy=1.14.5
-RUN conda install scikit-learn=0.19.1
-RUN pip install tensorflow-gpu==1.4.0
+#RUN pip3 install tensorflow-gpu==1.4.0
 
 ################################################################################
 #                                     RUNS                                     #
 ################################################################################
-RUN cd src
-RUN python preprocess.py --dataset movie #(or --dataset book)
-RUN python main.py --dataset movie #(note: use -h to check optional arguments)
+RUN cd RippleNet/src \
+    && python3 preprocess.py --dataset movie #(or --dataset book)
+    && python3 main.py --dataset movie #(note: use -h to check optional arguments)
