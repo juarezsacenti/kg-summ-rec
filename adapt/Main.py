@@ -24,6 +24,7 @@ from caserec.evaluation.item_recommendation import ItemRecommendationEvaluation
 
 # inspired on function test in utility/batch_test.py
 def case_rec_evaluation(sess, model, users_to_test, drop_flag=False, batch_test_flag=False):
+    batch_test_flag=False
     ### Added:
     preds_output_filepath = '../Data/ml1m-sun2kgat/kgat_pred.txt'
     test_output_filepath = '../Data/ml1m-sun2kgat/case_rec_test.txt'
@@ -51,6 +52,7 @@ def case_rec_evaluation(sess, model, users_to_test, drop_flag=False, batch_test_
 
     count = 0
 
+    print_preds = []
     for u_batch_id in range(n_user_batchs):
         start = u_batch_id * u_batch_size
         end = (u_batch_id + 1) * u_batch_size
@@ -59,27 +61,27 @@ def case_rec_evaluation(sess, model, users_to_test, drop_flag=False, batch_test_
 
         if batch_test_flag:
 
-            n_item_batchs = ITEM_NUM // i_batch_size + 1
-            rate_batch = np.zeros(shape=(len(user_batch), ITEM_NUM))
-
-            i_count = 0
-            for i_batch_id in range(n_item_batchs):
-                i_start = i_batch_id * i_batch_size
-                i_end = min((i_batch_id + 1) * i_batch_size, ITEM_NUM)
-
-                item_batch = range(i_start, i_end)
-
-                feed_dict = data_generator.generate_test_feed_dict(model=model,
-                                                                   user_batch=user_batch,
-                                                                   item_batch=item_batch,
-                                                                   drop_flag=drop_flag)
-                i_rate_batch = model.eval(sess, feed_dict=feed_dict)
-                i_rate_batch = i_rate_batch.reshape((-1, len(item_batch)))
-
-                rate_batch[:, i_start: i_end] = i_rate_batch
-                i_count += i_rate_batch.shape[1]
-
-            assert i_count == ITEM_NUM
+#            n_item_batchs = ITEM_NUM // i_batch_size + 1
+#            rate_batch = np.zeros(shape=(len(user_batch), ITEM_NUM))
+#
+#            i_count = 0
+#            for i_batch_id in range(n_item_batchs):
+#                i_start = i_batch_id * i_batch_size
+#                i_end = min((i_batch_id + 1) * i_batch_size, ITEM_NUM)
+#
+#                item_batch = range(i_start, i_end)
+#
+#                feed_dict = data_generator.generate_test_feed_dict(model=model,
+#                                                                   user_batch=user_batch,
+#                                                                   item_batch=item_batch,
+#                                                                   drop_flag=drop_flag)
+#                i_rate_batch = model.eval(sess, feed_dict=feed_dict)
+#                i_rate_batch = i_rate_batch.reshape((-1, len(item_batch)))
+#
+#                rate_batch[:, i_start: i_end] = i_rate_batch
+#                i_count += i_rate_batch.shape[1]
+#
+#            assert i_count == ITEM_NUM
 
         else:
             item_batch = range(ITEM_NUM)
@@ -96,8 +98,6 @@ def case_rec_evaluation(sess, model, users_to_test, drop_flag=False, batch_test_
         ### Removed-
         ### Added: from function test_one_user in utility/batch_test.py:
 
-        print_preds = []
-        print_tests = []
         for rating, u in user_batch_rating_uid:
             try:
                 training_items = data_generator.train_user_dict[u]
@@ -119,7 +119,7 @@ def case_rec_evaluation(sess, model, users_to_test, drop_flag=False, batch_test_
                 score = item_score[i]
                 print_preds.append((u, i, score))
 
-        WriteFile(preds_output_filepath, data=print_preds, sep='\t').write()
+    WriteFile(preds_output_filepath, data=print_preds, sep='\t').write()
 
         #for rating, u in user_batch_rating_uid:
         #    #user u's items in the test set
