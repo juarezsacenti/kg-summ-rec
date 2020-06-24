@@ -20,10 +20,11 @@ def load_kgat_data(input_file):
 
 def save_case_rec_data(output_file, user_dict):
 #    WriteFile(file_name, data=user_dict, sep='\t', mode='w', as_binary=False).write_with_dict()
+    sep='\t'
     with open(output_file, 'w') as infile:
         for user in user_dict:
             for item in user_dict[user]:
-                infile.write('%d%s%d%s%f\n' % (user, self.sep, item, self.sep, user_dict[user][item]))
+                infile.write('%d%s%d%s%f\n' % (user, sep, item, sep, user_dict[user][item]))
 
 
 if __name__ == '__main__':
