@@ -28,7 +28,7 @@ def save_case_rec_data(output_file, user_dict):
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description=''' Selecting folds' roles (train, valid, test)''')
+    parser = argparse.ArgumentParser(description=''' Converting file formats ''')
 
     parser.add_argument('--input_file', type=str, dest='input_file', default='../../knowledge_graph_attention_network/Data/ml1m-sun2kgat/test.txt')
     parser.add_argument('--input_format', type=str, dest='input_format', default='kgat')
@@ -46,6 +46,7 @@ if __name__ == '__main__':
 
     if input_format == 'kgat':
         user_dict = load_kgat_data(input_file)
+        print(len(user_dict))
 
     if output_format == 'case_rec':
         save_case_rec_data(output_file, user_dict)
