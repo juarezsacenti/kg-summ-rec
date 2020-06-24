@@ -26,7 +26,7 @@ from caserec.evaluation.item_recommendation import ItemRecommendationEvaluation
 def case_rec_evaluation(sess, model, users_to_test, drop_flag=False, batch_test_flag=False):
     ### Added:
     preds_output_filepath = '../Data/ml1m-sun2kgat/kgat_pred.txt'
-    test_output_filepath = '../Data/ml1m-sun2kgat/kgat_test.txt'
+    test_output_filepath = '../Data/ml1m-sun2kgat/case_rec_test.txt'
     ### Added-
     result = {'precision': np.zeros(len(Ks)), 'recall': np.zeros(len(Ks)), 'ndcg': np.zeros(len(Ks)),
               'hit_ratio': np.zeros(len(Ks)), 'auc': 0.}
@@ -121,13 +121,13 @@ def case_rec_evaluation(sess, model, users_to_test, drop_flag=False, batch_test_
 
         WriteFile(preds_output_filepath, data=print_preds, sep='\t').write()
 
-        for rating, u in user_batch_rating_uid:
-            #user u's items in the test set
-            user_pos_test = data_generator.test_user_dict[u]
-            for i in user_pos_test:
-                print_tests.append((u, i))
-
-        WriteFile(test_output_filepath, data=print_tests, sep='\t', as_binary=True).write()
+        #for rating, u in user_batch_rating_uid:
+        #    #user u's items in the test set
+        #    user_pos_test = data_generator.test_user_dict[u]
+        #    for i in user_pos_test:
+        #        print_tests.append((u, i))
+        #
+        #WriteFile(test_output_filepath, data=print_tests, sep='\t', as_binary=True).write()
 
         ### Added-
     ### Removed:
