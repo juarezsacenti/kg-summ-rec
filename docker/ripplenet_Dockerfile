@@ -1,31 +1,28 @@
-# sudo docker build -t rippelnet:ripplenet  .
-#FROM nvcr.io/nvidia/pytorch:20.03-py3
-#FROM nvidia/cuda:8.0-cudnn5-runtime-ubuntu16.04
-FROM tensorflow/tensorflow:1.4.0-gpu
-ENV PATH="/root/anaconda3/bin:${PATH}"
-ARG PATH="/root/anaconda3/bin:${PATH}"
+### BUILD:  docker build -t ripplenet:1.0 .
+### RUN:    docker run --rm -it --gpus all ripplenet:1.0 $CMD
 
+FROM tensorflow/tensorflow:1.4.0-gpu-py3
+# CONTENT
+# python=3.5.2
+# numpy=1.13.3
+# scipy=1.0.0
+# tensorflow-gpu=1.4.0
+
+# 1. Install git
 RUN apt-get update
 RUN apt-get install -y git
-RUN apt-get install -y wget
 
-# 1. Download project
+# 2. Download project
 RUN git clone https://github.com/hwwang55/RippleNet.git
 
-# 2. Install dependencies
-RUN wget \
-    https://repo.anaconda.com/archive/Anaconda3-2020.02-Linux-x86_64.sh \
-    && mkdir /root/.conda \
-    && bash Anaconda3-2020.02-Linux-x86_64.sh -b \
-    && rm -f Anaconda3-2020.02-Linux-x86_64.sh
-RUN conda update -n base -c defaults conda
-RUN conda install numpy=1.14.5
-RUN conda install scikit-learn=0.19.1
+# 3. Adapt to CaseRecommender
+RUN pip install -U git+git://github.com/caserec/CaseRecommender.git
+RUN mv RippleNet/src/train.py RippleNet/src/train.py_ORIG
+RUN ls -la
+COPY train.py /user/home/RippleNet/src/train.py
 
-################################################################################
-#                                     RUNS                                     #
-################################################################################
-RUN cd RippleNet/src \
+# 4. Run application
+# or --dataset book, use -h to check optional arguments in main.py
+CMD cd RippleNet/src \
     && python3 preprocess.py --dataset movie \
     && python3 main.py --dataset movie
-# (or --dataset book)(note: use -h to check optional arguments)
