@@ -21,10 +21,10 @@ def case_rec_evaluation(sess, args, model, data, ripple_set, batch_size):
     while start < data.shape[0]:
         feed_dict = get_feed_dict(args, model, data, ripple_set, start, start + batch_size)
         labels, scores = sess.run([model.labels, model.scores_normalized], feed_dict)
-        for u, u_scores in enumerate(scores):
-            print('%d\t:%s'% (u,str(u_scores)))
-            for i, score in enumerate(u_scores):
-                print_preds.append((u_map[start+u], i_map[i], score))
+        print('len_scores:%d\tlen_items:%s'% (len(scores),len(feed_dict[model.items])))
+        #for u, u_scores in enumerate(scores):
+        #    for i, score in enumerate(u_scores):
+        #        print_preds.append((u_map[start+u], i_map[i], score))
         start += batch_size
     WriteFile(predictions_output_filepath, data=print_preds, sep='\t').write()
 
