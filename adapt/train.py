@@ -22,7 +22,7 @@ def case_rec_evaluation(sess, args, model, data, ripple_set, batch_size):
         feed_dict = get_feed_dict(args, model, data, ripple_set, start, start + batch_size)
         labels, scores = sess.run([model.labels, model.scores_normalized], feed_dict)
         for u, u_scores in enumerate(scores):
-            print('%d\t:%s'%u,str(u_scores))
+            print('%d\t:%s'% (u,str(u_scores)))
             for i, score in enumerate(u_scores):
                 print_preds.append((u_map[start+u], i_map[i], score))
         start += batch_size
