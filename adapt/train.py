@@ -10,8 +10,8 @@ from caserec.evaluation.item_recommendation import ItemRecommendationEvaluation
 
 ### +Added Functions
 def case_rec_evaluation(sess, args, model, data, ripple_set, batch_size):
-    predictions_output_filepath = './ripplenet_pred.dat'
-    test_path = './ripplenet_test.dat'
+    predictions_output_filepath = '../data/' + args.dataset + '/ripplenet_preds.dat'
+    test_output_filepath = '../data/' + args.dataset + '/ripplenet_tests.dat'
 
     i_map = load_dict('../data/' + args.dataset + '/i_map.txt')
     u_map = load_dict('../data/' + args.dataset + '/i_map.txt')
@@ -28,12 +28,14 @@ def case_rec_evaluation(sess, args, model, data, ripple_set, batch_size):
         start += batch_size
     WriteFile(predictions_output_filepath, data=print_preds, sep='\t').write()
 
+    print_tests = []
     for u, u_data in enumerate(data):
         for i, score in enumerate(u_data):
-            print_preds.append((u_map[start+u], i_map[i], score))
+            print_tests.append((u_map[start+u], i_map[i], score))
+    WriteFile(test_output_filepath, data=print_tests, sep='\t').write()
 
     # Using CaseRecommender ReadFile class to read test_set from file
-    eval_data = ReadFile(input_file=test_path).read()
+    eval_data = ReadFile(input_file=test_output_filepath).read()
     predictions_data = ReadFile(input_file=predictions_output_filepath).read()
 
     # Creating CaseRecommender evaluator with item-recommendation parameters

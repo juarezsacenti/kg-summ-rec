@@ -18,8 +18,10 @@ RUN git clone https://github.com/hwwang55/RippleNet.git
 # 3. Adapt to CaseRecommender
 RUN pip install -U git+git://github.com/caserec/CaseRecommender.git
 RUN mv RippleNet/src/train.py RippleNet/src/train.py_ORIG
-RUN ls -la
-COPY train.py /user/home/RippleNet/src/train.py
+RUN mv RippleNet/src/preprocess.py RippleNet/src/preprocess.py_ORIG
+COPY train.py /notebooks/RippleNet/src/train.py
+COPY preprocess.py /notebooks/RippleNet/src/preprocess.py
+
 
 # 4. Run application
 # or --dataset book, use -h to check optional arguments in main.py
