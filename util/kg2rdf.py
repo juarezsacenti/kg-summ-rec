@@ -1,46 +1,213 @@
 import argparse
 import os
+from rdflib import Graph 
+import pandas as pd
+import numpy as np
 
-def file2ttl(file, fr_e_map, fr_r_map, save_file):
+def remove_duplicates(input_file, output_file):
+    #remove duplicate triples
+    with open(input_file) as fin, open(output_file, 'w') as fout:
+        lines_seen = set() # holds lines already seen
+        for line in fin:
+            if line not in lines_seen: # not a duplicate
+                fout.write(line)
+                lines_seen.add(line)
+
+
+def mv_cluster2nt(cluster_file, input_file, output_file):
+    #open entity-cluster mapping
+    c_map = {}
+    r_map = {}
+    with open(cluster_file) as fin:
+        #for each cluster, each triple, each entity in cluster, replace entity in triple with cluster
+        n_relation = 0 
+        for line in fin:
+            (relation, entity, cluster) = line.split('\t')
+            if relation not in c_map:
+                c_map[relation] = {}
+                r_map[relation] = n_relation
+                n_relation += 1
+            c_map[relation][entity] = f'<http://know-rec/relation{r_map[relation]}-'+cluster.rstrip("\n")+'>'
+    #find'n'replace entities with clusters
+    with open(input_file) as fin, open('temp.dat', 'w') as fout:
+        #for each cluster, each triple, each entity in cluster, replace entity in triple with cluster
+        for line in fin:
+            (s, p, o, dot) = line.split(' ')
+            #read replace the string and write to output file
+            new_line = line.replace(s, c_map[p].get(s, s))
+            new_line = new_line.replace(o, c_map[p].get(o, o))
+            fout.write(new_line)
+    remove_duplicates('temp.dat', output_file)
+    #remove temporary file
+    os.remove('temp.dat')
+
+
+def cluster2nt(cluster_file, input_file, output_file):
+    #open entity-cluster mapping
+    c_map = {}
+    with open(cluster_file) as fin:
+        #for each cluster, each triple, each entity in cluster, replace entity in triple with cluster
+        for line in fin:
+            (entity, cluster) = line.split('\t')
+            c_map[entity] = '<http://know-rec/' + cluster.rstrip("\n") + '>'
+    #find'n'replace entities with clusters
+    with open(input_file) as fin, open('temp.dat', 'w') as fout:
+        #for each cluster, each triple, each entity in cluster, replace entity in triple with cluster
+        for line in fin:
+            (s, p, o, dot) = line.split(' ')
+            #read replace the string and write to output file
+            new_line = line.replace(s, c_map.get(s, s))
+            new_line = new_line.replace(o, c_map.get(o, o))
+            fout.write(new_line)
+    remove_duplicates('temp.dat', output_file)
+    #remove temporary file
+    os.remove('temp.dat')
+
+
+# does not work with cao kg_hop0.dat
+def rdf2nt(input_file, output_file):
+    g = Graph()
+    g.parse(input_file)
+    g.serialize(destination=output_file, format='nt')
+
+
+# does not work with cao kg_hop0.dat
+def splitkg2nt(file, fr_e_map, fr_r_map, save_file):
     e_map = {}
     with open(fr_e_map, 'r') as fin:
         for line in fin:
-            (e_id, uri) = line.split("\t")
+            (e_id, uri) = line.split('\t')
             e_map[e_id] = uri.replace('\n', '')
 
     r_map = {}
     with open(fr_r_map, 'r') as fin:
         for line in fin:
-            (e_id, uri) = line.split("\t")
+            (e_id, uri) = line.split('\t')
             r_map[e_id] = uri.replace('\n', '')
 
     with open(file, 'r') as fin:
-        with open(save_file, 'a') as fout:
+        with open(save_file, 'a+') as fout:
             for line in fin:
                 (s, o, r) = line.split('\t')
-                fout.write('<{}> <{}> <{}>.\n'.format(e_map.get(s, s),
+                fout.write('<{}> <{}> <{}> .\n'.format(e_map.get(s, s),
                                                 r_map.get(r.replace('\n', ''), r.replace('\n', '')),
                                                 e_map.get(o, o)))
 
 
-if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description=''' Selecting folds' roles (train, valid, test)''')
 
+def statistics(kg_path, output_file, KG_format='nt'):
+    input_KG_file = os.path.join(kg_path, 'kg.nt')
+    input_items_file = os.path.join(kg_path, 'cao-format', 'ml1m', 'i2kg_map.tsv')
+    
+    g = Graph()
+    g.parse(input_KG_file, format=KG_format)
+
+    items = [f'{x}' for x in pd.read_csv(input_items_file, sep='\t', names=["id", "name", "url"]).url.unique().tolist()]
+    #print(items[0:10])
+    n_items = len(items)
+    nodes = [ row['node'].toPython() for row in g.query('SELECT DISTINCT ?node WHERE { {?node ?p1 ?o1. } UNION {?s2 ?p2 ?node. FILTER(!IsLiteral(?node)).} }') ]
+    n_nodes = len(nodes)
+    n_nodes2 = len(set(nodes))
+    #print(nodes[0:10])
+    n_entities = len( np.setdiff1d( np.array(nodes), np.array(items) ) )
+    n_entities2 = len ( [node for node in nodes if node not in items] )
+    n_relations = [ row['count'].toPython() for row in g.query('SELECT (count (distinct ?p) as ?count) WHERE { ?s ?p ?o . }') ][0] 
+    n_triples = len(g)
+    n_loops = [ row['count'].toPython() for row in g.query('SELECT (count (*) as ?count) WHERE { ?e ?p ?e . }') ][0]
+    density_rate = n_triples / (n_entities * n_relations *n_entities)
+    sparsity_rate = 1 - density_rate
+    
+####
+# Compression_rate
+####
+    #uncompressed_size = os.stat(original_kg).st_size
+    #compressed_size = os.stat(input_file).st_size
+    #compression_rate = uncompressed_size / compressed_size
+    
+####
+# Old Sun's entities per relations counts:
+####
+    #genre_count = [ row['count'].toPython() for row in g.query('SELECT (count (distinct ?o) as ?count) WHERE { ?s <http://ml1m-sun/genre> ?o . }') ][0]
+    #director_count = [ row['count'].toPython() for row in g.query('SELECT (count (distinct ?o) as ?count) WHERE { ?s <http://ml1m-sun/director> ?o . }') ][0]
+    #actor_count = [ row['count'].toPython() for row in g.query('SELECT (count (distinct ?o) as ?count) WHERE { ?s <http://ml1m-sun/actor> ?o . }') ][0]
+
+    nl = '\n'
+    sep = '\t'
+    with open(output_file, 'w+') as fout:
+        fout.write(
+            f'#Items{sep}{n_items}{nl}'
+            f'#Nodes{sep}{n_nodes}{nl}'
+            f'#Nodes2{sep}{n_nodes2}{nl}'
+            f'#Entities{sep}{n_entities}{nl}'
+            f'#Entities2{sep}{n_entities2}{nl}'
+            f'#Relations{sep}{n_relations}{nl}'
+            f'#Triples{sep}{n_triples}{nl}'
+            f'Sparsity rate{sep}{sparsity_rate*100}{nl}'
+            f'#Loops{sep}{n_loops}{nl}'
+            #f'Compression rate{sep}{compression_rate}{nl}'
+            #f'#Genres{sep}{genre_count}{nl}'
+            #f'#Directors{sep}{director_count}{nl}'
+            #f'#Actors{sep}{actor_count}{nl}'
+        )
+        for row in g.query('SELECT ?p (COUNT (*) AS ?count) WHERE { ?s ?p ?o . } GROUP BY ?p'):
+            fout.write(
+                f"#Triples<{row['p'].toPython()}>{sep}{row['count'].toPython()}{nl}"
+            )
+        for row in g.query('SELECT ?p (COUNT (DISTINCT ?o) AS ?count) WHERE { ?s ?p ?o . } GROUP BY ?p'):
+            fout.write(
+                f"#Objects<{row['p'].toPython()}>{sep}{row['count'].toPython()}{nl}"
+            )
+
+    
+def infrequent_entities(input_file, output_file, input_format="nt"):
+    g = Graph()
+    g.parse(input_file, format=input_format)
+    #entity_frequency = g.query('SELECT ?o (COUNT(?o) AS ?count) WHERE { ?s ?p ?o . } GROUP BY ?o ORDER BY DESC(?count)')
+    entity_frequency = g.query('SELECT ?count (COUNT(?count) AS ?count2) WHERE { select ?o (COUNT(?o) as ?count) where {?s ?p ?o . } GROUP BY ?o } GROUP BY ?count ORDER BY ?count')
+    nl = '\n'
+    with open(output_file, 'w+') as fout:
+        for row in entity_frequency:
+            print(f"{row[0].toPython()} {row[1].toPython()}")
+            fout.write(f"{row[0].toPython()} {row[1].toPython()}{nl}")
+            
+
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description='''Convert kg to turtle format''')
+
+    parser.add_argument('--mode', type=str, dest='mode', default='splitkg')
     parser.add_argument('--kgpath', type=str, dest='kg_path', default='../../datasets/ml1m-sun2cao/ml1m/kg/')
-    parser.add_argument('--savepath', type=str, dest='save_path', default='../../results/ml1m-sun/')
+    parser.add_argument('--input', type=str, dest='input_file', default='../docker/ampligraph-data/kg.nt')
+    parser.add_argument('--input2', type=str, dest='input_file_2', default='../docker/ampligraph-data/cluster25.csv')
+    parser.add_argument('--output', type=str, dest='output_file', default='../docker/ampligraph-data/kg_cluster25.nt')
 
     parsed_args = parser.parse_args()
+    
+    mode = parsed_args.mode
+    kg_path = os.path.expanduser(parsed_args.kg_path)
+    input_file = os.path.expanduser(parsed_args.input_file)
+    input_file_2 = os.path.expanduser(parsed_args.input_file_2)
+    output_file = os.path.expanduser(parsed_args.output_file)
 
-    kg_path = parsed_args.kg_path
-    save_path = parsed_args.save_path
+    if mode == 'splitkg':
+        train_file = os.path.join(kg_path, 'train.dat')
+        valid_file = os.path.join(kg_path, 'valid.dat')
+        test_file = os.path.join(kg_path, 'test.dat')
+        fr_e_map = os.path.join(kg_path, 'e_map.dat')
+        fr_r_map = os.path.join(kg_path, 'r_map.dat')
 
-    train_file = os.path.join(kg_path, 'train.dat')
-    valid_file = os.path.join(kg_path, 'valid.dat')
-    test_file = os.path.join(kg_path, 'test.dat')
-    fr_e_map = os.path.join(kg_path, 'e_map.dat')
-    fr_r_map = os.path.join(kg_path, 'r_map.dat')
-    save_file = os.path.join(save_path, 'kg.ttl')
-
-    file2ttl(train_file, fr_e_map, fr_r_map, save_file)
-    file2ttl(valid_file, fr_e_map, fr_r_map, save_file)
-    file2ttl(test_file, fr_e_map, fr_r_map, save_file)
+        splitkg2nt(train_file, fr_e_map, fr_r_map, output_file)
+        splitkg2nt(valid_file, fr_e_map, fr_r_map, output_file)
+        splitkg2nt(test_file, fr_e_map, fr_r_map, output_file)
+    elif mode == 'rdf':
+        rdf2nt(input_file, output_file)
+    elif mode == 'cluster':
+        cluster2nt(input_file_2, input_file, output_file)
+    elif mode == 'mv_cluster':
+        mv_cluster2nt(input_file_2, input_file, output_file)
+    elif mode == 'statistics':
+        statistics(kg_path, output_file)
+    elif mode == 'infrequent':
+        infrequent_entities(input_file, output_file)
+    elif mode == 'duplicates':
+        remove_duplicates(input_file, output_file)

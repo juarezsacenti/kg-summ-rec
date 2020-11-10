@@ -113,20 +113,20 @@ if __name__ == '__main__':
     #print(os.getcwd())
     parser = argparse.ArgumentParser(description=''' Map Auxiliary Information into ID''')
 
-    parser.add_argument('--loadfile', type=str, dest='load_file', default='../../datasets/ml1m-sun/ml1m/rating-delete-missing-itemid.txt')
+    parser.add_argument('--loadfile', type=str, dest='load_file', default='~/git/datasets/ml-sun/sun-format/rating-delete-missing-itemid.txt')
     parser.add_argument('--column', type=str, dest='column', default='user_id')
     parser.add_argument('--frac', type=str, dest='frac', default='0.2,0.2,0.2,0.2')
-    parser.add_argument('--savepath', type=str, dest='save_path', default='../../datasets/ml1m-sun2cao/ml1m/')
+    parser.add_argument('--savepath', type=str, dest='save_path', default='~/git/datasets/ml-sun/cao-format/ml1m/')
 
     parsed_args = parser.parse_args()
 
-    load_file = parsed_args.load_file
+    load_file = os.path.expanduser(parsed_args.load_file)
     column = parsed_args.column
     frac = np.fromstring(parsed_args.frac, dtype=float, sep=',')
     print(frac)
-    save_path = parsed_args.save_path
-    u_map_file = save_path + 'u_map.dat'
-    i_map_file = save_path + 'i_map.dat'
+    save_path = os.path.expanduser(parsed_args.save_path)
+    u_map_file = os.path.join(save_path, 'u_map.dat')
+    i_map_file = os.path.join(save_path, 'i_map.dat')
 
     df = load_ml1m_sun_data(load_file)
     df = id_map(df, u_map_file, i_map_file)
@@ -154,13 +154,13 @@ if __name__ == '__main__':
         for i in range(len(sun_sets)):
             sun_sets[i].to_csv(save_path+'sun_fold'+str(i+1)+'.txt', sep='\t', header=False, encoding='utf-8', index=False)
 
-    kgat_remain, kgat_sets = kgat_format(df_remain, sets)
+    #kgat_remain, kgat_sets = kgat_format(df_remain, sets)
 
-    if len(frac) < 3:
-        train = pd.concat([kgat_remain, kgat_sets[0]], sort=False)
-        kgat_write(train, '../../datasets/ml1m-sun2kgat/kgat_train.txt', sep=' ', encoding='utf-8')
-        kgat_write(kgat_sets[1], '../../datasets/ml1m-sun2kgat/kgat_test.txt', sep=' ', encoding='utf-8')
-    else:
-        kgat_write(kgat_remain, '../../datasets/ml1m-sun2kgat/kgat_fold0.txt', sep=' ', encoding='utf-8')
-        for i in range(len(kgat_sets)):
-            kgat_write(kgat_sets[i], '../../datasets/ml1m-sun2kgat/kgat_fold'+str(i+1)+'.txt', sep=' ', encoding='utf-8')
+    #if len(frac) < 3:
+    #    train = pd.concat([kgat_remain, kgat_sets[0]], sort=False)
+    #    kgat_write(train, '../../datasets/ml1m-sun2kgat/kgat_train.txt', sep=' ', encoding='utf-8')
+    #    kgat_write(kgat_sets[1], '../../datasets/ml1m-sun2kgat/kgat_test.txt', sep=' ', encoding='utf-8')
+    #else:
+    #    kgat_write(kgat_remain, '../../datasets/ml1m-sun2kgat/kgat_fold0.txt', sep=' ', encoding='utf-8')
+    #    for i in range(len(kgat_sets)):
+    #        kgat_write(kgat_sets[i], '../../datasets/ml1m-sun2kgat/kgat_fold'+str(i+1)+'.txt', sep=' ', encoding='utf-8')
