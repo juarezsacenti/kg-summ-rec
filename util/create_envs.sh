@@ -14,6 +14,7 @@ pip install visdom
 conda install -c conda-forge tqdm
 conda install pandas
 pip install -U git+git://github.com/caserec/CaseRecommender.git
+pip install rdflib
 
 conda deactivate
 

@@ -1,0 +1,36 @@
+### BUILD:  docker build -t ampligraph:1.0 .
+### RUN:    docker run --rm -it --gpus all -v "$PWD"/ampligraph-data:/data -w /data ampligraph:1.0 /bin/bash -c "python ampligraph-kge_n_cluster.py"
+### RUN-nb: docker run -p 8888:8888 --rm -it --gpus all -v "$PWD"/ampligraph-data:/data -w /data/notebooks ampligraph:1.0 $CMD
+
+FROM tensorflow/tensorflow:1.15.2-gpu-py3
+# CONTENT
+# python=3.5.2
+# numpy=1.15.4
+# scipy=1.1.0
+# tensorflow-gpu=1.15.2
+
+# 1. Install git
+RUN apt-get update
+RUN apt-get install -y git
+
+# 2. Download project
+RUN pip3 install ampligraph
+RUN pip3 install seaborn
+RUN pip3 install adjustText
+RUN git clone https://github.com/wyldebeast-wunderliebe/incf.countryutils.git
+RUN cd incf.countryutils \
+ && pip install .
+RUN pip3 install jupyter
+
+# 4. Setup notebooks
+# Add Tini. Tini operates as a process subreaper for jupyter. This prevents kernel crashes.
+ENV TINI_VERSION v0.6.0
+ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini /usr/bin/tini
+RUN chmod +x /usr/bin/tini
+ENTRYPOINT ["/usr/bin/tini", "--"]
+
+# 4. Start notebook
+CMD ["jupyter", "notebook", "--port=8888", "--no-browser", "--ip=0.0.0.0", "--allow-root"]
+
+# 5. Start tunnel RDP
+# https://blog.devolutions.net/2017/4/how-to-configure-an-ssh-tunnel-on-putty

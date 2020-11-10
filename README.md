@@ -1,5 +1,11 @@
-# know-rec
-Knowledge-based experiments with TaoMiner/joint-kg-recommender and sunzhuntu/Recurrent-Knowledge-Graph-Embedding projects.
+# kg-summ-rs
+Experiments with Knowledge Graph (KG) -based Summarization (Summ.) and Recommender Systems (RSs).
+
+We summarize KG representing side information about items gathered by KG-based RSs. We use a KG Embedding (KGE) clustering Summ. strategy with Accenture/AmpliGraph project.
+
+We evaluate summaries of KG representing side information with recommendation metrics from caserec/CaseRecommender project. We adapt TaoMiner/joint-kg-recommender and sunzhuntu/Recurrent-Knowledge-Graph-Embedding projects for generating results with CaseRecommender.
+
+Also, we provide exploratory data analisys (EDA) of original and summarized datasets using jupyter notebook.
 
 ## Setup
 
@@ -9,39 +15,24 @@ Use the following steps in order to setup our project properly.
 
 1. Run setup script.<br />
 `$ setup.sh`
-2. Download Cao datasets from https://drive.google.com/file/d/1FIbaWzP6AWUNG2-8q6SKQ3b9yTiiLvGW/view<br />
-3. Move Cao's ml1m data to ~/git/datasets/ml1m-cao.<br />
 
 Git folder should have the follow structure:
 
 ```
 git
 └─datasets
-| └─ml1m-cao (with Cao's data)
-| | └─ml1m
-| | | └─kg
-| └─ml1m-cao2sun
-| | └─ml1m
-| └─ml1m-sun (with Sun's data)
-| | └─ml1m
-| └─ml1m-sun2cao
-| | └─ml1m
-| | | └─kg
-| └─ml1m-sun_sum0
-| | └─ml1m
-| | | └─kg
-| └─ml1m-sun_sum1
-| | └─ml1m
-| | | └─kg
+| └─ml-cao (with Cao's data)
+| | └─cao-format
+| | | └─ml1m
+| | | | └─kg
+| └─ml-sun (with Sun's data)
+| | └─sun-format
 └─joint-kg-recommender
-└─know-rec
-└─ORBS
+└─kg-summ-rs
 └─Recurrent-Knowledge-Graph-Embedding
 └─results
-| └─ml1m-cao
-| └─ml1m-sun
-| └─ml1m-sun_sum0
-| └─ml1m-sun_sum1
+| └─ml-cao
+| └─ml-sun
 ```
 
 4. Install cuda 7.5 from https://developer.nvidia.com/cuda-75-downloads-archive<br />
@@ -54,8 +45,15 @@ git
 
 ## Run
 
-`$ cd ~/git/know-rec/preprocess/`
-`$ bash -i preprocess_crossvalid.sh`
+`$ cd ~/git/kg-summ-rs`
+`$ bash -i summ.sh`
+`$ bash -i evaluate.sh`
 
-`$ cd ~/git/know-rec/run/`
-`$ bash -i run_ml1m-crossvalid.sh`
+OR
+
+`$ cd ~/git/kg-summ-rs`
+`$ nohup bash -i summ.sh </dev/null >nohup.out 2>nohup.err &`
+`$ nohup bash -i evaluate.sh </dev/null >nohup.out 2>nohup.err &`
+`$ watch "ps -aux | grep 'python\|bash\|nohup'"`
+`$ watch "ls -l"`
+

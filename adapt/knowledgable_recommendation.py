@@ -50,7 +50,8 @@ def getMappedItems(e_ids, e_remap, new_map):
         new_e_ids.append(new_index[0])
     return new_e_ids, i_ids
 
-# CUDA_VISIBLE_DEVICES=0 nohup python run_knowledgable_recommendation.py -data_path ~/git/datasets/ml1m-sun_sum4/ -log_path ~/git/results/ml1m-sun_sum4/ -rec_test_files valid.dat:test.dat -kg_test_files valid.dat:test.dat -model_type cofm -nohas_visualization -dataset ml1m -embedding_size 100 -topn 10 -seed 3 -eval_only_mode -load_experiment_name ml1m-cofm-1589557836 -load_ckpt_file ml1m-cofm-1589557836.ckpt &
+
+# ADAPT: CaseRecommender evaluation
 def case_rec_evaluateRec(FLAGS, model, eval_iter, eval_dict, all_dicts, i_map, logger, i, eval_descending=True, is_report=False):
     # Evaluate
     total_batches = len(eval_iter)
@@ -303,6 +304,8 @@ def train_loop(FLAGS, model, trainer, rating_train_dataset, triple_train_dataset
                     all_eval_dicts = [rating_train_dict] + [tmp_data[3] for j, tmp_data in enumerate(rating_eval_datasets) if j!=i]
 
                 rec_performances.append( evaluateRec(FLAGS, model, eval_data[0], eval_data[3], all_eval_dicts, i_map, logger, eval_descending=True if trainer.model_target == 1 else False, is_report=is_report))
+		# ADAPT: Execute CaseRecommender evaluation
+                rec_performances.append( case_rec_evaluateRec(FLAGS, model, eval_data[0], eval_data[3], all_eval_dicts, i_map, logger, i, eval_descending=True if trainer.model_target == 1 else False, is_report=is_report))
 
             kg_performances = []
             for i, eval_data in enumerate(triple_eval_datasets):
@@ -318,7 +321,7 @@ def train_loop(FLAGS, model, trainer, rating_train_dataset, triple_train_dataset
             vis_kg = True if len(kg_performances) > 0 else False
             if trainer.step > 0 and vis_rec > 0:
                 is_best = trainer.new_performance(rec_performances[0], rec_performances)
-                # visuliazation
+                # visualiazation
                 if vis is not None:
                     if vis_rec and vis_kg:
                         vis.plot_many_stack({'Rec Train Loss': rec_total_loss, 'KG Train Loss':kg_total_loss}, win_name="Loss Curve")
@@ -470,6 +473,9 @@ def train_loop(FLAGS, model, trainer, rating_train_dataset, triple_train_dataset
         else:
             kg_total_loss += losses.data[0]
         pbar.update(1)
+    
+    # ADAPT: saving final ckpt
+    #trainer.save(trainer.checkpoint_path + '_final')
 
 
 def run(only_forward=False):
@@ -564,6 +570,8 @@ def run(only_forward=False):
                 logger,
                 eval_descending=True if trainer.model_target == 1 else False,
                 is_report=FLAGS.is_report)
+            # ADAPT: Execute CaseRecommender evaluation
+# CUDA_VISIBLE_DEVICES=0 nohup python run_knowledgable_recommendation.py -data_path ~/git/datasets/ml1m-sun_sum4/ -log_path ~/git/results/ml1m-sun_sum4/ -rec_test_files valid.dat:test.dat -kg_test_files valid.dat:test.dat -model_type cofm -nohas_visualization -dataset ml1m -embedding_size 100 -topn 10 -seed 3 -eval_only_mode -load_experiment_name ml1m-cofm-1589557836 -load_ckpt_file ml1m-cofm-1589557836.ckpt &
             case_rec_evaluateRec(
                 FLAGS,
                 joint_model,
