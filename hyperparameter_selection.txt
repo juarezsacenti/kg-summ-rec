@@ -1,0 +1,156 @@
+# Hyperparameter selection - KG recommendation algorithms
+#
+# ---- BASELINE ----
+# hs_ml-sun_ho_mv_sKG_complex-50: summarized with multi-view ComplEx 
+# (epochs at 300, batch size at 50 and learning rate at 1e-4), non-
+# filtered, recommender CFKG (epochs at '9150,915000,45750' '5000,
+# 500000,25000' '500,50000,2500' '19520,1952000,97600', batch size at
+# 256 and learning rate at 0.005). CFKG use early stopped strategy, the
+# epochs parameters represent training steps and are approximately 
+# equivalent to 'Knowledge representation: training 32678 epochs, 
+# evaluating every 326.78 epochs and  waiting for 1633.92 epochs', 'Item
+# recommendation:  training 1824 epochs, evaluating every 18.24 epochs 
+# and waiting for 91.24 epochs', 'KTUP: training 182 epochs, evaluating 
+# every 1.82 epochs and  waiting for 9.12 epochs', 'Knowledgable 
+# recommendation: training 3568 epochs, evaluating every 35.68 epochs 
+# and waiting for 178.42 epochs'
+# Rec. Quality: {'PREC@10': 0.372534, 'RECALL@10': 0.217795, 'NDCG@10': 0.697037, 'MAP@10': 0.589935, 'MAP': 0.589935}
+# Rec. Cost: 01:07:41
+#
+# ---- EPOCHS ----
+# a) hs_ml-sun_ho_mv_sKG_complex-50_epoch-a: same baseline setup except
+# recommender CFKG with epochs at '34,3400,170' '274,27400,1370' '27,
+# 2740,137' '308,30800,1540'
+# Rec. Quality: {'PREC@10': 0.152492, 'RECALL@10': 0.078418, 'NDCG@10': 0.415056, 'MAP@10': 0.297147, 'MAP': 0.297147} 
+# Rec. Cost: 00:01:32
+#
+# b) hs_ml-sun_ho_mv_sKG_complex-50_epoch-a: same baseline setup except
+# recommender CFKG with epochs at '170,3400,850' '1370,27400,6850' 
+# '137,2740,685' '1540,30800,7700'
+# Rec. Quality: {'PREC@10': 0.297349, 'RECALL@10': 0.175419, 'NDCG@10': 0.629325, 'MAP@10': 0.50897, 'MAP': 0.50897} 
+# Rec. Cost: 00:05:51
+#
+# c) hs_ml-sun_ho_mv_sKG_complex-50_epoch-b: same baseline setup except
+# recommender CFKG with epochs at '170,17000,850' '1370,137000,6850' 
+# '137,13700,685' '1540,154000,7700'
+# Rec. Quality: {'PREC@10': 0.321527, 'RECALL@10': 0.186916, 'NDCG@10': 0.645604, 'MAP@10': 0.527999, 'MAP': 0.527999}
+# Rec. Cost: 00:08:56
+#
+# d) hs_ml-sun_ho_mv_sKG_complex-50_epoch-c: same baseline setup except
+# recommender CFKG with epochs at '915,91500,4575' '500,50000,2500' '50,
+# 5000,250' '1952,195200,9760'
+# Rec. Quality: {'PREC@10': 0.334889, 'RECALL@10': 0.198322, 'NDCG@10': 0.6587, 'MAP@10': 0.550651, 'MAP': 0.550651}
+# Rec. Cost: 00:21:58
+#
+# e) hs_ml-sun_ho_mv_sKG_complex-50_epoch-d: same baseline setup except
+# recommender CFKG with epochs at '2735,273500,13675' '1495,149500,7475'
+# '149,14950,747' '5833,583300,29165'
+# Rec. Quality: {'PREC@10': 0.357052, 'RECALL@10': 0.211443, 'NDCG@10': 0.691386, 'MAP@10': 0.578753, 'MAP': 0.578753}
+# Rec. Cost: 00:28:34
+#
+# f) hs_ml-sun_ho_mv_sKG_complex-50_epoch-e: same baseline setup except
+# recommender CFKG with epochs at '1587,158700,7937' '1000,100000,5000'
+# '100,10000,500' '3899,389900,19495'
+# Rec. Quality: {'PREC@10': 0.347614, 'RECALL@10': 0.204512, 'NDCG@10': 0.684336, 'MAP@10': 0.57555, 'MAP': 0.57555}
+# Rec. Cost: 00:25:23
+#
+# g) hs_ml-sun_ho_mv_sKG_complex-50_epoch-g: same baseline setup except
+# recommender CFKG with epochs at '4873,487300,24363' '2663,266300,
+# 13317' '266,26630,1331' '10392,1039200,51960'
+# Rec. Quality: {'PREC@10': 0.366914, 'RECALL@10': 0.214279, 'NDCG@10': 0.691646, 'MAP@10': 0.580595, 'MAP': 0.580595}
+# Rec. Cost: 00:31:56
+#
+# h) hs_ml-sun_ho_mv_sKG_complex-50_epoch-h: same baseline setup except
+# recommender CFKG with epochs at '7010,470100,35050' '3832,383200,
+# 19160' '383,38320,1331' '14950,1495000,74750'
+# Rec. Quality: {'PREC@10': 0.374973, 'RECALL@10': 0.219828, 'NDCG@10': 0.703495, 'MAP@10': 0.594704, 'MAP': 0.594704}
+# Rec. Cost: 00:56:27
+#
+# i) hs_ml-sun_ho_mv_sKG_complex-50_epoch-i: same baseline setup except
+# recommender CFKG with epochs at '5584,558400,27923' '3051,305100,
+# 15258' '305,30510,1525' '11914,1191400,59570'
+# Rec. Quality: {'PREC@10': 0.372322, 'RECALL@10': 0.222338, 'NDCG@10': 0.698824, 'MAP@10': 0.589961, 'MAP': 0.589961}
+# Rec. Cost: 00:51:43
+#
+# j) hs_ml-sun_ho_mv_sKG_complex-50_epoch-j: same baseline setup except
+# recommender CFKG with epochs at '6297,629700,31485' '3441,344100,
+# 17205' '344,34410,1720' '13434,1343400,67170'
+# Rec. Quality: {'PREC@10': 0.363203, 'RECALL@10': 0.210153, 'NDCG@10': 0.691737, 'MAP@10': 0.582897, 'MAP': 0.582897}
+# Rec. Cost: 00:56:13
+#
+# ---- BATCH SIZE ----
+# a) hs_ml-sun_ho_mv_sKG_complex-50_bs-a: same baseline setup except 
+# recommender CFKG with batch size at 32
+# Rec. Quality: {'PREC@10': 0.350053, 'RECALL@10': 0.204669, 'NDCG@10': 0.681388, 'MAP@10': 0.571303, 'MAP': 0.571303} 
+# Rec. Cost: 01:20:37
+#
+# b) hs_ml-sun_ho_mv_sKG_complex-50_bs-b: same baseline setup except 
+# recommender CFKG with batch size at 512
+# Rec. Quality: {'PREC@10': 0.371474, 'RECALL@10': 0.215287, 'NDCG@10': 0.680094, 'MAP@10': 0.576724, 'MAP': 0.576724}
+# Rec. Cost: 01:31:53
+#
+# ---- LEARNING RATE ----
+# a) hs_ml-sun_ho_mv_sKG_complex-50_lr-a: same baseline setup except 
+# recommender CFKG with batch size at 0.1
+# Rec. Quality: {'PREC@10': 0.231495, 'RECALL@10': 0.120523, 'NDCG@10': 0.538507, 'MAP@10': 0.432386, 'MAP': 0.432386}
+# Rec. Cost: 00:59:58
+#
+#
+# Hyperparameter selection - KG summarization algorithm ComplEx
+#
+# ---- BASELINE ----
+# hs_ml-sun_ho_mv_sKG_complex-50-epoch-g: summarized with multi-view 
+# ComplEx (epochs at 300, batch size at 50 and learning rate at 1e-4),
+# non-filtered, recommender CFKG (epochs at '4873,487300,24363' '2663,
+# 266300,13317' '266,26630,1331' '10392,1039200,51960', batch size at
+# 256 and learning rate at 0.005). CFKG use early stopped strategy, the
+# epochs parameters represent training steps and are approximately 
+# equivalent to 'training 3385 epochs, evaluating every 34 epochs an
+# waiting for 170 epochs'
+# Rec. Quality:  {'PREC@10': 0.366914, 'RECALL@10': 0.214279, 'NDCG@10': 0.691646, 'MAP@10': 0.580595, 'MAP': 0.580595}
+# Rec. Cost: 00:31:56
+#
+# ---- EPOCHS ----
+# a) hs_ml-sun_ho_mv_sKG_epoch-a_complex-50: same baseline setup except 
+# ComplEx with epochs at 150
+# Rec. Quality: {'PREC@10': 0.379003, 'RECALL@10': 0.223858, 'NDCG@10': 0.696765, 'MAP@10': 0.590518, 'MAP': 0.590518}
+# Rec. Cost: 00:43:16
+#
+# b) hs_ml-sun_ho_mv_sKG_epoch-b_complex-50: same baseline setup except 
+# ComplEx with epochs at 600
+# Rec. Quality: {'PREC@10': 0.358749, 'RECALL@10': 0.209826, 'NDCG@10': 0.684423, 'MAP@10': 0.578465, 'MAP': 0.578465}
+# Rec. Cost: 00:34:06
+#
+# c) hs_ml-sun_ho_mv_sKG_epoch-c_complex-50: same baseline setup except 
+# ComplEx with epochs at 1200
+# Rec. Quality: {'PREC@10': 0.373065, 'RECALL@10': 0.216846, 'NDCG@10': 0.706302, 'MAP@10': 0.599996, 'MAP': 0.599996}
+# Rec. Cost: 00:32:49
+#
+# ---- BATCH SIZE ----
+# a) hs_ml-sun_ho_mv_sKG_bs-a_complex-50: same baseline setup except 
+# ComplEx with batch size at 100
+# Rec. Quality: {'PREC@10': 0.378897, 'RECALL@10': 0.221526, 'NDCG@10': 0.708086, 'MAP@10': 0.60222, 'MAP': 0.60222}
+# Rec. Cost: 00:39:05
+#
+# b) hs_ml-sun_ho_mv_sKG_bs-b_complex-50: same baseline setup except 
+# ComplEx with batch size at 256
+# Rec. Quality: {'PREC@10': 0.371474, 'RECALL@10': 0.215466, 'NDCG@10': 0.691738, 'MAP@10': 0.588288, 'MAP': 0.588288}
+# Rec. Cost: 00:38:07
+#
+# ---- LEARNING RATE ----
+# a) hs_ml-sun_ho_mv_sKG_lr-a_complex-50: same baseline setup except 
+# ComplEx with learning rate at 0.005
+# Rec. Quality: {'PREC@10': 0.379109, 'RECALL@10': 0.216967, 'NDCG@10': 0.695727, 'MAP@10': 0.592933, 'MAP': 0.592933}
+# Rec. Cost: 00:36:48
+#
+# b) hs_ml-sun_ho_mv_sKG_lr-b_complex-50: same baseline setup except 
+# ComplEx with learning rate at 0.001
+# Rec. Quality: {'PREC@10': 0.374443, 'RECALL@10': 0.216592, 'NDCG@10': 0.703274, 'MAP@10': 0.596637, 'MAP': 0.596637}
+# Rec. Cost: 00:31:21
+#
+# c) hs_ml-sun_ho_mv_sKG_lr-c_complex-50: same baseline setup except 
+# ComplEx with learning rate at 0.0005
+# Rec. Quality: {'PREC@10': 0.365217, 'RECALL@10': 0.216854, 'NDCG@10': 0.699886, 'MAP@10': 0.590016, 'MAP': 0.590016}
+# Rec. Cost: 00:33:13
+#
+

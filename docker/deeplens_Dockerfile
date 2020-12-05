@@ -1,0 +1,23 @@
+### BUILD:  docker build -t deeplens:1.0 .
+### RUN:    docker run --rm -it --gpus all deeplens:1.0 $CMD
+
+FROM tensorflow/tensorflow:1.12.3-gpu-py3
+# CONTENT
+# python=3.5.2
+# numpy=1.15.4
+# scipy=1.1.0
+# tensorflow-gpu=1.12.3
+
+# 1. Install git
+RUN apt-get update
+RUN apt-get install -y git
+
+# 2. Download project
+RUN git clone https://github.com/nju-websoft/DeepLENS.git
+
+# 3. Convert input format
+
+# 4. Run application
+# or --dataset book, use -h to check optional arguments in main.py
+CMD cd DeepLENS/code \
+    && python3 train_test.py

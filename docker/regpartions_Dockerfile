@@ -1,0 +1,25 @@
+### BUILD:  docker build -t gemsec:1.0 .
+### RUN:    docker run --rm -it --gpus all gemsec:1.0 $CMD
+
+FROM python:3.6.12-buster
+# CONTENT
+# python=3.5.2
+# numpy=1.15.4
+# scipy=1.1.0
+# tensorflow-gpu=1.12.3
+
+# 1. Install git
+RUN apt-get update
+RUN apt-get install -y git
+
+# 2. Download project
+RUN git clone https://github.com/MarcoFiorucci/graph-summarization-using-regular-partitions.git
+
+RUN pip3 install -r graph-summarization-using-regular-partitions/scripts/requirements.txt
+
+# 3. Convert input format
+
+# 4. Run application
+# or --dataset book, use -h to check optional arguments in main.py
+CMD cd graph-summarization-using-regular-partitions/scripts/  \ 
+    && sh experiment.sh
