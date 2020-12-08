@@ -1,5 +1,5 @@
 ### BUILD:  docker build -t gemsec:1.0 .
-### RUN:    docker run --rm -it --gpus all gemsec:1.0 $CMD
+### RUN:    docker run --rm -it --gpus all -v "$PWD"/gemsec_data:/data -w /data gemsec:1.0 $CMD"
 
 FROM tensorflow/tensorflow:1.12.3-gpu-py3
 # CONTENT
@@ -26,6 +26,24 @@ RUN pip3 install python-louvain==0.11
 # 3. Convert input format
 
 # 4. Run application
-# or --dataset book, use -h to check optional arguments in main.py
-CMD cd GEMSEC \ 
-    && python3 src/embedding_clustering.py
+CMD cd GEMSEC \
+    && python3 src/embedding_clustering.py --input "./data/politician_edges.csv" \
+    --embedding-output "./output/embeddings/politician_embedding.csv" --cluster-mean-output \
+    "./output/cluster_means/politician_means.csv" --log-output "./output/logs/politician.json" --assignment-output \
+    "./output/assignments/politician.json" --dump-matrices True --model "GEMSECWithRegularization"  \
+    --P 1 --Q 1 --walker "first" --dimensions 16 --random-walk-length 80 \
+    --num-of-walks 5 --window-size 5 --distortion 0.75 --negative-sample-number 10 \
+    --initial-learning-rate 0.01 --minimal-learning-rate 0.001 --annealing-factor 1 \
+    --initial-gamma 0.1 --final-gamma 0.5 --lambd 2.0**-4 --cluster-number 20 \
+    --overlap-weighting "normalized_overlap" --regularization-noise 10**-8
+
+#CMD cd GEMSEC \
+#    && python3 src/embedding_clustering.py --input "/data/temp/kg.csv" \
+#    --embedding-output "/data/temp/embedding.csv" --cluster-mean-output \
+#    "/data/temp/means.csv" --log-output "/data/temp/log.json" --assignment-output \
+#    "/data/temp/assignment.json" --dump-matrices True --model "GEMSECWithRegularization"  \
+#    --P 1 --Q 1 --walker "first" --dimensions 16 --random-walk-length 80 \
+#    --num-of-walks 5 --window-size 5 --distortion 0.75 --negative-sample-number 10 \
+#    --initial-learning-rate 0.01 --minimal-learning-rate 0.001 --annealing-factor 1 \
+#    --initial-gamma 0.1 --final-gamma 0.5 --lambd 2.0**-4 --cluster-number 20 \
+#    --overlap-weighting "normalized_overlap" --regularization-noise 10**-8
