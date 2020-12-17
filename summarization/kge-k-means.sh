@@ -43,7 +43,7 @@ source util/util.sh
 # RETURN:
 #   0 if print succeeds, non-zero on error.
 #######################################
-kge_k_means () {
+kge_k_means() {
     local dataset_in=$1
     local dataset_out=$2
     local kge=$3

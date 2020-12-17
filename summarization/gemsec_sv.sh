@@ -41,7 +41,7 @@ source ../util/util.sh
 # RETURN:
 #   0 if print succeeds, non-zero on error.
 #######################################
-gemsec () {
+gemsec() {
     local dataset_in=$1 # Default is "ml-sun_ho_originalKG"
     local dataset_out=$2 # Default is "ml-sun_ho_sv_sKG"
     local model=$3 # Default is "GEMSECWithRegularization"
@@ -202,3 +202,5 @@ gemsec () {
         cd ..
     fi
 }
+
+bash -i gemsec "ml-sun_ho_originalKG" "ml-sun_ho_sv_sKG" "GEMSECWithRegularization" 0.001 0.0001
