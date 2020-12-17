@@ -13,7 +13,7 @@ def nt2edges(e_map_file, nt_file, output_file):
     with open(e_map_file) as fin:
         for line in fin:
             (id, entity) = line.split('\t')
-            e_map[entity] = id
+            e_map[entity.rstrip("\n")] = id
     #find'n'replace entities with ids
     with open(nt_file) as fin:
         new_id = len(e_map)
