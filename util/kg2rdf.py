@@ -1,8 +1,49 @@
 import argparse
 import os
-from rdflib import Graph 
+from rdflib import Graph
 import pandas as pd
 import numpy as np
+import json
+
+
+#nt to edges (gemsec format)
+def nt2edges(e_map_file, nt_file, output_file):
+    #open id-entity mapping
+    e_map = {}
+    with open(e_map_file) as fin:
+        for line in fin:
+            (id, entity) = line.split('\t')
+            e_map[entity] = id
+    #find'n'replace entities with ids
+    with open(nt_file) as fin:
+        new_id = len(e_map)
+        #for each triple, replace entity in triple with entity id
+        for line in fin:
+            (s, p, o, dot) = line.split(' ')
+            #write in csv edge format
+            sid = e_map[s[1:-1]]
+            oid = e_map[o[1:-1]]
+            fout.write(f'{sid},{oid}')
+
+
+#assignment (gemsec format) to nt
+def assignment2cluster(e_map_file, assignment_file, output_file):
+    #open id-entity mapping
+    e_map = {}
+    with open(e_map_file) as fin:
+        for line in fin:
+            (id, entity) = line.split('\t')
+            e_map[id] = entity
+    #open entity-cluster id mapping
+    with open(assignment_file) as json_file:
+        c_map = json.load(json_file)
+    #find'n'replace entities with clusters
+    with open(output_file, 'w') as fout:
+        #for each cluster, each triple, each entity in cluster, replace entity in triple with cluster
+        for k, v in c_map.iteritems():
+            new_line = f'<{e_map[k]}>\tcluster{v}'
+            fout.write(new_line)
+
 
 def remove_duplicates(input_file, output_file):
     #remove duplicate triples
@@ -20,7 +61,7 @@ def mv_cluster2nt(cluster_file, input_file, output_file):
     r_map = {}
     with open(cluster_file) as fin:
         #for each cluster, each triple, each entity in cluster, replace entity in triple with cluster
-        n_relation = 0 
+        n_relation = 0
         for line in fin:
             (relation, entity, cluster) = line.split('\t')
             if relation not in c_map:
@@ -98,7 +139,7 @@ def splitkg2nt(file, fr_e_map, fr_r_map, save_file):
 def statistics(kg_path, output_file, KG_format='nt'):
     input_KG_file = os.path.join(kg_path, 'kg.nt')
     input_items_file = os.path.join(kg_path, 'cao-format', 'ml1m', 'i2kg_map.tsv')
-    
+
     g = Graph()
     g.parse(input_KG_file, format=KG_format)
 
@@ -111,19 +152,19 @@ def statistics(kg_path, output_file, KG_format='nt'):
     #print(nodes[0:10])
     n_entities = len( np.setdiff1d( np.array(nodes), np.array(items) ) )
     n_entities2 = len ( [node for node in nodes if node not in items] )
-    n_relations = [ row['count'].toPython() for row in g.query('SELECT (count (distinct ?p) as ?count) WHERE { ?s ?p ?o . }') ][0] 
+    n_relations = [ row['count'].toPython() for row in g.query('SELECT (count (distinct ?p) as ?count) WHERE { ?s ?p ?o . }') ][0]
     n_triples = len(g)
     n_loops = [ row['count'].toPython() for row in g.query('SELECT (count (*) as ?count) WHERE { ?e ?p ?e . }') ][0]
     density_rate = n_triples / (n_entities * n_relations *n_entities)
     sparsity_rate = 1 - density_rate
-    
+
 ####
 # Compression_rate
 ####
     #uncompressed_size = os.stat(original_kg).st_size
     #compressed_size = os.stat(input_file).st_size
     #compression_rate = uncompressed_size / compressed_size
-    
+
 ####
 # Old Sun's entities per relations counts:
 ####
@@ -158,7 +199,7 @@ def statistics(kg_path, output_file, KG_format='nt'):
                 f"#Objects<{row['p'].toPython()}>{sep}{row['count'].toPython()}{nl}"
             )
 
-    
+
 def infrequent_entities(input_file, output_file, input_format="nt"):
     g = Graph()
     g.parse(input_file, format=input_format)
@@ -169,7 +210,7 @@ def infrequent_entities(input_file, output_file, input_format="nt"):
         for row in entity_frequency:
             print(f"{row[0].toPython()} {row[1].toPython()}")
             fout.write(f"{row[0].toPython()} {row[1].toPython()}{nl}")
-            
+
 
 
 if __name__ == '__main__':
@@ -182,7 +223,7 @@ if __name__ == '__main__':
     parser.add_argument('--output', type=str, dest='output_file', default='../docker/ampligraph-data/kg_cluster25.nt')
 
     parsed_args = parser.parse_args()
-    
+
     mode = parsed_args.mode
     kg_path = os.path.expanduser(parsed_args.kg_path)
     input_file = os.path.expanduser(parsed_args.input_file)
@@ -211,3 +252,7 @@ if __name__ == '__main__':
         infrequent_entities(input_file, output_file)
     elif mode == 'duplicates':
         remove_duplicates(input_file, output_file)
+    elif mode == 'nt2edges':
+        nt2edges(input_file_2, input_file, output_file)
+    elif mode == 'assignment2cluster':
+        assignment2cluster(input_file_2, input_file, output_file)
