@@ -17,12 +17,12 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #######################################
-# Import util/util.sh
+# Import ../util/util.sh
 # FUNCTIONS:
 #   no_exist 'path_to_file'
 #   copy_dataset 'path_to_dataset' 'path_to_new_dataset'
 #######################################
-source util/util.sh
+source ../util/util.sh
 
 #######################################
 # Summarize using Gemsec
@@ -42,12 +42,11 @@ source util/util.sh
 #   0 if print succeeds, non-zero on error.
 #######################################
 gemsec () {
-    local dataset_in=$1
-    local dataset_out=$2
-    local model=$3
-    local learning_rate_init=$4
-    local learning_rate_min=$5
-    local clusters=$6
+    local dataset_in=$1 # Default is "ml-sun_ho_originalKG"
+    local dataset_out=$2 # Default is "ml-sun_ho_sv_sKG"
+    local model=$3 # Default is "GEMSECWithRegularization"
+    local learning_rate_init=$4 # Default is 0.001
+    local learning_rate_min=$5 # Default is 0.0001
 
     ############################################################################
     ###                        Create dataset Folders                        ###
