@@ -88,19 +88,22 @@ gemsec() {
     if no_exist "$HOME/git/know-rec/docker/gemsec_data/temp/kg.csv"
     then
         echo '[kg-summ-rs] Creating ~/git/know-rec/docker/gemsec_data/temp/kg.csv'
-        cd util
-        python kg2rdf.py --mode 'nt2edges' --input2 "$HOME/git/datasets/${dataset_in}/kg/e_map.dat" \
+        cd ../util
+        #[activate jointrec]
+        conda deactivate
+        conda activate jointrec
+        python kg2rdf.py --mode 'nt2edges' --input2 "$HOME/git/datasets/${dataset_in}/cao-format/ml1m/kg/e_map.dat" \
         --input "$HOME/git/datasets/${dataset_in}/kg.nt" --output "$HOME/git/know-rec/docker/gemsec_data/temp/kg.csv"
-        cd ..
+        cd ../summarization
     fi
-    local num_entities=($(wc -l "$HOME/git/datasets/${dataset_in}/kg/e_map.dat"))
+    local num_entities=($(wc -l "$HOME/git/datasets/${dataset_in}/cao-format/ml1m/kg/e_map.dat"))
     local rate25=$((${num_entities[0]}*25/100))
     local rate50=$((${num_entities[0]}*50/100))
     local rate75=$((${num_entities[0]}*75/100))
     if no_exist "$HOME/git/datasets/${dataset_out}_gemsec-25/assignment.json"
     then
         echo "[kg-summ-rs] Creating ~/git/datasets/${dataset_out}_gemsec-25/assignment.json"
-        cd docker
+        cd ../docker
         cp gemsec_Dockerfile Dockerfile
         docker build -t gemsec:1.0 .
 
@@ -117,12 +120,12 @@ gemsec() {
         "normalized_overlap" --regularization-noise 1e-8"
 
         cp "$HOME/git/know-rec/docker/gemsec_data/temp/assignment.json" "$HOME/git/datasets/${dataset_out}_gemsec-25/assignment.json"
-        cd ..
+        cd ../summarization
     fi
     if no_exist "$HOME/git/datasets/${dataset_out}_gemsec-50/assignment.json"
     then
         echo "[kg-summ-rs] Creating ~/git/datasets/${dataset_out}_gemsec-50/assignment.json"
-        cd docker
+        cd ../docker
         cp gemsec_Dockerfile Dockerfile
         docker build -t gemsec:1.0 .
 
@@ -139,12 +142,12 @@ gemsec() {
         "normalized_overlap" --regularization-noise 1e-8"
 
         cp "$HOME/git/know-rec/docker/gemsec_data/temp/assignment.json" "$HOME/git/datasets/${dataset_out}_gemsec-50/assignment.json"
-        cd ..
+        cd ../summarization
     fi
     if no_exist "$HOME/git/datasets/${dataset_out}_gemsec-75/assignment.json"
     then
         echo "[kg-summ-rs] Creating ~/git/datasets/${dataset_out}_gemsec-75/assignment.json"
-        cd docker
+        cd ../docker
         cp gemsec_Dockerfile Dockerfile
         docker build -t gemsec:1.0 .
 
@@ -161,7 +164,7 @@ gemsec() {
         "normalized_overlap" --regularization-noise 1e-8"
 
         cp "$HOME/git/know-rec/docker/gemsec_data/temp/assignment.json" "$HOME/git/datasets/${dataset_out}_gemsec-75/assignment.json"
-        cd ..
+        cd ../summarization
     fi
 
     ############################################################################
@@ -174,33 +177,33 @@ gemsec() {
     if no_exist "$HOME/git/datasets/${dataset_out}_gemsec/kg.nt"
     then
         echo "[kg-summ-rs] Creating ~/git/datasets/${dataset_out}_gemsec-25/kg.nt"
-        cd util
-        python kg2rdf.py --mode 'assignment2cluster' --input2 "$HOME/git/datasets/${dataset_in}/e_map.dat" \
+        cd ../util
+        python kg2rdf.py --mode 'assignment2cluster' --input2 "$HOME/git/datasets/${dataset_in}/cao-format/ml1m/kg/e_map.dat" \
         --input "$HOME/git/datasets/${dataset_out}_gemsec-25/assignment.json" --output "$HOME/git/datasets/${dataset_out}_gemsec-25/cluster.tsv"
         python kg2rdf.py --mode 'cluster' --input2 "$HOME/git/datasets/${dataset_out}_gemsec-25/cluster.tsv" \
         --input "$HOME/git/datasets/${dataset_in}/kg.nt"  --output "$HOME/git/datasets//${dataset_out}_gemsec-25/kg.nt"
-        cd ..
+        cd ../summarization
     fi
     if no_exist "$HOME/git/datasets/${dataset_out}_gemsec-50/kg.nt"
     then
         echo "[kg-summ-rs] Creating ~/git/datasets/${dataset_out}_gemsec-50/kg.nt"
-        cd util
-        python kg2rdf.py --mode 'assignment2cluster' --input2 "$HOME/git/datasets/${dataset_in}/e_map.dat" \
+        cd ../util
+        python kg2rdf.py --mode 'assignment2cluster' --input2 "$HOME/git/datasets/${dataset_in}/cao-format/ml1m/kg/e_map.dat" \
         --input "$HOME/git/datasets/${dataset_out}_gemsec-50/assignment.json" --output "$HOME/git/datasets/${dataset_out}_gemsec-50/cluster.tsv"
         python kg2rdf.py --mode 'cluster' --input2 "$HOME/git/datasets//${dataset_out}_gemsec-50/cluster.tsv" \
         --input "$HOME/git/datasets/${dataset_in}/kg.nt"  --output "$HOME/git/datasets/${dataset_out}_gemsec-50/kg.nt"
-        cd ..
+        cd ../summarization
     fi
     if no_exist "$HOME/git/datasets/${dataset_out}_gemsec/kg.nt"
     then
         echo "[kg-summ-rs] Creating ~/git/datasets/${dataset_out}_gemsec/kg.nt"
-        cd util
-        python kg2rdf.py --mode 'assignment2cluster' --input2 "$HOME/git/datasets/${dataset_in}/e_map.dat" \
+        cd ../util
+        python kg2rdf.py --mode 'assignment2cluster' --input2 "$HOME/git/datasets/${dataset_in}/cao-format/ml1m/kg/e_map.dat" \
         --input "$HOME/git/datasets/${dataset_out}_gemsec-75/assignment.json" --output "$HOME/git/datasets/${dataset_out}_gemsec-75/cluster.tsv"
         python kg2rdf.py --mode 'cluster' --input2 "$HOME/git/datasets//${dataset_out}_gemsec-75/cluster.tsv" \
         --input "$HOME/git/datasets/${dataset_in}/kg.nt"  --output "$HOME/git/datasets/${dataset_out}_gemsec-75/kg.nt"
-        cd ..
+        cd ../summarization
     fi
 }
 
-bash -i gemsec "ml-sun_ho_originalKG" "ml-sun_ho_sv_sKG" "GEMSECWithRegularization" 0.001 0.0001
+gemsec "ml-sun_ho_originalKG" "ml-sun_ho_sv_sKG" "GEMSECWithRegularization" 0.001 0.0001
