@@ -1,12 +1,12 @@
 ### BUILD:  docker build -t gemsec:1.0 .
 ### RUN:    docker run --rm -it --gpus all gemsec:1.0 $CMD
 
-FROM tensorflow/tensorflow:1.12.3-gpu-py3
+FROM tensorflow/tensorflow:1.12.0-gpu-py3
 # CONTENT
 # python=3.5.2
 # numpy=1.15.4
 # scipy=1.1.0
-# tensorflow-gpu=1.12.3
+# tensorflow-gpu=1.12.0
 
 # 1. Install git
 RUN apt-get update
@@ -27,5 +27,5 @@ RUN pip3 install python-louvain==0.11
 
 # 4. Run application
 # or --dataset book, use -h to check optional arguments in main.py
-CMD cd GEMSEC \
+CMD cd /notebooks/GEMSEC \
     && python3 src/embedding_clustering.py
