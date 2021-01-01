@@ -6,43 +6,73 @@ import numpy as np
 import json
 
 
-#nt to edges (gemsec format)
-def nt2edges(e_map_file, nt_file, output_file):
-    #open id-entity mapping
-    e_map = {}
-    with open(e_map_file) as fin:
+def ig2uig(nt_file, dataset_path, output_file):
+    # copy nt_file to output_file
+    with open(nt_file) as fin, open(output_file, 'w') as fout:
         for line in fin:
-            (id, entity) = line.split('\t')
-            e_map[entity.rstrip("\n")] = id
+            fout.write(line)
+    i2kg_map = {}
+    with open(f'{dataset_path}i2kg_map.tsv') as fin:
+        for line in fin:
+            (id, name, entity) = line.rstrip('\n').split('\t')
+            i2kg_map[id] = entity
+    # add triples about user-item ratings to output_file
+    with open(f'{dataset_path}train.dat') as fin, open(output_file, 'a+') as fout:
+        for line in fin:
+            (u, i, r) = line.rstrip('\n').split('\t')
+            fout.write(f'<http://ml1m-sun/user{u}> <http://ml1m-sun/rates> <{i2kg_map[i]}>')
+
+
+#nt to edges (gemsec format)
+def nt2edges(nt_file, output_file, edge_map_file):
+    #create entity-edge map mapping
+    edge_map = {}
+    edge_id = 0
+    nl='\n'
+    sep = ','
     #find'n'replace entities with ids
-    with open(nt_file) as fin:
-        new_id = len(e_map)
+    with open(nt_file) as fin, open(output_file, 'w') as fout:
         #for each triple, replace entity in triple with entity id
         for line in fin:
             (s, p, o, dot) = line.split(' ')
             #write in csv edge format
-            sid = e_map[s[1:-1]]
-            oid = e_map[o[1:-1]]
-            fout.write(f'{sid},{oid}')
+            key = s[1:-1]
+            if key in edge_map:
+                sid = edge_map[key]
+            else:
+                sid = edge_map[key] = edge_id
+                edge_id+=1
+            key = o[1:-1]
+            if key in edge_map:
+                oid = edge_map[key]
+            else:
+                oid = edge_map[key] = edge_id
+                edge_id+=1
+            fout.write(f'{sid}{sep}{oid}{nl}')
+    with open(edge_map_file, 'w') as fout:
+        #save edge_map
+        for k, v in edge_map.items():
+            fout.write(f'{k}{sep}{v}{nl}')
 
 
 #assignment (gemsec format) to nt
-def assignment2cluster(e_map_file, assignment_file, output_file):
+def assignment2cluster(assignment_file, edge_map_file, output_file):
     #open id-entity mapping
-    e_map = {}
-    with open(e_map_file) as fin:
+    edge_map = {}
+    nl = '\n'
+    sep = '\t'
+    with open(edge_map_file) as fin:
         for line in fin:
-            (id, entity) = line.split('\t')
-            e_map[id] = entity
+            (entity, id) = line.rstrip('\n').split(',')
+            edge_map[id] = entity
     #open entity-cluster id mapping
     with open(assignment_file) as json_file:
         c_map = json.load(json_file)
     #find'n'replace entities with clusters
     with open(output_file, 'w') as fout:
         #for each cluster, each triple, each entity in cluster, replace entity in triple with cluster
-        for k, v in c_map.iteritems():
-            new_line = f'<{e_map[k]}>\tcluster{v}'
-            fout.write(new_line)
+        for k, v in c_map.items():
+            fout.write(f'<{edge_map[k]}>{sep}cluster{v}{nl}')
 
 
 def remove_duplicates(input_file, output_file):
@@ -63,12 +93,12 @@ def mv_cluster2nt(cluster_file, input_file, output_file):
         #for each cluster, each triple, each entity in cluster, replace entity in triple with cluster
         n_relation = 0
         for line in fin:
-            (relation, entity, cluster) = line.split('\t')
+            (relation, entity, cluster) = line.rstrip('\n').split('\t')
             if relation not in c_map:
                 c_map[relation] = {}
                 r_map[relation] = n_relation
                 n_relation += 1
-            c_map[relation][entity] = f'<http://know-rec/relation{r_map[relation]}-'+cluster.rstrip("\n")+'>'
+            c_map[relation][entity] = f'<http://know-rec/relation{r_map[relation]}-'+cluster+'>'
     #find'n'replace entities with clusters
     with open(input_file) as fin, open('temp.dat', 'w') as fout:
         #for each cluster, each triple, each entity in cluster, replace entity in triple with cluster
@@ -89,8 +119,8 @@ def cluster2nt(cluster_file, input_file, output_file):
     with open(cluster_file) as fin:
         #for each cluster, each triple, each entity in cluster, replace entity in triple with cluster
         for line in fin:
-            (entity, cluster) = line.split('\t')
-            c_map[entity] = '<http://know-rec/' + cluster.rstrip("\n") + '>'
+            (entity, cluster) = line.rstrip('\n').split('\t')
+            c_map[entity] = '<http://know-rec/' + cluster + '>'
     #find'n'replace entities with clusters
     with open(input_file) as fin, open('temp.dat', 'w') as fout:
         #for each cluster, each triple, each entity in cluster, replace entity in triple with cluster
@@ -117,21 +147,21 @@ def splitkg2nt(file, fr_e_map, fr_r_map, save_file):
     e_map = {}
     with open(fr_e_map, 'r') as fin:
         for line in fin:
-            (e_id, uri) = line.split('\t')
-            e_map[e_id] = uri.replace('\n', '')
+            (e_id, uri) = line.rstrip('\n').split('\t')
+            e_map[e_id] = uri
 
     r_map = {}
     with open(fr_r_map, 'r') as fin:
         for line in fin:
-            (e_id, uri) = line.split('\t')
-            r_map[e_id] = uri.replace('\n', '')
+            (e_id, uri) = line.rstrip('\n').split('\t')
+            r_map[e_id] = uri
 
     with open(file, 'r') as fin:
         with open(save_file, 'a+') as fout:
             for line in fin:
-                (s, o, r) = line.split('\t')
+                (s, o, r) = line.rstrip('\n').split('\t')
                 fout.write('<{}> <{}> <{}> .\n'.format(e_map.get(s, s),
-                                                r_map.get(r.replace('\n', ''), r.replace('\n', '')),
+                                                r_map.get(r, r),
                                                 e_map.get(o, o)))
 
 
@@ -221,6 +251,7 @@ if __name__ == '__main__':
     parser.add_argument('--input', type=str, dest='input_file', default='../docker/ampligraph-data/kg.nt')
     parser.add_argument('--input2', type=str, dest='input_file_2', default='../docker/ampligraph-data/cluster25.csv')
     parser.add_argument('--output', type=str, dest='output_file', default='../docker/ampligraph-data/kg_cluster25.nt')
+    parser.add_argument('--output2', type=str, dest='output_file_2', default='../docker/gemsec-data/temp/edge_map.csv')
 
     parsed_args = parser.parse_args()
 
@@ -229,6 +260,7 @@ if __name__ == '__main__':
     input_file = os.path.expanduser(parsed_args.input_file)
     input_file_2 = os.path.expanduser(parsed_args.input_file_2)
     output_file = os.path.expanduser(parsed_args.output_file)
+    output_file_2 = os.path.expanduser(parsed_args.output_file_2)
 
     if mode == 'splitkg':
         train_file = os.path.join(kg_path, 'train.dat')
@@ -253,6 +285,8 @@ if __name__ == '__main__':
     elif mode == 'duplicates':
         remove_duplicates(input_file, output_file)
     elif mode == 'nt2edges':
-        nt2edges(input_file_2, input_file, output_file)
+        nt2edges(input_file, output_file, output_file_2)
     elif mode == 'assignment2cluster':
-        assignment2cluster(input_file_2, input_file, output_file)
+        assignment2cluster(input_file, input_file_2, output_file)
+    elif mode == 'ig2uig':
+        ig2uig(input_file, input_file_2, output_file)

@@ -44,13 +44,14 @@ source util/util.sh
 #   0 if print succeeds, non-zero on error.
 #######################################
 kge_k_means() {
-    local dataset_in=$1
-    local dataset_out=$2
-    local kge=$3
-    local epochs=$4
-    local batch_size=$5
-    local learning_rate=$6
-    local low_frequence=$7
+    local experiment=$1
+    local dataset_in=$2
+    local dataset_out=$3
+    local kge=$4
+    local epochs=$5
+    local batch_size=$6
+    local learning_rate=$7
+    local low_frequence=$8
 
     ############################################################################
     ###                   Create dataset Folders - {25,50,75}                ###

@@ -92,8 +92,9 @@ gemsec() {
         #[activate jointrec]
         conda deactivate
         conda activate jointrec
-        python kg2rdf.py --mode 'nt2edges' --input2 "$HOME/git/datasets/${dataset_in}/cao-format/ml1m/kg/e_map.dat" \
-        --input "$HOME/git/datasets/${dataset_in}/kg.nt" --output "$HOME/git/know-rec/docker/gemsec_data/temp/kg.csv"
+        python kg2rdf.py --mode 'nt2edges' --input "$HOME/git/datasets/${dataset_in}/kg.nt" \
+        --output "$HOME/git/know-rec/docker/gemsec_data/temp/kg.csv" \
+        --output2 "$HOME/git/know-rec/docker/gemsec_data/temp/edge_map.csv"
         cd ../summarization
     fi
     local num_entities=($(wc -l "$HOME/git/datasets/${dataset_in}/cao-format/ml1m/kg/e_map.dat"))
@@ -108,7 +109,7 @@ gemsec() {
         docker build -t gemsec:1.0 .
 
         docker run --rm -it --gpus all -v "$PWD"/gemsec_data:/data -w /data \
-        gemsec:1.0 /bin/bash -c "cd GEMSEC && python3 src/embedding_clustering.py \
+        gemsec:1.0 /bin/bash -c "cd /notebooks/GEMSEC && python3 src/embedding_clustering.py \
         --input "/data/temp/kg.csv" --embedding-output "/data/temp/embedding.csv" \
         --cluster-mean-output "/data/temp/means.csv" --log-output "/data/temp/log.json" \
         --assignment-output "/data/temp/assignment.json" --dump-matrices True \
@@ -130,7 +131,7 @@ gemsec() {
         docker build -t gemsec:1.0 .
 
         docker run --rm -it --gpus all -v "$PWD"/gemsec_data:/data -w /data \
-        gemsec:1.0 /bin/bash -c "cd GEMSEC && python3 src/embedding_clustering.py \
+        gemsec:1.0 /bin/bash -c "cd /notebooks/GEMSEC && python3 src/embedding_clustering.py \
         --input "/data/temp/kg.csv" --embedding-output "/data/temp/embedding.csv" \
         --cluster-mean-output "/data/temp/means.csv" --log-output "/data/temp/log.json" \
         --assignment-output "/data/temp/assignment.json" --dump-matrices True \
@@ -152,7 +153,7 @@ gemsec() {
         docker build -t gemsec:1.0 .
 
         docker run --rm -it --gpus all -v "$PWD"/gemsec_data:/data -w /data \
-        gemsec:1.0 /bin/bash -c "cd GEMSEC && python3 src/embedding_clustering.py \
+        gemsec:1.0 /bin/bash -c "cd /notebooks/GEMSEC && python3 src/embedding_clustering.py \
         --input "/data/temp/kg.csv" --embedding-output "/data/temp/embedding.csv" \
         --cluster-mean-output "/data/temp/means.csv" --log-output "/data/temp/log.json" \
         --assignment-output "/data/temp/assignment.json" --dump-matrices True \
@@ -178,19 +179,19 @@ gemsec() {
     then
         echo "[kg-summ-rs] Creating ~/git/datasets/${dataset_out}_gemsec-25/kg.nt"
         cd ../util
-        python kg2rdf.py --mode 'assignment2cluster' --input2 "$HOME/git/datasets/${dataset_in}/cao-format/ml1m/kg/e_map.dat" \
-        --input "$HOME/git/datasets/${dataset_out}_gemsec-25/assignment.json" --output "$HOME/git/datasets/${dataset_out}_gemsec-25/cluster.tsv"
+        python kg2rdf.py --mode 'assignment2cluster' --input "$HOME/git/datasets/${dataset_out}_gemsec-25/assignment.json" \
+        --input2 "$HOME/git/know-rec/docker/gemsec_data/temp/edge_map.csv" --output "$HOME/git/datasets/${dataset_out}_gemsec-25/cluster.tsv"
         python kg2rdf.py --mode 'cluster' --input2 "$HOME/git/datasets/${dataset_out}_gemsec-25/cluster.tsv" \
-        --input "$HOME/git/datasets/${dataset_in}/kg.nt"  --output "$HOME/git/datasets//${dataset_out}_gemsec-25/kg.nt"
+        --input "$HOME/git/datasets/${dataset_in}/kg.nt"  --output "$HOME/git/datasets/${dataset_out}_gemsec-25/kg.nt"
         cd ../summarization
     fi
     if no_exist "$HOME/git/datasets/${dataset_out}_gemsec-50/kg.nt"
     then
         echo "[kg-summ-rs] Creating ~/git/datasets/${dataset_out}_gemsec-50/kg.nt"
         cd ../util
-        python kg2rdf.py --mode 'assignment2cluster' --input2 "$HOME/git/datasets/${dataset_in}/cao-format/ml1m/kg/e_map.dat" \
-        --input "$HOME/git/datasets/${dataset_out}_gemsec-50/assignment.json" --output "$HOME/git/datasets/${dataset_out}_gemsec-50/cluster.tsv"
-        python kg2rdf.py --mode 'cluster' --input2 "$HOME/git/datasets//${dataset_out}_gemsec-50/cluster.tsv" \
+        python kg2rdf.py --mode 'assignment2cluster' --input "$HOME/git/datasets/${dataset_out}_gemsec-50/assignment.json" \
+        --input2 "$HOME/git/know-rec/docker/gemsec_data/temp/edge_map.csv" --output "$HOME/git/datasets/${dataset_out}_gemsec-50/cluster.tsv"
+        python kg2rdf.py --mode 'cluster' --input2 "$HOME/git/datasets/${dataset_out}_gemsec-50/cluster.tsv" \
         --input "$HOME/git/datasets/${dataset_in}/kg.nt"  --output "$HOME/git/datasets/${dataset_out}_gemsec-50/kg.nt"
         cd ../summarization
     fi
@@ -198,9 +199,9 @@ gemsec() {
     then
         echo "[kg-summ-rs] Creating ~/git/datasets/${dataset_out}_gemsec/kg.nt"
         cd ../util
-        python kg2rdf.py --mode 'assignment2cluster' --input2 "$HOME/git/datasets/${dataset_in}/cao-format/ml1m/kg/e_map.dat" \
-        --input "$HOME/git/datasets/${dataset_out}_gemsec-75/assignment.json" --output "$HOME/git/datasets/${dataset_out}_gemsec-75/cluster.tsv"
-        python kg2rdf.py --mode 'cluster' --input2 "$HOME/git/datasets//${dataset_out}_gemsec-75/cluster.tsv" \
+        python kg2rdf.py --mode 'assignment2cluster' --input "$HOME/git/datasets/${dataset_out}_gemsec-75/assignment.json" \
+        --input2 "$HOME/git/know-rec/docker/gemsec_data/temp/edge_map.csv" --output "$HOME/git/datasets/${dataset_out}_gemsec-75/cluster.tsv"
+        python kg2rdf.py --mode 'cluster' --input2 "$HOME/git/datasets/${dataset_out}_gemsec-75/cluster.tsv" \
         --input "$HOME/git/datasets/${dataset_in}/kg.nt"  --output "$HOME/git/datasets/${dataset_out}_gemsec-75/kg.nt"
         cd ../summarization
     fi
