@@ -1,5 +1,5 @@
 #!/bin/bash
-# root_folder: ~/git/kg-summ-rs
+# root_folder: ~/git/kg-summ-rec
 cd ../
 
 ################################################################################
@@ -29,9 +29,9 @@ cd ../../
 git clone https://github.com/TaoMiner/joint-kg-recommender.git
 ### Adapting Cao to CaseRecommender
 mv joint-kg-recommender/jTransUP/models/item_recommendation.py joint-kg-recommender/jTransUP/models/item_recommendation.py_ORIG
-cp kg-summ-rs/adapt/item_recommendation.py joint-kg-recommender/jTransUP/models/item_recommendation.py
+cp kg-summ-rec/adapt/item_recommendation.py joint-kg-recommender/jTransUP/models/item_recommendation.py
 mv joint-kg-recommender/jTransUP/models/knowledgable_recommendation.py joint-kg-recommender/jTransUP/models/knowledgable_recommendation.py_ORIG
-cp kg-summ-rs/adapt/knowledgable_recommendation.py joint-kg-recommender/jTransUP/models/knowledgable_recommendation.py
+cp kg-summ-rec/adapt/knowledgable_recommendation.py joint-kg-recommender/jTransUP/models/knowledgable_recommendation.py
 
 ### Sun's project
 git clone https://github.com/sunzhuntu/Recurrent-Knowledge-Graph-Embedding.git
@@ -39,7 +39,7 @@ git clone https://github.com/sunzhuntu/Recurrent-Knowledge-Graph-Embedding.git
 cp Recurrent-Knowledge-Graph-Embedding/data/ml/* datasets/ml-sun/sun_format/
 ### Adapting Sun to CaseRecommender
 mv Recurrent-Knowledge-Graph-Embedding/recurrent-neural-network.py Recurrent-Knowledge-Graph-Embedding/recurrent-neural-network.py_ORIG
-cp kg-summ-rs/adapt/recurrent-neural-network.py Recurrent-Knowledge-Graph-Embedding/recurrent-neural-network.py
+cp kg-summ-rec/adapt/recurrent-neural-network.py Recurrent-Knowledge-Graph-Embedding/recurrent-neural-network.py
 
 ### KGAT's project
 #git clone https://github.com/xiangwang1223/knowledge_graph_attention_network.git

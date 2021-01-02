@@ -24,4 +24,4 @@
 experiment=$1
 default='Sacenti-JOURNAL2021'
 
-source examples/${experiment:-default}/run_experiments.sh
+source examples/${experiment:-${default}}/run_experiments.sh

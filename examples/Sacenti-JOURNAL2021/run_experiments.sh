@@ -51,21 +51,21 @@ experiment='Sacenti-JOURNAL2021'
 #   no_exist 'path_to_file'
 #   copy_dataset 'path_to_dataset' 'path_to_new_dataset'
 #######################################
-source $HOME/git/kg-summ-rs/util/util.sh
+source $HOME/git/kg-summ-rec/util/util.sh
 
 #######################################
 # Import kg_summarization.sh
 # FUNCTIONS:
 #   kg_summarization 'dataset' 'split_mode' 'filtering'
 #######################################
-source $HOME/git/kg-summ-rs/examples/${experiment}/kg_summarization.sh
+source $HOME/git/kg-summ-rec/examples/${experiment}/kg_summarization.sh
 
 #######################################
 # Import kg_recommendation.sh
 # FUNCTIONS:
 #   kg_recommendation 'dataset' 'split_mode' 'filtering'
 #######################################
-source $HOME/git/kg-summ-rs/examples/${experiment}/kg_recommendation.sh
+source $HOME/git/kg-summ-rec/examples/${experiment}/kg_recommendation.sh
 
 
 ####
@@ -79,33 +79,33 @@ preprocess_sun_oKG() {
     # Create folders for Sun's original KG (oKG)
     if no_exist "$HOME/git/datasets/${experiment}/ml-sun_ho_oKG"
     then
-        echo "[kg-summ-rs] Creating ~/git/datasets/${experiment}/ml-sun_ho_originalKG"
-        cd $HOME/git/kg-summ-rs/util
+        echo "[kg-summ-rec] Creating ~/git/datasets/${experiment}/ml-sun_ho_originalKG"
+        cd $HOME/git/kg-summ-rec/util
         copy_ml_sun "$HOME/git/datasets/ml-sun" "$HOME/git/datasets/${experiment}/ml-sun_ho_oKG"
-        cd $HOME/git/kg-summ-rs/examples/${experiment}
+        cd $HOME/git/kg-summ-rec/examples/${experiment}
     fi
 
     # Preprocess oKG
-    cd $HOME/git/kg-summ-rs/preprocess
+    cd $HOME/git/kg-summ-rec/preprocess
     LOW_FREQUENCE=0    #Low Frequence Filtering (0, 10)
     source cao-format_ml-sun.sh "ml-sun_ho_oKG" ${LOW_FREQUENCE}
-    cd $HOME/git/kg-summ-rs/examples/${experiment}
+    cd $HOME/git/kg-summ-rec/examples/${experiment}
 
     # Collect oKG statistics
     if no_exist "$HOME/git/results/${experiment}/ml-sun_ho_oKG"
     then
-        echo "[kg-summ-rs] Creating ~/git/results/${experiment}/ml-sun_ho_oKG"
+        echo "[kg-summ-rec] Creating ~/git/results/${experiment}/ml-sun_ho_oKG"
         mkdir ~/git/results/${experiment}/ml-sun_ho_oKG
     fi
     if no_exist "$HOME/git/results/${experiment}/ml-sun_ho_oKG/kg_stats.tsv"
     then
-        echo "[kg-summ-rs] Creating ~/git/results/${experiment}/ml-sun_ho_oKG/kg_stats.tsv"
-        cd $HOME/git/kg-summ-rs/util
+        echo "[kg-summ-rec] Creating ~/git/results/${experiment}/ml-sun_ho_oKG/kg_stats.tsv"
+        cd $HOME/git/kg-summ-rec/util
         conda deactivate
-        conda activate kg-summ-rs
+        conda activate kg-summ-rec
         python kg2rdf.py --mode 'statistics' --kgpath "~/git/datasets/${experiment}/ml-sun_ho_oKG" \
         --output "~/git/results/${experiment}/ml-sun_ho_oKG/kg_stats.tsv"
-        cd $HOME/git/kg-summ-rs/examples/${experiment}
+        cd $HOME/git/kg-summ-rec/examples/${experiment}
     fi
 }
 
@@ -113,33 +113,33 @@ preprocess_sun_fKG() {
     # Create folders for Sun's filtered KG (fKG)
     if no_exist "$HOME/git/datasets/${experiment}/ml-sun_ho_fKG"
     then
-        echo "[kg-summ-rs] Creating ~/git/datasets/${experiment}/ml-sun_ho_fKG"
-        cd $HOME/git/kg-summ-rs/util
+        echo "[kg-summ-rec] Creating ~/git/datasets/${experiment}/ml-sun_ho_fKG"
+        cd $HOME/git/kg-summ-rec/util
         copy_ml_sun "$HOME/git/datasets/ml-sun" "$HOME/git/datasets/${experiment}/ml-sun_ho_fKG"
-        cd $HOME/git/kg-summ-rs/examples/${experiment}
+        cd $HOME/git/kg-summ-rec/examples/${experiment}
     fi
 
     # Preprocess fKG
-    cd $HOME/git/kg-summ-rs/preprocess
+    cd $HOME/git/kg-summ-rec/preprocess
     LOW_FREQUENCE=10    #Low Frequence Filtering (0, 10)
     source cao-format_ml-sun.sh "ml-sun_ho_fKG" ${LOW_FREQUENCE}
-    cd $HOME/git/kg-summ-rs/examples/${experiment}
+    cd $HOME/git/kg-summ-rec/examples/${experiment}
 
     # Collect oKG statistics
     if no_exist "$HOME/git/results/${experiment}/ml-sun_ho_fKG"
     then
-        echo "[kg-summ-rs] Creating ~/git/results/${experiment}/ml-sun_ho_fKG"
+        echo "[kg-summ-rec] Creating ~/git/results/${experiment}/ml-sun_ho_fKG"
         mkdir ~/git/results/${experiment}/ml-sun_ho_fKG
     fi
     if no_exist "$HOME/git/results/${experiment}/ml-sun_ho_fKG/kg_stats.tsv"
     then
-        echo "[kg-summ-rs] Creating ~/git/results/${experiment}/ml-sun_ho_fKG/kg_stats.tsv"
-        cd $HOME/git/kg-summ-rs/util
+        echo "[kg-summ-rec] Creating ~/git/results/${experiment}/ml-sun_ho_fKG/kg_stats.tsv"
+        cd $HOME/git/kg-summ-rec/util
         conda deactivate
-        conda activate kg-summ-rs
+        conda activate kg-summ-rec
         python kg2rdf.py --mode 'statistics' --kgpath "~/git/datasets/${experiment}/ml-sun_ho_fKG" \
         --output "~/git/results/${experiment}/ml-sun_ho_fKG/kg_stats.tsv"
-        cd $HOME/git/kg-summ-rs/examples/${experiment}
+        cd $HOME/git/kg-summ-rec/examples/${experiment}
     fi
 }
 
@@ -271,7 +271,7 @@ run_experiments() {
     summarize_sun_sfKG
 
     # Recommendation
-    recommend_sun_sKG
-    recommend_sun_sfKG
+    #recommend_sun_sKG
+    #recommend_sun_sfKG
 }
 run_experiments
