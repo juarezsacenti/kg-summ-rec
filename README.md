@@ -1,5 +1,5 @@
-# kg-summ-rs
-Experiments with Knowledge Graph (KG) -based Summarization (Summ.) and Recommender Systems (RSs).
+# kg-summ-rec
+Experiments with Knowledge Graph (KG) -based Summarization (Summ.) and Recommendation (Rec).
 
 We summarize KG representing side information about items gathered by KG-based RSs. We use a KG Embedding (KGE) clustering Summ. strategy with Accenture/AmpliGraph project.
 
@@ -28,7 +28,7 @@ git
 | └─ml-sun (with Sun's data)
 | | └─sun-format
 └─joint-kg-recommender
-└─kg-summ-rs
+└─kg-summ-rec
 └─Recurrent-Knowledge-Graph-Embedding
 └─results
 | └─ml-cao
@@ -45,15 +45,12 @@ git
 
 ## Run
 
-`$ cd ~/git/kg-summ-rs`
-`$ bash -i summ.sh`
-`$ bash -i evaluate.sh`
+`$ cd ~/git/kg-summ-rec`
+`$ bash -i run.sh`
 
 OR
 
 `$ cd ~/git/kg-summ-rs`
-`$ nohup bash -i summ.sh </dev/null >nohup.out 2>nohup.err &`
-`$ nohup bash -i evaluate.sh </dev/null >nohup.out 2>nohup.err &`
+`$ nohup bash -i run.sh </dev/null >nohup.out 2>nohup.err &`
 `$ watch "ps -aux | grep 'python\|bash\|nohup'"`
 `$ watch "ls -l"`
-

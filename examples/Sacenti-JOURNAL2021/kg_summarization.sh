@@ -48,21 +48,21 @@ experiment='Sacenti-JOURNAL2021'
 #   no_exist 'path_to_file'
 #   copy_dataset 'path_to_dataset' 'path_to_new_dataset'
 #######################################
-source $HOME/git/kg-summ-rs/util/util.sh
+source $HOME/git/kg-summ-rec/util/util.sh
 
 #######################################
 # Import ../summarization/kge_k_means.sh
 # FUNCTIONS:
 #   kge_k_means 'experiment' 'dataset_in' 'dataset_out' 'kg_type' 'summarization_mode' 'kge' 'epochs' 'batch_size' learning_rate' 'low_frequence'
 #######################################
-source $HOME/git/kg-summ-rs/summarization/kge_k_means.sh
+source $HOME/git/kg-summ-rec/summarization/kge_k_means.sh
 
 #######################################
 # Import ../summarization/gemsec.sh
 # FUNCTIONS:
 #   gemsec 'dataset_in' 'dataset_out' 'kg_type' 'summarization_mode' 'model' 'learning_rate_init' 'learning_rate_min'
 #######################################
-source $HOME/git/kg-summ-rs/summarization/gemsec.sh
+source $HOME/git/kg-summ-rec/summarization/gemsec.sh
 
 #######################################
 # Import ../summarization/cao-format_summ.sh
@@ -151,12 +151,12 @@ preprocess_uig() {
 
     if no_exist "$HOME/git/datasets/${experiment}/${dataset_in}/kg-uig.nt"
     then
-        echo "[kg-summ-rs] Creating ~/git/datasets/${experiment}/${dataset_in}/kg-uig.nt"
-        cd $HOME/git/kg-summ-rs/util
+        echo "[kg-summ-rec] Creating ~/git/datasets/${experiment}/${dataset_in}/kg-uig.nt"
+        cd $HOME/git/kg-summ-rec/util
         python kg2rdf.py --mode 'ig2uig' --input "$HOME/git/datasets/${experiment}/${dataset_in}/kg-ig.nt" \
         --input2 "$HOME/git/datasets/${experiment}/${dataset_in}/cao-format/ml1m/" \
         --output "$HOME/git/datasets/${experiment}/${dataset_in}/kg-uig.nt"
-        cd $HOME/git/kg-summ-rs/examples/${experiment}
+        cd $HOME/git/kg-summ-rec/examples/${experiment}
     fi
 }
 
@@ -166,7 +166,7 @@ preprocess_summ() {
     local kg_type=$3
     local low_frequence=$4
 
-    cd $HOME/git/kg-summ-rs/preprocess
+    cd $HOME/git/kg-summ-rec/preprocess
 
     summ_types=(ig uig)
     summ_modes=(sv mv)
@@ -186,7 +186,7 @@ preprocess_summ() {
         done
     done
 
-    cd $HOME/git/kg-summ-rs/examples/${experiment}
+    cd $HOME/git/kg-summ-rec/examples/${experiment}
 }
 
 measure_summ_impact() {
@@ -195,7 +195,7 @@ measure_summ_impact() {
     local kg_type=$3
     local low_frequence=$4
 
-    cd $HOME/git/kg-summ-rs/util
+    cd $HOME/git/kg-summ-rec/util
 
     summ_types=(ig uig)
     summ_modes=(sv mv)
@@ -212,7 +212,7 @@ measure_summ_impact() {
                     local dirName="${dataset_out}_${t}_${m}_${a}_${r}"
                     if no_exist "$HOME/git/results/${experiment}/${dirName}/kg_stats.tsv"
                     then
-                        echo "[kg-summ-rs] Creating ~/git/results/${experiment}/${dirName}/kg_stats.tsv"
+                        echo "[kg-summ-rec] Creating ~/git/results/${experiment}/${dirName}/kg_stats.tsv"
                         python kg2rdf.py --mode 'statistics' --kgpath "$HOME/git/datasets/${experiment}/${dirName}" \
                         --output "$HOME/git/results/${experiment}/${dirName}//kg_stats.tsv"
                     fi
@@ -221,7 +221,7 @@ measure_summ_impact() {
         done
     done
 
-    cd $HOME/git/kg-summ-rs/examples/${experiment}
+    cd $HOME/git/kg-summ-rec/examples/${experiment}
 }
 
 kg_summarization() {
