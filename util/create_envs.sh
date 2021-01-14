@@ -1,7 +1,17 @@
 #!/bin/bash
-cd ~/git/know-rec
+cd ~/git/kg-summ-rec
 
-# TaoMiner/joint-kg-recommender environment:
+# kg-summ-rec environment:
+conda create -n kg-summ-rec python=3.7.4
+conda activate kg-summ-rec
+
+conda install pandas
+pip install rdflib==4.2.2
+
+conda deactivate
+
+
+# TaoMiner/joint-kg-recommender jointrec environment:
 conda create -n jointrec python=3.6
 conda activate jointrec
 
@@ -12,13 +22,12 @@ rm torch-0.3.0.post4-cp36-cp36m-linux_x86_64.whl
 conda install python-gflags
 pip install visdom
 conda install -c conda-forge tqdm
-conda install pandas
 pip install -U git+git://github.com/caserec/CaseRecommender.git
-pip install rdflib
 
 conda deactivate
 
-# sunzhuntu/Recurrent-Knowledge-Graph-Embedding environment:
+
+# sunzhuntu/Recurrent-Knowledge-Graph-Embedding rkge environment:
 conda create -n rkge python=3.6.9
 conda activate rkge
 
@@ -28,7 +37,8 @@ pip install -U git+git://github.com/caserec/CaseRecommender.git
 
 conda deactivate
 
-# xiangwang1223/knowledge_graph_attention_network
+
+# xiangwang1223/knowledge_graph_attention_network kgat environment:
 conda create -n kgat python=3.6.5
 conda activate kgat
 
@@ -37,13 +47,14 @@ conda install scipy=1.1.0
 conda install scikit-learn=0.20.0
 conda install tensorflow-gpu=1.12.0
 
-# hwwang55/RippleNet
+
+# hwwang55/RippleNet ripplenet environment
 conda create -n ripplenet python=3.6.5
 conda activate ripplenet
 
 wget -O cuda_8.0_linux.run https://developer.nvidia.com/compute/cuda/8.0/Prod2/local_installers/cuda_8.0.61_375.26_linux-run
 chmod +x cuda_8.0_linux.run
-sudo sh cuda_8.0_linux.run --silent --toolkit --toolkitpath=/usr/local/cuda-8.0
+sh cuda_8.0_linux.run --silent --toolkit --toolkitpath=/usr/local/cuda-8.0
 rm cuda_8.0_linux.run
 
 cd $CONDA_PREFIX
@@ -68,14 +79,3 @@ conda install numpy=1.14.5
 conda install scikit-learn=0.19.1
 pip install tensorflow-gpu==1.4.0
 
-# juarezsacenti/orbs environment:
-#conda create -n orbs python=3.6
-#conda activate orbs
-
-#sudo apt-get update
-#sudo apt-get install gcc
-#pip install numpy cython
-#cd ~/git/ORBS
-#python setup.py install
-
-#conda deactivate

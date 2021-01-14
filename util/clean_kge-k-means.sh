@@ -1,6 +1,7 @@
 #!/bin/bash
 
 #[kge-k-means_data]
-
-yes | rm ~/git/know-rec/docker/kge-k-means_data/application.log
-yes | rm -r ~/git/know-rec/docker/kge-k-means_data/temp/*.*
+clean_kge-k-means() {
+    yes | rm ~/git/kg-summ-rec/docker/kge-k-means_data/application.log
+    yes | rm -r ~/git/kg-summ-rec/docker/kge-k-means_data/temp/*.*
+}

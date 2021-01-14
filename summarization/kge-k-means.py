@@ -32,9 +32,9 @@ def kge_k_means(data_home, folder, triples_file, items_file, mode, kge_name, epo
     
     # Print Stats:
     if verbose:
-        print(f'[kg-summ-rs] #Triples: {len(triples)}')
+        print(f'[kge-k-means] #Triples: {len(triples)}')
         #print(triples[0:10])
-        print(f'[kg-summ-rs] #Items: {len(items)}')
+        print(f'[kge-k-means] #Items: {len(items)}')
         #print(items[0:10])
     
     # Select mode:
@@ -55,9 +55,9 @@ def singleview(triples, items, kge_name, epochs, batch_size, learning_rate, rate
     entities = np.setdiff1d(nodes,items)
     
     if verbose:
-        print(f'[kg-summ-rs] #Nodes: {len(nodes)}')
+        print(f'[kge-k-means] #Nodes: {len(nodes)}')
         #print(nodes[0:10])
-        print(f'[kg-summ-rs] #Entities: {len(entities)}')
+        print(f'[kge-k-means] #Entities: {len(entities)}')
         #print(entities[0:10])
 
     # Train KGE model
@@ -96,10 +96,10 @@ def multiview(triples, items, kge_name, epochs, batch_size, learning_rate, rates
             entities = np.setdiff1d(nodes,items)
     
             if verbose:
-                print(f'[kg-summ-rs] Relation: {r}')
-                print(f'[kg-summ-rs] #Nodes: {len(nodes)}')
+                print(f'[kge-k-means] Relation: {r}')
+                print(f'[kge-k-means] #Nodes: {len(nodes)}')
                 #print(nodes[0:10])
-                print(f'[kg-summ-rs] #Entities: {len(entities)}')
+                print(f'[kge-k-means] #Entities: {len(entities)}')
                 #print(entities[0:10])
     
             # Group entities into n-clusters
@@ -197,7 +197,7 @@ if __name__ == '__main__':
 
     parser.add_argument('--datahome', type=str, dest='datahome', default='/data')
     parser.add_argument('--folder', type=str, dest='folder', default='temp')
-    parser.add_argument('--triples', type=str, dest='triples', default='kg.nt')
+    parser.add_argument('--triples', type=str, dest='triples', default='kg-ig.nt')
     parser.add_argument('--items', type=str, dest='items', default='/data/temp/i2kg_map.tsv')
     parser.add_argument('--mode', type=str, dest='mode', default='singleview')
     parser.add_argument('--kge', type=str, dest='kge', default='complex')

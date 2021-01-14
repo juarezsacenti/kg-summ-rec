@@ -81,7 +81,7 @@ def df2nt(df_auxiliary, output_file, i2kg_map_file=''):
             # Writing
             nt_str = ""
 
-            movie_str = "<" + i2kg_map.get(int(movie_id), "http://ml1m-sun/movie_"+movie_id)+ ">"
+            movie_str = "<" + i2kg_map.get(int(movie_id), "http://ml1m-sun/movie"+movie_id)+ ">"
             for genre_id in genre_list:
                 nt_str += movie_str + ' <http://ml1m-sun/genre> <http://ml1m-sun/genre' + str(genre_id) + '> .\n'
             for director_id in director_list:
@@ -174,11 +174,11 @@ def mapping(df_auxiliary, mapping_path, i2kg_map_file=''):
                 head_json_str += ', '
 
             head_json_str = head_json_str[:-2] + "]"
-            output_line = i2kg_map.get(int(movie_id), "http://ml1m-sun/movie_"+movie_id) + '\t' + head_json_str + '\t' + '[]' + '\n'
+            output_line = i2kg_map.get(int(movie_id), "http://ml1m-sun/movie"+movie_id) + '\t' + head_json_str + '\t' + '[]' + '\n'
             fout.write(output_line)
 
             # Entities and predicates
-            all_entity_set.add(i2kg_map.get(int(movie_id), "http://ml1m-sun/movie_"+movie_id))
+            all_entity_set.add(i2kg_map.get(int(movie_id), "http://ml1m-sun/movie"+movie_id))
             input_entity_set.add(movie_id)
 
     for actor_id in actor_map.values():
@@ -212,7 +212,7 @@ def mapping(df_auxiliary, mapping_path, i2kg_map_file=''):
     with open(input_entity_file, 'w') as fout:
         id=1
         for movie_id in input_entity_set:
-            fout.write(str(movie_id) + '\t' + "name" + '\t' + i2kg_map.get(int(movie_id), "http://ml1m-sun/movie_"+movie_id) + '\n')
+            fout.write(str(movie_id) + '\t' + "name" + '\t' + i2kg_map.get(int(movie_id), "http://ml1m-sun/movie"+movie_id) + '\n')
             id+=1
 
     kg_map_file = os.path.join(mapping_path, "kg_map.dat")
@@ -338,7 +338,7 @@ if __name__ == '__main__':
         df_auxiliary = load_ml1m_sun_data(input_file)
         df_auxiliary = cleanning(df_auxiliary)
         genre_count, director_count, actor_count = mapping(df_auxiliary, mapping_path, i2kg_map_file)
-        df2nt(df_auxiliary, os.path.join(mapping_path,"..","..","kg.nt") )
+        df2nt(df_auxiliary, os.path.join(mapping_path,"..","..","kg-ig.nt") )
     elif mode == 'nt':
         genre_count, director_count, actor_count = mapping_from_nt(input_file, mapping_path)
 
