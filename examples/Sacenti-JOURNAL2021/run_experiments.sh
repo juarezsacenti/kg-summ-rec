@@ -46,12 +46,19 @@
 experiment='Sacenti-JOURNAL2021'
 
 #######################################
-# Import ../util/util.sh
+# Import util/util.sh
 # FUNCTIONS:
 #   no_exist 'path_to_file'
 #   copy_dataset 'path_to_dataset' 'path_to_new_dataset'
 #######################################
 source $HOME/git/kg-summ-rec/util/util.sh
+
+#######################################
+# Import preprocess/cao-format_ml-sun.sh
+# FUNCTIONS:
+#   cao-format_ml-sun 'dataset' 'low_frequence'
+#######################################
+source $HOME/git/kg-summ-rec/preprocess/cao-format_ml-sun.sh
 
 #######################################
 # Import kg_summarization.sh
@@ -65,7 +72,7 @@ source $HOME/git/kg-summ-rec/examples/${experiment}/kg_summarization.sh
 # FUNCTIONS:
 #   kg_recommendation 'dataset' 'split_mode' 'filtering'
 #######################################
-source $HOME/git/kg-summ-rec/examples/${experiment}/kg_recommendation.sh
+#source $HOME/git/kg-summ-rec/examples/${experiment}/kg_recommendation.sh
 
 
 ####
@@ -79,7 +86,7 @@ preprocess_sun_oKG() {
     # Create folders for Sun's original KG (oKG)
     if no_exist "$HOME/git/datasets/${experiment}/ml-sun_ho_oKG"
     then
-        echo "[kg-summ-rec] Creating ~/git/datasets/${experiment}/ml-sun_ho_originalKG"
+        echo "[kg-summ-rec] Creating ~/git/datasets/${experiment}/ml-sun_ho_oKG"
         cd $HOME/git/kg-summ-rec/util
         copy_ml_sun "$HOME/git/datasets/ml-sun" "$HOME/git/datasets/${experiment}/ml-sun_ho_oKG"
         cd $HOME/git/kg-summ-rec/examples/${experiment}
@@ -88,7 +95,7 @@ preprocess_sun_oKG() {
     # Preprocess oKG
     cd $HOME/git/kg-summ-rec/preprocess
     LOW_FREQUENCE=0    #Low Frequence Filtering (0, 10)
-    source cao-format_ml-sun.sh "ml-sun_ho_oKG" ${LOW_FREQUENCE}
+    cao-format_ml-sun "ml-sun_ho_oKG" ${LOW_FREQUENCE}
     cd $HOME/git/kg-summ-rec/examples/${experiment}
 
     # Collect oKG statistics
@@ -97,14 +104,15 @@ preprocess_sun_oKG() {
         echo "[kg-summ-rec] Creating ~/git/results/${experiment}/ml-sun_ho_oKG"
         mkdir ~/git/results/${experiment}/ml-sun_ho_oKG
     fi
-    if no_exist "$HOME/git/results/${experiment}/ml-sun_ho_oKG/kg_stats.tsv"
+    if no_exist "$HOME/git/results/${experiment}/ml-sun_ho_oKG/kg-ig_stats.tsv"
     then
-        echo "[kg-summ-rec] Creating ~/git/results/${experiment}/ml-sun_ho_oKG/kg_stats.tsv"
+        echo "[kg-summ-rec] Creating ~/git/results/${experiment}/ml-sun_ho_oKG/kg-ig_stats.tsv"
         cd $HOME/git/kg-summ-rec/util
         conda deactivate
         conda activate kg-summ-rec
         python kg2rdf.py --mode 'statistics' --kgpath "~/git/datasets/${experiment}/ml-sun_ho_oKG" \
-        --output "~/git/results/${experiment}/ml-sun_ho_oKG/kg_stats.tsv"
+        --input "~/git/datasets/${experiment}/ml-sun_ho_oKG/kg-ig.nt" \
+        --output "~/git/results/${experiment}/ml-sun_ho_oKG/kg-ig_stats.tsv"
         cd $HOME/git/kg-summ-rec/examples/${experiment}
     fi
 }
@@ -122,7 +130,7 @@ preprocess_sun_fKG() {
     # Preprocess fKG
     cd $HOME/git/kg-summ-rec/preprocess
     LOW_FREQUENCE=10    #Low Frequence Filtering (0, 10)
-    source cao-format_ml-sun.sh "ml-sun_ho_fKG" ${LOW_FREQUENCE}
+    cao-format_ml-sun "ml-sun_ho_fKG" ${LOW_FREQUENCE}
     cd $HOME/git/kg-summ-rec/examples/${experiment}
 
     # Collect oKG statistics
@@ -131,14 +139,15 @@ preprocess_sun_fKG() {
         echo "[kg-summ-rec] Creating ~/git/results/${experiment}/ml-sun_ho_fKG"
         mkdir ~/git/results/${experiment}/ml-sun_ho_fKG
     fi
-    if no_exist "$HOME/git/results/${experiment}/ml-sun_ho_fKG/kg_stats.tsv"
+    if no_exist "$HOME/git/results/${experiment}/ml-sun_ho_fKG/kg-ig_stats.tsv"
     then
-        echo "[kg-summ-rec] Creating ~/git/results/${experiment}/ml-sun_ho_fKG/kg_stats.tsv"
+        echo "[kg-summ-rec] Creating ~/git/results/${experiment}/ml-sun_ho_fKG/kg-ig_stats.tsv"
         cd $HOME/git/kg-summ-rec/util
         conda deactivate
         conda activate kg-summ-rec
         python kg2rdf.py --mode 'statistics' --kgpath "~/git/datasets/${experiment}/ml-sun_ho_fKG" \
-        --output "~/git/results/${experiment}/ml-sun_ho_fKG/kg_stats.tsv"
+        --input "~/git/datasets/${experiment}/ml-sun_ho_fKG/kg-ig.nt" \
+        --output "~/git/results/${experiment}/ml-sun_ho_fKG/kg-ig_stats.tsv"
         cd $HOME/git/kg-summ-rec/examples/${experiment}
     fi
 }
@@ -205,7 +214,7 @@ summarize_sun_sfKG() {
 # - ml-sun_ho_sfKG_complex-ig-mv-25
 ####
 recommend_sun_sKG() {
-    source kg_recommendation_ho_ml-sun.sh "ml-sun_ho_originalKG" '4873,487300,24363' '2663,266300,13317' '266,26630,1331' '10392,1039200,51960' 256 0.005
+    source kg_recommendation_ho_ml-sun.sh "ml-sun_ho_oKG" '4873,487300,24363' '2663,266300,13317' '266,26630,1331' '10392,1039200,51960' 256 0.005
     source kg_recommendation_ho_ml-sun.sh "ml-sun_ho_sv_sKG_complex-75" '4873,487300,24363' '2663,266300,13317' '266,26630,1331' '10392,1039200,51960' 256 0.005
     source kg_recommendation_ho_ml-sun.sh "ml-sun_ho_sv_sKG_complex-50" '4873,487300,24363' '2663,266300,13317' '266,26630,1331' '10392,1039200,51960' 256 0.005
     source kg_recommendation_ho_ml-sun.sh "ml-sun_ho_sv_sKG_complex-25" '4873,487300,24363' '2663,266300,13317' '266,26630,1331' '10392,1039200,51960' 256 0.005
@@ -262,13 +271,20 @@ recommend_sun_sfKG() {
 }
 
 run_experiments() {
+    if [ ! -d "$HOME/git/datasets/${experiment}" ]
+    then
+       echo "[kg-summ-rec] Creating ~/git/datasets/${experiment}"
+       mkdir "$HOME/git/datasets/${experiment}"
+       mkdir "$HOME/git/results/${experiment}"        
+    fi
+    
     # Preprocessing
     preprocess_sun_oKG
     preprocess_sun_fKG
 
     # Summarization
     summarize_sun_sKG
-    summarize_sun_sfKG
+    #summarize_sun_sfKG
 
     # Recommendation
     #recommend_sun_sKG

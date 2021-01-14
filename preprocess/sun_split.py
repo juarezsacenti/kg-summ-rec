@@ -28,11 +28,11 @@ def id_map(df, u_map_file, i_map_file):
 
     with open(u_map_file, 'w') as fout:
         for k,v in u_map.items():
-            fout.write(str(v)+'\t'+str(v)+'\n')
+            fout.write(str(v)+'\t'+str(k)+'\n')
 
     with open(i_map_file, 'w') as fout:
         for k,v in i_map.items():
-            fout.write(str(v)+'\t'+str(v)+'\n')
+            fout.write(str(v)+'\t'+str(k)+'\n')
 
     return df
 

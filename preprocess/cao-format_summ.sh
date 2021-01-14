@@ -33,7 +33,6 @@
 # RETURN:
 #   0 if print succeeds, non-zero on error.
 #######################################
-experiment='Sacenti-JOURNAL2021'
 
 #######################################
 # Import ../util/util.sh
@@ -41,26 +40,26 @@ experiment='Sacenti-JOURNAL2021'
 #   no_exist 'path_to_file'
 #   copy_dataset 'path_to_dataset' 'path_to_new_dataset'
 #######################################
-source $HOME/git/kg-summ-rs/util/util.sh
+source $HOME/git/kg-summ-rec/util/util.sh
 
 cao-format_summ() {
     local dataset_in=$1 # Input dataset: ml-sun, ml-cao
     local dataset_out=$2 # Output dataset: ml-sun_ho_sv_sKG, ml-cao_ho_mv_sfKG
-    local low_frequence=$7 # Low Frequence: 0, 10
+    local low_frequence=$3 # Low Frequence: 0, 10
 
     ################################################################################
     ###                       Preprocess ${DATASET}_${KGE}-${RATE}               ###
     ################################################################################
     if no_exist "$HOME/git/datasets/${experiment}/${dataset_out}/cao-format/ml1m/kg/kg_hop0.dat"
     then
-        echo "[kg-summ-rs] Creating ~/git/datasets/${experiment}/${dataset_out}/cao-format/ml1m/kg/kg_hop0.dat"
-        python sun2cao_step1.py --mode 'nt' --input "~/git/datasets/${experiment}/${dataset_out}/kg.nt" --mapping "~/git/datasets/${experiment}/${dataset_out}/cao-format/ml1m"
+        echo "[kg-summ-rec] Creating ~/git/datasets/${experiment}/${dataset_out}/cao-format/ml1m/kg/kg_hop0.dat"
+        python sun2cao_step1.py --mode 'nt' --input "~/git/datasets/${experiment}/${dataset_out}/kg-ig.nt" --mapping "~/git/datasets/${experiment}/${dataset_out}/cao-format/ml1m"
     fi
 
     #[sun2cao/train.dat, valid.dat, test.dat, ... from sun2cao]
     if no_exist "$HOME/git/datasets/${experiment}/${dataset_out}/cao-format/ml1m/train.dat"
     then
-        echo "[kg-summ-rs] Creating ~/git/datasets/${experiment}/${dataset_out}/cao-format/ml1m/train.dat"
+        echo "[kg-summ-rec] Creating ~/git/datasets/${experiment}/${dataset_out}/cao-format/ml1m/train.dat"
         ln -s ~/git/datasets/${experiment}/${dataset_in}/cao-format/ml1m/train.dat ~/git/datasets/${experiment}/${dataset_out}/cao-format/ml1m/train.dat
         ln -s ~/git/datasets/${experiment}/${dataset_in}/cao-format/ml1m/valid.dat ~/git/datasets/${experiment}/${dataset_out}/cao-format/ml1m/valid.dat
         ln -s ~/git/datasets/${experiment}/${dataset_in}/cao-format/ml1m/test.dat ~/git/datasets/${experiment}/${dataset_out}/cao-format/ml1m/test.dat
@@ -73,9 +72,9 @@ cao-format_summ() {
     #[sun2cao_step2]
     if no_exist "$HOME/git/datasets/${experiment}/${dataset_out}/cao-format/ml1m/kg/e_map.dat"
     then
-        echo "[kg-summ-rs] Creating ~/git/datasets/${experiment}/${dataset_out}/cao-format/ml1m/kg/e_map.dat"
+        echo "[kg-summ-rec] Creating ~/git/datasets/${experiment}/${dataset_out}/cao-format/ml1m/kg/e_map.dat"
         python sun2cao_step2.py --data_path "~/git/datasets/${experiment}/${dataset_out}/cao-format/" --dataset 'ml1m' --lowfrequence ${low_frequence}
     fi
 
-    cd "$HOME/git/know-rec/preprocess"
+    cd "$HOME/git/kg-summ-rec/preprocess"
 }

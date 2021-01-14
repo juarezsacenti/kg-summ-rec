@@ -6,11 +6,30 @@ import numpy as np
 import json
 
 
+def uig2euig(nt_file, dataset_path, output_file):
+    # copy nt_file to output_file
+    with open(nt_file) as fin, open(output_file, 'w') as fout:
+        for line in fin:
+            fout.write(line)
+    kg_map = {}
+    with open(f'{dataset_path}i_map.dat') as fin:
+        for line in fin:
+            (entity_name, entity_uri) = line.rstrip('\n').split('\t')
+            i_map[entity_uri] = entity_name
+ 
+
+
+
 def ig2uig(nt_file, dataset_path, output_file):
     # copy nt_file to output_file
     with open(nt_file) as fin, open(output_file, 'w') as fout:
         for line in fin:
             fout.write(line)
+    i_map = {}
+    with open(f'{dataset_path}i_map.dat') as fin:
+        for line in fin:
+            (item_id, original_item_id) = line.rstrip('\n').split('\t')
+            i_map[item_id] = original_item_id
     i2kg_map = {}
     with open(f'{dataset_path}i2kg_map.tsv') as fin:
         for line in fin:
@@ -20,7 +39,7 @@ def ig2uig(nt_file, dataset_path, output_file):
     with open(f'{dataset_path}train.dat') as fin, open(output_file, 'a+') as fout:
         for line in fin:
             (u, i, r) = line.rstrip('\n').split('\t')
-            fout.write(f'<http://ml1m-sun/user{u}> <http://ml1m-sun/rates> <{i2kg_map[i]}>')
+            fout.write(f'<http://ml1m-sun/user{u}> <http://ml1m-sun/rates> <{i2kg_map[i_map[i]]}>')
 
 
 #nt to edges (gemsec format)
@@ -165,13 +184,11 @@ def splitkg2nt(file, fr_e_map, fr_r_map, save_file):
                                                 e_map.get(o, o)))
 
 
-
-def statistics(kg_path, output_file, KG_format='nt'):
-    input_KG_file = os.path.join(kg_path, 'kg.nt')
+def statistics(kg_path, input_file, output_file, KG_format='nt'):
     input_items_file = os.path.join(kg_path, 'cao-format', 'ml1m', 'i2kg_map.tsv')
 
     g = Graph()
-    g.parse(input_KG_file, format=KG_format)
+    g.parse(input_file, format=KG_format)
 
     items = [f'{x}' for x in pd.read_csv(input_items_file, sep='\t', names=["id", "name", "url"]).url.unique().tolist()]
     #print(items[0:10])
@@ -248,7 +265,7 @@ if __name__ == '__main__':
 
     parser.add_argument('--mode', type=str, dest='mode', default='splitkg')
     parser.add_argument('--kgpath', type=str, dest='kg_path', default='../../datasets/ml1m-sun2cao/ml1m/kg/')
-    parser.add_argument('--input', type=str, dest='input_file', default='../docker/ampligraph-data/kg.nt')
+    parser.add_argument('--input', type=str, dest='input_file', default='../docker/ampligraph-data/kg-ig.nt')
     parser.add_argument('--input2', type=str, dest='input_file_2', default='../docker/ampligraph-data/cluster25.csv')
     parser.add_argument('--output', type=str, dest='output_file', default='../docker/ampligraph-data/kg_cluster25.nt')
     parser.add_argument('--output2', type=str, dest='output_file_2', default='../docker/gemsec-data/temp/edge_map.csv')
@@ -279,7 +296,7 @@ if __name__ == '__main__':
     elif mode == 'mv_cluster':
         mv_cluster2nt(input_file_2, input_file, output_file)
     elif mode == 'statistics':
-        statistics(kg_path, output_file)
+        statistics(kg_path, input_file, output_file)
     elif mode == 'infrequent':
         infrequent_entities(input_file, output_file)
     elif mode == 'duplicates':

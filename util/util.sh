@@ -45,6 +45,28 @@ no_exist() {
 }
 
 #######################################
+# Summarize using KGE-K-Means
+# GLOBALS:
+#   None
+# ARGUMENTS:
+#   path_to_file: Input path to file
+# OUTPUTS:
+#   None
+# RETURN:
+#   0 if print succeeds, non-zero on error.
+#######################################
+no_exist_dir() {
+    local dir_path=$1
+
+    if [! -d "$f" ]
+    then
+        return 1
+    else
+        return 0
+    fi
+}
+
+#######################################
 # Copy ml-sun dataset
 # GLOBALS:
 #   None
@@ -60,16 +82,16 @@ copy_ml_sun() {
     local path_to_dataset=$1
     local path_to_new_dataset=$2
 
-    mkdir "${path_to_dataset}"
-    mkdir "${path_to_dataset}/sun-format"
-    ln -s "${path_to_new_dataset}/sun-format/auxiliary.txt" "${path_to_dataset}/sun-format/auxiliary.txt"
-    ln -s "${path_to_new_dataset}/sun-format/auxiliary-mapping.txt" "${path_to_dataset}/sun-format/auxiliary-mapping.txt"
-    ln -s "${path_to_new_dataset}/sun-format/negative-path.txt" "${path_to_dataset}/sun-format/negative-path.txt"
-    ln -s "${path_to_new_dataset}/sun_format/negative.txt" "${path_to_dataset}/sun-format/negative.txt"
-    ln -s "${path_to_new_dataset}/sun-format/positive-path.txt" "${path_to_dataset}/sun-format/positive-path.txt"
-    ln -s "${path_to_new_dataset}/sun_format/pre-train-item-embedding.txt" "${path_to_dataset}/sun-format/pre-train-item-embedding.txt"
-    ln -s "${path_to_new_dataset}/sun-format/pre-train-user-embedding.txt" "${path_to_dataset}/sun-format/pre-train-user-embedding.txt"
-    ln -s "${path_to_new_dataset}/sun-format/rating-delete-missing-itemid.txt" "${path_to_dataset}/sun-format/rating-delete-missing-itemid.txt"
-    ln -s "${path_to_new_dataset}/sun-format/test.txt" "${path_to_dataset}/sun-format/test.txt"
-    ln -s "${path_to_new_dataset}/sun-format/training.txt" "${path_to_dataset}/sun-format/training.txt"
+    mkdir "${path_to_new_dataset}"
+    mkdir "${path_to_new_dataset}/sun-format"
+    ln -s "${path_to_dataset}/sun-format/auxiliary.txt" "${path_to_new_dataset}/sun-format/auxiliary.txt"
+    ln -s "${path_to_dataset}/sun-format/auxiliary-mapping.txt" "${path_to_new_dataset}/sun-format/auxiliary-mapping.txt"
+    ln -s "${path_to_dataset}/sun-format/negative-path.txt" "${path_to_new_dataset}/sun-format/negative-path.txt"
+    ln -s "${path_to_dataset}/sun_format/negative.txt" "${path_to_new_dataset}/sun-format/negative.txt"
+    ln -s "${path_to_dataset}/sun-format/positive-path.txt" "${path_to_new_dataset}/sun-format/positive-path.txt"
+    ln -s "${path_to_dataset}/sun_format/pre-train-item-embedding.txt" "${path_to_new_dataset}/sun-format/pre-train-item-embedding.txt"
+    ln -s "${path_to_dataset}/sun-format/pre-train-user-embedding.txt" "${path_to_new_dataset}/sun-format/pre-train-user-embedding.txt"
+    ln -s "${path_to_dataset}/sun-format/rating-delete-missing-itemid.txt" "${path_to_new_dataset}/sun-format/rating-delete-missing-itemid.txt"
+    ln -s "${path_to_dataset}/sun-format/test.txt" "${path_to_new_dataset}/sun-format/test.txt"
+    ln -s "${path_to_dataset}/sun-format/training.txt" "${path_to_new_dataset}/sun-format/training.txt"
 }

@@ -22,7 +22,7 @@
 #   no_exist 'path_to_file'
 #   copy_dataset 'path_to_dataset' 'path_to_new_dataset'
 #######################################
-source util/util.sh
+source $HOME/git/kg-summ-rec/util/util.sh
 
 
 #######################################
@@ -43,110 +43,124 @@ source util/util.sh
 # RETURN:
 #   0 if print succeeds, non-zero on error.
 #######################################
-kge_k_means() {
+kge-k-means() {
     local experiment=$1
     local dataset_in=$2
     local dataset_out=$3
-    local kge=$4
-    local epochs=$5
-    local batch_size=$6
-    local learning_rate=$7
-    local low_frequence=$8
+    local kg_filename=$4
+    local summarization_mode=$5
+    local kge=$6
+    local epochs=$7
+    local batch_size=$8
+    local learning_rate=$9
+    local low_frequence=$10
 
     ############################################################################
-    ###                   Create dataset Folders - {25,50,75}                ###
+    ##i                   Create dataset Folders - {25,50,75}                ###
     ############################################################################
-    if [ ! -d "$HOME/git/datasets/${dataset_out}_${kge}-25" ]
+    if [ ! -d "$HOME/git/datasets/${experiment}/${dataset_out}-${kge}-25" ]
     then
-        echo "[kg-summ-rs] Creating ~/git/datasets/${dataset_out}_${kge}-25"
-        mkdir ~/git/datasets/${dataset_out}_${kge}-25/
-        mkdir ~/git/datasets/${dataset_out}_${kge}-25/cao-format
-        mkdir ~/git/datasets/${dataset_out}_${kge}-25/cao-format/ml1m
-        mkdir ~/git/datasets/${dataset_out}_${kge}-25/cao-format/ml1m/kg
-        mkdir ~/git/results/${dataset_out}_${kge}-25/
+        echo "[kg-summ-rec] Creating ~/git/datasets/${experiment}/${dataset_out}-${kge}-25"
+        mkdir ~/git/datasets/${experiment}/${dataset_out}-${kge}-25/
+        mkdir ~/git/datasets/${experiment}/${dataset_out}-${kge}-25/cao-format
+        mkdir ~/git/datasets/${experiment}/${dataset_out}-${kge}-25/cao-format/ml1m
+        mkdir ~/git/datasets/${experiment}/${dataset_out}-${kge}-25/cao-format/ml1m/kg
+        mkdir ~/git/results/${experiment}/${dataset_out}-${kge}-25/
     fi
-    if [ ! -d "$HOME/git/datasets/${dataset_out}_${kge}-50" ]
+    if [ ! -d "$HOME/git/datasets/${experiment}/${dataset_out}-${kge}-50" ]
     then
-        echo "[kg-summ-rs] Creating ~/git/datasets/${dataset_out}_${kge}-50"
-        mkdir ~/git/datasets/${dataset_out}_${kge}-50/
-        mkdir ~/git/datasets/${dataset_out}_${kge}-50/cao-format
-        mkdir ~/git/datasets/${dataset_out}_${kge}-50/cao-format/ml1m
-        mkdir ~/git/datasets/${dataset_out}_${kge}-50/cao-format/ml1m/kg
-        mkdir ~/git/results/${dataset_out}_${kge}-50/
+        echo "[kg-summ-rec] Creating ~/git/datasets/${experiment}/${dataset_out}-${kge}-50"
+        mkdir ~/git/datasets/${experiment}/${dataset_out}-${kge}-50/
+        mkdir ~/git/datasets/${experiment}/${dataset_out}-${kge}-50/cao-format
+        mkdir ~/git/datasets/${experiment}/${dataset_out}-${kge}-50/cao-format/ml1m
+        mkdir ~/git/datasets/${experiment}/${dataset_out}-${kge}-50/cao-format/ml1m/kg
+        mkdir ~/git/results/${experiment}/${dataset_out}-${kge}-50/
     fi
-    if [ ! -d "$HOME/git/datasets/${dataset_out}_${kge}-75" ]
+    if [ ! -d "$HOME/git/datasets/${experiment}/${dataset_out}-${kge}-75" ]
     then
-        echo "[kg-summ-rs] Creating ~/git/datasets/${dataset_out}_${kge}-75"
-        mkdir ~/git/datasets/${dataset_out}_${kge}-75/
-        mkdir ~/git/datasets/${dataset_out}_${kge}-75/cao-format
-        mkdir ~/git/datasets/${dataset_out}_${kge}-75/cao-format/ml1m
-        mkdir ~/git/datasets/${dataset_out}_${kge}-75/cao-format/ml1m/kg
-        mkdir ~/git/results/${dataset_out}_${kge}-75/
+        echo "[kg-summ-rec] Creating ~/git/datasets/${experiment}/${dataset_out}-${kge}-75"
+        mkdir ~/git/datasets/${experiment}/${dataset_out}-${kge}-75/
+        mkdir ~/git/datasets/${experiment}/${dataset_out}-${kge}-75/cao-format
+        mkdir ~/git/datasets/${experiment}/${dataset_out}-${kge}-75/cao-format/ml1m
+        mkdir ~/git/datasets/${experiment}/${dataset_out}-${kge}-75/cao-format/ml1m/kg
+        mkdir ~/git/results/${experiment}/${dataset_out}-${kge}-75/
     fi
 
     ############################################################################
     ###          Clusterize ${dataset_out} with ${kge} - {25,50,75}          ###
     ############################################################################
     # Dependencies:
-    #[~/git/datasets/${dataset_out}/kg.nt]
+    #[~/git/datasets/${experiment}/${dataset_out}/${kg_filename}]
 
-    if no_exist "$HOME/git/know-rec/docker/kge-k-means_data/temp/kg.nt"
+    if no_exist "$HOME/git/kg-summ-rec/docker/kge-k-means_data/temp/${kg_filename}"
     then
-        echo '[kg-summ-rs] Creating ~/git/know-rec/docker/kge-k-means_data/temp/kg.nt'
-        yes | cp -L ~/git/datasets/${dataset_in}/kg.nt docker/kge-k-means_data/temp/
+        echo "[kg-summ-rec] Creating ~/git/kg-summ-rec/docker/kge-k-means_data/temp/${kg_filename}"
+        yes | cp -L ~/git/datasets/${experiment}/${dataset_in}/${kg_filename} ~/git/kg-summ-rec/docker/kge-k-means_data/temp/
     fi
-    if no_exist "$HOME/git/know-rec/docker/kge-k-means_data/temp/i2kg_map.tsv"
+    if no_exist "$HOME/git/kg-summ-rec/docker/kge-k-means_data/temp/i2kg_map.tsv"
     then
-        echo '[kg-summ-rs] Creating ~/git/know-rec/docker/kge-k-means_data/temp/i2kg_map.tsv'
-        yes | cp -L ~/git/datasets/${dataset_in}/cao-format/ml1m/i2kg_map.tsv docker/kge-k-means_data/temp/
+        echo '[kg-summ-rec] Creating ~/git/kg-summ-rec/docker/kge-k-means_data/temp/i2kg_map.tsv'
+        yes | cp -L ~/git/datasets/${experiment}/${dataset_in}/cao-format/ml1m/i2kg_map.tsv  ~/git/kg-summ-rec/docker/kge-k-means_data/temp/
     fi
-    if no_exist "$HOME/git/datasets/${dataset_out}_${kge}-25/cluster25.tsv"
+    if no_exist "$HOME/git/datasets/${experiment}/${dataset_out}-${kge}-25/cluster25.tsv"
     then
-        echo "[kg-summ-rs] Creating ~/git/datasets/${dataset_out}_${kge}-25/cluster25.tsv"
-        cd docker
+        echo "[kg-summ-rec] Creating ~/git/datasets/${experiment}/${dataset_out}-${kge}-25/cluster25.tsv"
+        cd $HOME/git/kg-summ-rec/docker
         cp kge-k-means_Dockerfile Dockerfile
         docker build -t kge-k-means:1.0 .
 
-        docker run --rm -it --gpus all -v "$PWD"/kge-k-means_data:/data -w /data \
-        kge-k-means:1.0 /bin/bash -c "python kge-k-means.py --mode 'singleview' \
-        --kge ${kge} --epochs ${epochs} --batch_size ${batch_size} --learning_rate \
-        ${learning_rate} --verbose"
+        local mode='singleview'
+        if [ ${summarization_mode} = 'mv' ]
+        then
+            mode='multiview'
+        fi
 
-        cp "$HOME/git/know-rec/docker/kge-k-means_data/temp/cluster25.tsv" "$HOME/git/datasets/${dataset_out}_${kge}-25/cluster25.tsv"
-        cp "$HOME/git/know-rec/docker/kge-k-means_data/temp/cluster50.tsv" "$HOME/git/datasets/${dataset_out}_${kge}-50/cluster50.tsv"
-        cp "$HOME/git/know-rec/docker/kge-k-means_data/temp/cluster75.tsv" "$HOME/git/datasets/${dataset_out}_${kge}-75/cluster75.tsv"
-        cd ..
+        docker run --rm -it --gpus all -v "$PWD"/kge-k-means_data:/data -w /data \
+        kge-k-means:1.0 /bin/bash -c "python kge-k-means.py --triples ${kg_filename} \
+        --mode ${mode} --kge ${kge} --epochs ${epochs} --batch_size ${batch_size} \
+        --learning_rate ${learning_rate} --verbose"
+
+        cp "$HOME/git/kg-summ-rec/docker/kge-k-means_data/temp/cluster25.tsv" "$HOME/git/datasets/${experiment}/${dataset_out}-${kge}-25/cluster25.tsv"
+        cp "$HOME/git/kg-summ-rec/docker/kge-k-means_data/temp/cluster50.tsv" "$HOME/git/datasets/${experiment}/${dataset_out}-${kge}-50/cluster50.tsv"
+        cp "$HOME/git/kg-summ-rec/docker/kge-k-means_data/temp/cluster75.tsv" "$HOME/git/datasets/${experiment}/${dataset_out}-${kge}-75/cluster75.tsv"
+        cd $HOME/git/kg-summ-rec
     fi
 
     ############################################################################
     ###              Summarize ${dataset_out} with clusters                  ###
     ############################################################################
-    #[activate jointrec]
+    #[activate kg-summ-rec]
     conda deactivate
-    conda activate jointrec
+    conda activate kg-summ-rec
 
-    if no_exist "$HOME/git/datasets/${dataset_out}_${kge}-25/kg.nt"
+    local mode='cluster'
+    if [ ${summarization_mode} = 'mv' ]
     then
-        echo "[kg-summ-rs] Creating ~/git/datasets/${dataset_out}_${kge}-25/kg.nt"
-        cd util
-        python kg2rdf.py --mode 'cluster' --input2 "$HOME/git/datasets/${dataset_out}_${kge}-25/cluster25.tsv" \
-        --input "$HOME/git/datasets/${dataset_in}/kg.nt" --output "$HOME/git/datasets/${dataset_out}_${kge}-25/kg.nt"
-        cd ..
+        mode='mv_cluster'
     fi
-    if no_exist "$HOME/git/datasets/${dataset_out}_${kge}-50/kg.nt"
+
+    if no_exist "$HOME/git/datasets/${experiment}/${dataset_out}-${kge}-25/kg-ig.nt"
     then
-        echo "[kg-summ-rs] Creating ~/git/datasets/${dataset_out}_${kge}-50/kg.nt"
-        cd util
-        python kg2rdf.py --mode 'cluster' --input2 "$HOME/git/datasets/${dataset_out}_${kge}-50/cluster50.tsv" \
-        --input "$HOME/git/datasets/${dataset_in}/kg.nt"  --output "$HOME/git/datasets/${dataset_out}_${kge}-50/kg.nt"
-        cd ..
+        echo "[kg-summ-rec] Creating ~/git/datasets/${experiment}/${dataset_out}-${kge}-25/kg-ig.nt"
+        cd $HOME/git/kg-summ-rec/util
+        python kg2rdf.py --mode ${mode} --input2 "$HOME/git/datasets/${experiment}/${dataset_out}-${kge}-25/cluster25.tsv" \
+        --input "$HOME/git/datasets/${experiment}/${dataset_in}/kg-ig.nt" --output "$HOME/git/datasets/${experiment}/${dataset_out}-${kge}-25/kg-ig.nt"
+        cd $HOME/git/kg-summ-rec
     fi
-    if no_exist "$HOME/git/datasets/${dataset_out}_${kge}-75/kg.nt"
+    if no_exist "$HOME/git/datasets/${experiment}/${dataset_out}-${kge}-50/kg-ig.nt"
     then
-        echo "[kg-summ-rs] Creating ~/git/datasets/${dataset_out}_${kge}-75/kg.nt"
-        cd util
-        python kg2rdf.py --mode 'cluster' --input2 "$HOME/git/datasets/${dataset_out}_${kge}-75/cluster75.tsv" \
-        --input "$HOME/git/datasets/${dataset_in}/kg.nt"  --output "$HOME/git/datasets/${dataset_out}_${kge}-75/kg.nt"
-        cd ..
+        echo "[kg-summ-rec] Creating ~/git/datasets/${experiment}/${dataset_out}-${kge}-50/kg-ig.nt"
+        cd $HOME/git/kg-summ-rec/util
+        python kg2rdf.py --mode ${mode} --input2 "$HOME/git/datasets/${experiment}/${dataset_out}-${kge}-50/cluster50.tsv" \
+        --input "$HOME/git/datasets/${experiment}/${dataset_in}/kg-ig.nt"  --output "$HOME/git/datasets/${experiment}/${dataset_out}-${kge}-50/kg-ig.nt"
+        cd $HOME/git/kg-summ-rec
+    fi
+    if no_exist "$HOME/git/datasets/${experiment}/${dataset_out}-${kge}-75/kg-ig.nt"
+    then
+        echo "[kg-summ-rec] Creating ~/git/datasets/${experiment}/${dataset_out}-${kge}-75/kg-ig.nt"
+        cd $HOME/git/kg-summ-rec/util
+        python kg2rdf.py --mode ${mode} --input2 "$HOME/git/datasets/${experiment}/${dataset_out}-${kge}-75/cluster75.tsv" \
+        --input "$HOME/git/datasets/${experiment}/${dataset_in}/kg-ig.nt"  --output "$HOME/git/datasets/${experiment}/${dataset_out}-${kge}-75/kg-ig.nt"
+        cd $HOME/git/kg-summ-rec
     fi
 }

@@ -51,11 +51,11 @@ experiment='Sacenti-JOURNAL2021'
 source $HOME/git/kg-summ-rec/util/util.sh
 
 #######################################
-# Import ../summarization/kge_k_means.sh
+# Import ../summarization/kge-k-means.sh
 # FUNCTIONS:
-#   kge_k_means 'experiment' 'dataset_in' 'dataset_out' 'kg_type' 'summarization_mode' 'kge' 'epochs' 'batch_size' learning_rate' 'low_frequence'
+#   kge-k-means 'experiment' 'dataset_in' 'dataset_out' 'kg_type' 'summarization_mode' 'kge' 'epochs' 'batch_size' learning_rate' 'low_frequence'
 #######################################
-source $HOME/git/kg-summ-rec/summarization/kge_k_means.sh
+source $HOME/git/kg-summ-rec/summarization/kge-k-means.sh
 
 #######################################
 # Import ../summarization/gemsec.sh
@@ -69,7 +69,21 @@ source $HOME/git/kg-summ-rec/summarization/gemsec.sh
 # FUNCTIONS:
 #   cao-format_summ
 #######################################
-source cao-format_summ.sh
+source $HOME/git/kg-summ-rec/preprocess/cao-format_summ.sh
+
+#######################################
+# Import ../util/clean_kge-k-means.sh
+# FUNCTIONS:
+#   clean_kge-k-means
+#######################################
+source $HOME/git/kg-summ-rec/util/clean_kge-k-means.sh
+
+#######################################
+# Import ../util/clean_gemsec.sh
+# FUNCTIONS:
+#   clean_gemsec
+#######################################
+source $HOME/git/kg-summ-rec/util/clean_gemsec.sh
 
 ####
 # KG recommendation
@@ -133,16 +147,20 @@ summarize() {
 
     local summarization_mode='sv'
 
-    gemsec ${dataset_in} "${dataset_out}_${kg_type}" ${kg_filename} ${summarization_mode} \
+    clean_gemsec
+    gemsec ${experiment} ${dataset_in} "${dataset_out}_${kg_type}-${summarization_mode}" ${kg_filename} ${summarization_mode} \
     ${model} ${learning_rate_init} ${learning_rate_min}
-    kge_k_means ${experiment} ${dataset_in} "${dataset_out}_${kg_type}" ${kg_filename} ${summarization_mode} \
+    clean_kge-k-means
+    kge-k-means ${experiment} ${dataset_in} "${dataset_out}_${kg_type}-${summarization_mode}" ${kg_filename} ${summarization_mode} \
     ${kge} ${epochs} ${batch_size} ${learning_rate} ${low_frequence}
 
     summarization_mode='mv'
 
-    gemsec ${dataset_in} "${dataset_out}_${kg_type}" ${kg_filename} ${summarization_mode} \
+    clean_gemsec
+    gemsec ${experiment} ${dataset_in} "${dataset_out}_${kg_type}-${summarization_mode}" ${kg_filename} ${summarization_mode} \
     ${model} ${learning_rate_init} ${learning_rate_min}
-    kge_k_means ${experiment} ${dataset_in} "${dataset_out}_${kg_type}" ${kg_filename} ${summarization_mode} \
+    clean_kge-k-means
+    kge-k-means ${experiment} ${dataset_in} "${dataset_out}_${kg_type}-${summarization_mode}" ${kg_filename} ${summarization_mode} \
     ${kge} ${epochs} ${batch_size} ${learning_rate} ${low_frequence}
 }
 
@@ -180,7 +198,7 @@ preprocess_summ() {
             do
                 for r in "${summ_rates[@]}"
                 do
-                    cao-format_summ "${dataset_in}" "${dataset_out}" $t $m $a $r "${low_frequence}"
+                    cao-format_summ "${dataset_in}" "${dataset_out}_$t-$m-$a-$r" "${low_frequence}"
                 done
             done
         done
@@ -196,6 +214,8 @@ measure_summ_impact() {
     local low_frequence=$4
 
     cd $HOME/git/kg-summ-rec/util
+    conda deactivate
+    conda activate kg-summ-rec
 
     summ_types=(ig uig)
     summ_modes=(sv mv)
@@ -209,12 +229,13 @@ measure_summ_impact() {
             do
                 for r in "${summ_rates[@]}"
                 do
-                    local dirName="${dataset_out}_${t}_${m}_${a}_${r}"
+                    local dirName="${dataset_out}_${t}-${m}-${a}-${r}"
                     if no_exist "$HOME/git/results/${experiment}/${dirName}/kg_stats.tsv"
                     then
                         echo "[kg-summ-rec] Creating ~/git/results/${experiment}/${dirName}/kg_stats.tsv"
                         python kg2rdf.py --mode 'statistics' --kgpath "$HOME/git/datasets/${experiment}/${dirName}" \
-                        --output "$HOME/git/results/${experiment}/${dirName}//kg_stats.tsv"
+                        --input "$HOME/git/datasets/${experiment}/${dirName}/kg-${kg_type}.nt"
+                        --output "$HOME/git/results/${experiment}/${dirName}/kg-${kg_type}_stats.tsv"
                     fi
                 done
             done
@@ -233,7 +254,8 @@ kg_summarization() {
     local dataset_out="${dataset}_${split_mode}_${filtering}"
 
     local low_frequence=0
-    if [ ${filtering} -eq "sfKG" ]; then
+    if [ "${filtering}" = "sfKG" ]
+    then
         low_frequence=10
     fi
 
@@ -250,5 +272,4 @@ kg_summarization() {
     summarize ${dataset_in} ${dataset_out} ${kg_type} ${low_frequence}
     preprocess_summ ${dataset_in} ${dataset_out} ${kg_type} ${low_frequence}
     measure_summ_impact ${dataset_in} ${dataset_out} ${kg_type} ${low_frequence}
-
 }
