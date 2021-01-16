@@ -4,16 +4,41 @@ import numpy as np
 from ampligraph.datasets import load_from_ntriples
 
 
-def split_views(data_home, folder, input_file, mode, output_path, verbose):
-    kg_ig = load_from_ntriples(folder, input_file, data_home)
+def split_for_sun_mo(kg_uig, output_path, verbose):
+    # Select all entities, except items
+    triples_df = pd.DataFrame(kg_uig, columns=['s', 'p', 'o'])
+    relations = triples_df.p.unique()
 
-    try
-        if mode == 'relation':
-            split_by_relation(kg_ig, output_path, verbose)
-        else
-            raise ValueError
-    except ValueError:
-        print(f'Split mode {mode} is invalid.')
+    p_actor='<http://ml1m-sun/actor>'
+    p_director='<http://ml1m-sun/director>'
+    p_genre='<http://ml1m-sun/genre>'
+    p_rates='<http://ml1m-sun/rates>'
+    p_type='<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>'
+    p_subclassof='<http://www.w3.org/2000/01/rdf-schema#subClassOf>'
+    o_actor='<http://dbpedia.org/ontology/Actor>'
+    o_director='<http://dbpedia.org/page/Film_Director>'
+
+    df_actors = triples_df.loc[triples_df['p'] == p_actor]
+    df_actor_type = triples_df.loc[triples_df['o'] == o_actor]
+    df_users = triples_df.loc[triples_df['p'] == p_rates]
+    actor_view = pd.concat([df_actors, df_actor_type, df_users])
+    output_file = os.path.join(output_path, f'kg-ig-0.nt')
+    save_as_ntriples(actor_view, output_file)
+
+    df_directors = triples_df.loc[triples_df['p'] == p_director]
+    df_director_type = triples_df.loc[triples_df['o'] == o_director]
+    director_view = pd.concat([df_directors, df_director_type, df_users])
+    output_file = os.path.join(output_path, f'kg-ig-1.nt')
+    save_as_ntriples(director_view, output_file)
+
+    df_genres = triples_df.loc[triples_df['p'] == p_genre]
+    df_genre_type = triples_df.loc[triples_df['p'] == p_type]
+    df_genre_type = df_genre_type.merge(df_actor_type, indicator='i', how='outer').query('i == "left_only"').drop('i', 1)
+    df_genre_type = df_genre_type.merge(df_director_type, indicator='i', how='outer').query('i == "left_only"').drop('i', 1)
+    df_genre_subclassof = triples_df.loc[triples_df['p'] == p_subclassof]
+    genre_view = pd.concat([df_genres, df_genre_type, df_genre_subclassof, df_users])
+    output_file = os.path.join(output_path, f'kg-ig-2.nt')
+    save_as_ntriples(genre_view, output_file)
 
 
 def split_by_relation(kg_ig, output_path, verbose):
@@ -24,7 +49,7 @@ def split_by_relation(kg_ig, output_path, verbose):
     for i in range(0, len(relations)):
         r = relations[i]
         kg_ig_view_df = triples_df.loc[triples_df['p'] == r]
-        
+
         if verbose:
             print(f'[kg-summ-rec] split_views: by relation {r}')
             print(f'[kg-summ-rec] split_views: #Triples: {len(kg_ig_view_df)}'
@@ -34,7 +59,7 @@ def split_by_relation(kg_ig, output_path, verbose):
             nodes = np.unique(np.concatenate((subjects, objects)))
             print(f'[kg-summ-rec] split_views: #Nodes: {len(nodes)}')
             #print(nodes[0:10])
-            
+
             #items = np.array([f'<{x}>' for x in pd.read_csv(items_file, sep='\t', header=None, names=["id", "name", "url"]).url.unique().tolist()])
             #entities = np.setdiff1d(nodes,items)
             #print(f'[kge-k-means] #Entities: {len(entities)}')
@@ -46,6 +71,19 @@ def split_by_relation(kg_ig, output_path, verbose):
 
 def save_as_ntriples(kg_ig_view_df, output_file):
     kg_ig_view_df.to_csv(output_file, sep='\t', header=False, index=False)
+
+
+def split_views(data_home, folder, input_file, mode, output_path, verbose):
+    kg = load_from_ntriples(folder, input_file, data_home)
+    try
+        if mode == 'relation':
+            split_by_relation(kg, output_path, verbose)
+        elif mode == 'sun_mo':
+            split_for_sun_mo(kg, output_path, verbose)
+        else
+            raise ValueError
+    except ValueError:
+        print(f'Split mode {mode} is invalid.')
 
 
 if __name__ == '__main__':

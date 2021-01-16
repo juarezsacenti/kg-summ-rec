@@ -50,7 +50,7 @@ git
 
 OR
 
-`$ cd ~/git/kg-summ-rs`
+`$ cd ~/git/kg-summ-rec`
 `$ nohup bash -i run.sh </dev/null >nohup.out 2>nohup.err &`
 `$ watch "ps -aux | grep 'python\|bash\|nohup'"`
 `$ watch "ls -l"`
