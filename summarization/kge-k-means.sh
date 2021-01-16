@@ -55,39 +55,54 @@ kge-k-means() {
     local learning_rate=$9
     local low_frequence=$10
 
-    ############################################################################
-    ##i                   Create dataset Folders - {25,50,75}                ###
-    ############################################################################
-    if [ ! -d "$HOME/git/datasets/${experiment}/${dataset_out}-${kge}-25" ]
+    if [ ${summarization_mode} = 'sv' ]
     then
-        echo "[kg-summ-rec] Creating ~/git/datasets/${experiment}/${dataset_out}-${kge}-25"
-        mkdir ~/git/datasets/${experiment}/${dataset_out}-${kge}-25/
-        mkdir ~/git/datasets/${experiment}/${dataset_out}-${kge}-25/cao-format
-        mkdir ~/git/datasets/${experiment}/${dataset_out}-${kge}-25/cao-format/ml1m
-        mkdir ~/git/datasets/${experiment}/${dataset_out}-${kge}-25/cao-format/ml1m/kg
-        mkdir ~/git/results/${experiment}/${dataset_out}-${kge}-25/
+        sv_kge-k-means "${experiment}" "${dataset_in}" "${dataset_out}" "${kg_filename}" \
+        "${kge}" "${epochs}" "${batch_size}" "${learning_rate}" "${low_frequence}" "25"
+        sv_kge-k-means "${experiment}" "${dataset_in}" "${dataset_out}" "${kg_filename}" \
+        "${kge}" "${epochs}" "${batch_size}" "${learning_rate}" "${low_frequence}" "50"
+        sv_kge-k-means "${experiment}" "${dataset_in}" "${dataset_out}" "${kg_filename}" \
+        "${kge}" "${epochs}" "${batch_size}" "${learning_rate}" "${low_frequence}" "75"
+    elif [ ${summarization_mode} = 'mv' ]
+    then
+        mv_kge-k-means "${experiment}" "${dataset_in}" "${dataset_out}" "${kg_filename}" \
+        "${kge}" "${epochs}" "${batch_size}" "${learning_rate}" "${low_frequence}" "25"
+        mv_kge-k-means "${experiment}" "${dataset_in}" "${dataset_out}" "${kg_filename}" \
+        "${kge}" "${epochs}" "${batch_size}" "${learning_rate}" "${low_frequence}" "50"
+        mv_kge-k-means "${experiment}" "${dataset_in}" "${dataset_out}" "${kg_filename}" \
+        "${kge}" "${epochs}" "${batch_size}" "${learning_rate}" "${low_frequence}" "75"
+    else
+        echo "[kg-summ-rec] gemsec: Parameter error: summarization mode ${summarization_mode} should be sv or mv."
     fi
-    if [ ! -d "$HOME/git/datasets/${experiment}/${dataset_out}-${kge}-50" ]
+}
+
+sv_kge-k-means() {
+    local experiment=$1
+    local dataset_in=$2
+    local dataset_out=$3
+    local kg_filename=$4
+    local kge=$5
+    local epochs=$6
+    local batch_size=$7
+    local learning_rate=$8
+    local low_frequence=$9
+    local ratio=$10
+
+    ############################################################################
+    ###                        Create dataset Folders                        ###
+    ############################################################################
+    if [ ! -d "$HOME/git/datasets/${experiment}/${dataset_out}-${kge}-${ratio}" ]
     then
-        echo "[kg-summ-rec] Creating ~/git/datasets/${experiment}/${dataset_out}-${kge}-50"
-        mkdir ~/git/datasets/${experiment}/${dataset_out}-${kge}-50/
-        mkdir ~/git/datasets/${experiment}/${dataset_out}-${kge}-50/cao-format
-        mkdir ~/git/datasets/${experiment}/${dataset_out}-${kge}-50/cao-format/ml1m
-        mkdir ~/git/datasets/${experiment}/${dataset_out}-${kge}-50/cao-format/ml1m/kg
-        mkdir ~/git/results/${experiment}/${dataset_out}-${kge}-50/
-    fi
-    if [ ! -d "$HOME/git/datasets/${experiment}/${dataset_out}-${kge}-75" ]
-    then
-        echo "[kg-summ-rec] Creating ~/git/datasets/${experiment}/${dataset_out}-${kge}-75"
-        mkdir ~/git/datasets/${experiment}/${dataset_out}-${kge}-75/
-        mkdir ~/git/datasets/${experiment}/${dataset_out}-${kge}-75/cao-format
-        mkdir ~/git/datasets/${experiment}/${dataset_out}-${kge}-75/cao-format/ml1m
-        mkdir ~/git/datasets/${experiment}/${dataset_out}-${kge}-75/cao-format/ml1m/kg
-        mkdir ~/git/results/${experiment}/${dataset_out}-${kge}-75/
+        echo "[kg-summ-rec] Creating ~/git/datasets/${experiment}/${dataset_out}-${kge}-${ratio}"
+        mkdir ~/git/datasets/${experiment}/${dataset_out}-${kge}-${ratio}/
+        mkdir ~/git/datasets/${experiment}/${dataset_out}-${kge}-${ratio}/cao-format
+        mkdir ~/git/datasets/${experiment}/${dataset_out}-${kge}-${ratio}/cao-format/ml1m
+        mkdir ~/git/datasets/${experiment}/${dataset_out}-${kge}-${ratio}/cao-format/ml1m/kg
+        mkdir ~/git/results/${experiment}/${dataset_out}-${kge}-${ratio}/
     fi
 
     ############################################################################
-    ###          Clusterize ${dataset_out} with ${kge} - {25,50,75}          ###
+    ###          Clusterize ${dataset_out} with ${kge} - {ratio}          ###
     ############################################################################
     # Dependencies:
     #[~/git/datasets/${experiment}/${dataset_out}/${kg_filename}]
@@ -102,27 +117,19 @@ kge-k-means() {
         echo '[kg-summ-rec] Creating ~/git/kg-summ-rec/docker/kge-k-means_data/temp/i2kg_map.tsv'
         yes | cp -L ~/git/datasets/${experiment}/${dataset_in}/cao-format/ml1m/i2kg_map.tsv  ~/git/kg-summ-rec/docker/kge-k-means_data/temp/
     fi
-    if no_exist "$HOME/git/datasets/${experiment}/${dataset_out}-${kge}-25/cluster25.tsv"
+    if no_exist "$HOME/git/datasets/${experiment}/${dataset_out}-${kge}-${ratio}/cluster${ratio}.tsv"
     then
-        echo "[kg-summ-rec] Creating ~/git/datasets/${experiment}/${dataset_out}-${kge}-25/cluster25.tsv"
+        echo "[kg-summ-rec] Creating ~/git/datasets/${experiment}/${dataset_out}-${kge}-${ratio}/cluster${ratio}.tsv"
         cd $HOME/git/kg-summ-rec/docker
         cp kge-k-means_Dockerfile Dockerfile
         docker build -t kge-k-means:1.0 .
 
-        local mode='singleview'
-        if [ ${summarization_mode} = 'mv' ]
-        then
-            mode='multiview'
-        fi
-
         docker run --rm -it --gpus all -v "$PWD"/kge-k-means_data:/data -w /data \
         kge-k-means:1.0 /bin/bash -c "python kge-k-means.py --triples ${kg_filename} \
-        --mode ${mode} --kge ${kge} --epochs ${epochs} --batch_size ${batch_size} \
+        --mode singleview --kge ${kge} --epochs ${epochs} --batch_size ${batch_size} \
         --learning_rate ${learning_rate} --verbose"
 
-        cp "$HOME/git/kg-summ-rec/docker/kge-k-means_data/temp/cluster25.tsv" "$HOME/git/datasets/${experiment}/${dataset_out}-${kge}-25/cluster25.tsv"
-        cp "$HOME/git/kg-summ-rec/docker/kge-k-means_data/temp/cluster50.tsv" "$HOME/git/datasets/${experiment}/${dataset_out}-${kge}-50/cluster50.tsv"
-        cp "$HOME/git/kg-summ-rec/docker/kge-k-means_data/temp/cluster75.tsv" "$HOME/git/datasets/${experiment}/${dataset_out}-${kge}-75/cluster75.tsv"
+        cp "$HOME/git/kg-summ-rec/docker/kge-k-means_data/temp/cluster${ratio}.tsv" "$HOME/git/datasets/${experiment}/${dataset_out}-${kge}-${ratio}/cluster${ratio}.tsv"
         cd $HOME/git/kg-summ-rec
     fi
 
@@ -133,34 +140,122 @@ kge-k-means() {
     conda deactivate
     conda activate kg-summ-rec
 
-    local mode='cluster'
-    if [ ${summarization_mode} = 'mv' ]
+    if no_exist "$HOME/git/datasets/${experiment}/${dataset_out}-${kge}-${ratio}/kg-ig.nt"
     then
-        mode='mv_cluster'
+        echo "[kg-summ-rec] Creating ~/git/datasets/${experiment}/${dataset_out}-${kge}-${ratio}/kg-ig.nt"
+        cd $HOME/git/kg-summ-rec/util
+        python kg2rdf.py --mode 'cluster' --input2 "$HOME/git/datasets/${experiment}/${dataset_out}-${kge}-${ratio}/cluster${ratio}.tsv" \
+        --input "$HOME/git/datasets/${experiment}/${dataset_in}/kg-ig.nt" --output "$HOME/git/datasets/${experiment}/${dataset_out}-${kge}-${ratio}/kg-ig.nt"
+        cd $HOME/git/kg-summ-rec
+    fi
+}
+
+sv_kge-k-means() {
+    local experiment=$1
+    local dataset_in=$2
+    local dataset_out=$3
+    local kg_filename=$4
+    local kge=$5
+    local epochs=$6
+    local batch_size=$7
+    local learning_rate=$8
+    local low_frequence=$9
+    local ratio=$10
+
+    ############################################################################
+    ###                        Create dataset Folders                        ###
+    ############################################################################
+    if [ ! -d "$HOME/git/datasets/${experiment}/${dataset_out}-${kge}-${ratio}" ]
+    then
+        echo "[kg-summ-rec] Creating ~/git/datasets/${experiment}/${dataset_out}-${kge}-${ratio}"
+        mkdir ~/git/datasets/${experiment}/${dataset_out}-${kge}-${ratio}/
+        mkdir ~/git/datasets/${experiment}/${dataset_out}-${kge}-${ratio}/cao-format
+        mkdir ~/git/datasets/${experiment}/${dataset_out}-${kge}-${ratio}/cao-format/ml1m
+        mkdir ~/git/datasets/${experiment}/${dataset_out}-${kge}-${ratio}/cao-format/ml1m/kg
+        mkdir ~/git/results/${experiment}/${dataset_out}-${kge}-${ratio}/
+    fi
+    ############################################################################
+    ###                              Split views                             ###
+    ############################################################################
+    if no_exist "$HOME/git/kg-summ-rec/docker/kge-k-means_data/temp/${kg_filename}"
+    then
+        echo "[kg-summ-rec] Creating ~/git/kg-summ-rec/docker/kge-k-means_data/temp/${kg_filename}"
+        yes | cp -L ~/git/datasets/${experiment}/${dataset_in}/${kg_filename} ~/git/kg-summ-rec/docker/kge-k-means_data/temp/
     fi
 
-    if no_exist "$HOME/git/datasets/${experiment}/${dataset_out}-${kge}-25/kg-ig.nt"
+    local mode='relation'
+    if [ ${kg_filename} = 'kg-euig.nt']
     then
-        echo "[kg-summ-rec] Creating ~/git/datasets/${experiment}/${dataset_out}-${kge}-25/kg-ig.nt"
-        cd $HOME/git/kg-summ-rec/util
-        python kg2rdf.py --mode ${mode} --input2 "$HOME/git/datasets/${experiment}/${dataset_out}-${kge}-25/cluster25.tsv" \
-        --input "$HOME/git/datasets/${experiment}/${dataset_in}/kg-ig.nt" --output "$HOME/git/datasets/${experiment}/${dataset_out}-${kge}-25/kg-ig.nt"
+        mode='sun_mo'
+    fi
+
+    if no_exist "$HOME/git/kg-summ-rec/docker/kge-k-means_data/temp/kg-ig-0.nt"
+    then
+        echo '[kg-summ-rec] gemsec: Creating ~/git/kg-summ-rec/docker/kge-k-means_data/temp/kg-ig-0.nt'
+        #[activate kg-summ-rec]
+        conda deactivate
+        conda activate kg-summ-rec
+        cd $HOME/git/kg-summ-rec/summarization
+        python split_views.py --datahome '../docker/kge-k-means_data' --folder 'temp' \
+        --input ${kg_filename} --mode ${mode} --output '../docker/kge-k-means_data/temp/' \
+        --verbose
         cd $HOME/git/kg-summ-rec
     fi
-    if no_exist "$HOME/git/datasets/${experiment}/${dataset_out}-${kge}-50/kg-ig.nt"
+
+    ############################################################################
+    ###          Clusterize ${dataset_out} with ${kge} - {ratio}          ###
+    ############################################################################
+    if no_exist "$HOME/git/kg-summ-rec/docker/kge-k-means_data/temp/i2kg_map.tsv"
     then
-        echo "[kg-summ-rec] Creating ~/git/datasets/${experiment}/${dataset_out}-${kge}-50/kg-ig.nt"
-        cd $HOME/git/kg-summ-rec/util
-        python kg2rdf.py --mode ${mode} --input2 "$HOME/git/datasets/${experiment}/${dataset_out}-${kge}-50/cluster50.tsv" \
-        --input "$HOME/git/datasets/${experiment}/${dataset_in}/kg-ig.nt"  --output "$HOME/git/datasets/${experiment}/${dataset_out}-${kge}-50/kg-ig.nt"
+        echo '[kg-summ-rec] Creating ~/git/kg-summ-rec/docker/kge-k-means_data/temp/i2kg_map.tsv'
+        yes | cp -L ~/git/datasets/${experiment}/${dataset_in}/cao-format/ml1m/i2kg_map.tsv  ~/git/kg-summ-rec/docker/kge-k-means_data/temp/
+    fi
+
+    if no_exist "$HOME/git/datasets/${experiment}/${dataset_out}-${kge}-${ratio}/cluster${ratio}.tsv"
+    then
+        echo "[kg-summ-rec] Creating ~/git/datasets/${experiment}/${dataset_out}-${kge}-${ratio}/cluster${ratio}.tsv"
+        cd $HOME/git/kg-summ-rec/docker
+        cp kge-k-means_Dockerfile Dockerfile
+        docker build -t kge-k-means:1.0 .
+
+        for i in "$HOME/git/kg-summ-rec/docker/gemsec_data/temp/kg-ig-*.nt"
+        do
+            local filename=${i##*/}
+            local prefix=${filename#*.}
+            local viewnumber=$(echo "$prefix" | cut -d '-' -f 3)
+            docker run --rm -it --gpus all -v "$PWD"/kge-k-means_data:/data -w /data \
+            kge-k-means:1.0 /bin/bash -c "python kge-k-means.py --triples ${filename} \
+            --mode splitview --kge ${kge} --epochs ${epochs} --batch_size ${batch_size} \
+            --learning_rate ${learning_rate} --rates ${ratio} --view ${viewnumber} --verbose"
+
+            echo "${i##*/}"
+        done
+
+        cd $HOME/git/kg-summ-rec/summarization
+        #[activate kg-summ-rec]
+        conda deactivate
+        conda activate kg-summ-rec
+        python join_views.py --datahome '../docker/kge-k-means_data' --folder 'temp' \
+        --pattern 'cluster${ratio}-*.tsv' --mode 'clusters' --output '../docker/kge-k-means_data/temp/' \
+        --verbose
+
+        cp "$HOME/git/kg-summ-rec/docker/kge-k-means_data/temp/cluster${ratio}.tsv" "$HOME/git/datasets/${experiment}/${dataset_out}-${kge}-${ratio}/cluster${ratio}.tsv"
         cd $HOME/git/kg-summ-rec
     fi
-    if no_exist "$HOME/git/datasets/${experiment}/${dataset_out}-${kge}-75/kg-ig.nt"
+
+    ############################################################################
+    ###              Summarize ${dataset_out} with clusters                  ###
+    ############################################################################
+    #[activate kg-summ-rec]
+    conda deactivate
+    conda activate kg-summ-rec
+
+    if no_exist "$HOME/git/datasets/${experiment}/${dataset_out}-${kge}-${ratio}/kg-ig.nt"
     then
-        echo "[kg-summ-rec] Creating ~/git/datasets/${experiment}/${dataset_out}-${kge}-75/kg-ig.nt"
+        echo "[kg-summ-rec] Creating ~/git/datasets/${experiment}/${dataset_out}-${kge}-${ratio}/kg-ig.nt"
         cd $HOME/git/kg-summ-rec/util
-        python kg2rdf.py --mode ${mode} --input2 "$HOME/git/datasets/${experiment}/${dataset_out}-${kge}-75/cluster75.tsv" \
-        --input "$HOME/git/datasets/${experiment}/${dataset_in}/kg-ig.nt"  --output "$HOME/git/datasets/${experiment}/${dataset_out}-${kge}-75/kg-ig.nt"
+        python kg2rdf.py --mode 'mv_cluster' --input2 "$HOME/git/datasets/${experiment}/${dataset_out}-${kge}-${ratio}/cluster${ratio}.tsv" \
+        --input "$HOME/git/datasets/${experiment}/${dataset_in}/kg-ig.nt" --output "$HOME/git/datasets/${experiment}/${dataset_out}-${kge}-${ratio}/kg-ig.nt"
         cd $HOME/git/kg-summ-rec
     fi
 }

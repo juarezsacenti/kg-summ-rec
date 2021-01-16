@@ -6,21 +6,38 @@ import numpy as np
 import json
 
 
-def uig2euig(nt_file, dataset_path, output_file):
+def extend_ml_sun_with_mo(nt_file, dataset_path, output_file):
+    nl='\n'
     # copy nt_file to output_file
     with open(nt_file) as fin, open(output_file, 'w') as fout:
         for line in fin:
             fout.write(line)
+    # copy mo-genre-t-box.nt to output_file
+    mo_genre_t_box = os.path.expanduser('~/git/kg-summ-rec/util/mo/mo-genre-t-box.nt')
+    with open(mo_genre_t_box) as fin, open(output_file, 'w+') as fout:
+        for line in fin:
+            fout.write(line)
     kg_map = {}
-    with open(f'{dataset_path}i_map.dat') as fin:
+    with open(f'{dataset_path}kg_map.dat') as fin, open(output_file, 'w+') as fout:
         for line in fin:
             (entity_name, entity_uri) = line.rstrip('\n').split('\t')
-            i_map[entity_uri] = entity_name
- 
-
+            kg_map[entity_uri] = entity_name
+            # add actor is a Actor
+            if '<http://ml1m-sun/actor' in entity_uri:
+                fout.write(f'{entity_uri} <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/ontology/Actor> .{nl}')
+            # add director is a Director
+            if '<http://ml1m-sun/director' in entity_uri:
+                fout.write(f'{entity_uri} <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/page/Film_Director> {nl}')
+    # copy mo-genre-a-box.nt to output_file
+    mo_genre_a_box = os.path.expanduser('~/git/kg-summ-rec/util/mo/mo-genre-a-box.tsv')
+    with open(mo_genre_a_box) as fin, open(output_file, 'w+') as fout:
+        for line in fin:
+            (instance, concept) = line.rstrip('\n').split('\t')
+            fout.write(f'{kg_map.get(instance)} <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> {concept} .{nl}')
 
 
 def ig2uig(nt_file, dataset_path, output_file):
+    nl = '\n'
     # copy nt_file to output_file
     with open(nt_file) as fin, open(output_file, 'w') as fout:
         for line in fin:
@@ -39,7 +56,7 @@ def ig2uig(nt_file, dataset_path, output_file):
     with open(f'{dataset_path}train.dat') as fin, open(output_file, 'a+') as fout:
         for line in fin:
             (u, i, r) = line.rstrip('\n').split('\t')
-            fout.write(f'<http://ml1m-sun/user{u}> <http://ml1m-sun/rates> <{i2kg_map[i_map[i]]}>')
+            fout.write(f'<http://ml1m-sun/user{u}> <http://ml1m-sun/rates> <{i2kg_map[i_map[i]]}> .{nl}')
 
 
 #nt to edges (gemsec format)
@@ -124,9 +141,12 @@ def mv_cluster2nt(cluster_file, input_file, output_file):
         for line in fin:
             (s, p, o, dot) = line.split(' ')
             #read replace the string and write to output file
-            new_line = line.replace(s, c_map[p].get(s, s))
-            new_line = new_line.replace(o, c_map[p].get(o, o))
-            fout.write(new_line)
+            if p in c_map:
+                new_line = line.replace(s, c_map[p].get(s, s))
+                new_line = new_line.replace(o, c_map[p].get(o, o))
+                fout.write(new_line)
+            else:
+                fout.write(line)
     remove_duplicates('temp.dat', output_file)
     #remove temporary file
     os.remove('temp.dat')
@@ -307,3 +327,5 @@ if __name__ == '__main__':
         assignment2cluster(input_file, input_file_2, output_file)
     elif mode == 'ig2uig':
         ig2uig(input_file, input_file_2, output_file)
+    elif mode == 'extend_ml_sun_with_mo':
+        expand_ml_sun_with_mo(input_file, input_file_2, output_file)
