@@ -24,36 +24,38 @@ from ampligraph.discovery import find_clusters
 from math import ceil
 
 
-def kge_k_means(data_home, folder, triples_file, items_file, mode, kge_name, epochs, batch_size, learning_rate, rates, verbose):
+def kge_k_means(data_home, folder, triples_file, items_file, mode, kge_name, epochs, batch_size, learning_rate, rates, view, verbose):
     # Load triples:
     triples = load_from_ntriples(folder, triples_file, data_home)
     # Load items:
     items = np.array([f'<{x}>' for x in pd.read_csv(items_file, sep='\t', header=None, names=["id", "name", "url"]).url.unique().tolist()])
-    
+
     # Print Stats:
     if verbose:
         print(f'[kge-k-means] #Triples: {len(triples)}')
         #print(triples[0:10])
         print(f'[kge-k-means] #Items: {len(items)}')
         #print(items[0:10])
-    
+
     # Select mode:
     if mode == 'singleview':
         singleview(triples, items, kge_name, epochs, batch_size, learning_rate, rates, verbose)
     elif mode == 'multiview':
         multiview(triples, items, kge_name, epochs, batch_size, learning_rate, rates, verbose)
+    elif mode == 'splitview':
+        splitview(triples, items, kge_name, epochs, batch_size, learning_rate, rates, view, verbose)
     else:
         sys.exit('Given mode is not valid.')
-    
 
-def singleview(triples, items, kge_name, epochs, batch_size, learning_rate, rates, verbose):
+
+def splitview(triples, items, kge_name, epochs, batch_size, learning_rate, rates, view, verbose):
     # Select all entities, except items
     triples_df = pd.DataFrame(triples, columns=['s', 'p', 'o'])
     subjects = triples_df.s.unique()
     objects = triples_df.o.unique()
     nodes = np.unique(np.concatenate((subjects, objects)))
     entities = np.setdiff1d(nodes,items)
-    
+
     if verbose:
         print(f'[kge-k-means] #Nodes: {len(nodes)}')
         #print(nodes[0:10])
@@ -62,7 +64,52 @@ def singleview(triples, items, kge_name, epochs, batch_size, learning_rate, rate
 
     # Train KGE model
     model = kge(triples, kge_name, epochs, batch_size, learning_rate, verbose)
-    
+
+    # Group entities into n-clusters where n in rates
+    for rate in rates:
+        clusters = clustering(entities, model, rate, verbose)
+        # clusters to DF
+        cluster_df = pd.DataFrame({'entities': entities,
+                                f'cluster{rate}': f'cluster{rate}' + pd.Series(clusters).astype(str)})
+        if verbose:
+            print(cluster_df[f'cluster{rate}'].value_counts())
+            print(cluster_df[f'cluster{rate}'].value_counts().value_counts())
+        # DF to file
+        cluster_df.to_csv(f'./temp/cluster{rate}-{view}.tsv', sep='\t', header=False, index=False)
+
+
+def singleview(triples, items, kge_name, epochs, batch_size, learning_rate, rates, verbose):
+    # Select all entities, except items
+    triples_df = pd.DataFrame(triples, columns=['s', 'p', 'o'])
+    subjects = triples_df.s.unique()
+    for i in subjects:
+        if type(i) != str:
+            print('subjects ', i, type(i))
+    objects = triples_df.o.unique()
+    for i in objects:
+        if type(i) != str:
+            print('objects ', i, type(i))
+    concatenated = np.concatenate((subjects, objects)) 
+    for i in concatenated:
+        if type(i) != str:
+            print('concat ', i, type(i))
+
+    print("Concat: " + str(concatenated))
+    nodes = np.unique(concatenated)
+    print("NODES: " + str(nodes))
+    #nodes = np.unique(np.concatenate((subjects, objects)))
+    entities = np.setdiff1d(nodes,items)
+    print("Entities: " + str(entities))
+
+    if verbose:
+        print(f'[kge-k-means] #Nodes: {len(nodes)}')
+        #print(nodes[0:10])
+        print(f'[kge-k-means] #Entities: {len(entities)}')
+        #print(entities[0:10])
+
+    # Train KGE model
+    model = kge(triples, kge_name, epochs, batch_size, learning_rate, verbose)
+
     # Group entities into n-clusters where n in rates
     for rate in rates:
         clusters = clustering(entities, model, rate, verbose)
@@ -80,10 +127,10 @@ def multiview(triples, items, kge_name, epochs, batch_size, learning_rate, rates
     # Select all entities, except items
     triples_df = pd.DataFrame(triples, columns=['s', 'p', 'o'])
     relations = triples_df.p.unique()
-    
+
     # Train KGE model
     model = kge(triples, kge_name, epochs, batch_size, learning_rate, verbose)
-    
+
     # Group entities into n-clusters where n in rates
     for rate in rates:
         rate_df = pd.DataFrame(columns=['relation', 'entities', f'cluster{rate}'])
@@ -94,14 +141,14 @@ def multiview(triples, items, kge_name, epochs, batch_size, learning_rate, rates
             objects = view.o.unique()
             nodes = np.unique(np.concatenate((subjects, objects)))
             entities = np.setdiff1d(nodes,items)
-    
+
             if verbose:
                 print(f'[kge-k-means] Relation: {r}')
                 print(f'[kge-k-means] #Nodes: {len(nodes)}')
                 #print(nodes[0:10])
                 print(f'[kge-k-means] #Entities: {len(entities)}')
                 #print(entities[0:10])
-    
+
             # Group entities into n-clusters
             clusters = clustering(entities, model, rate, verbose)
             # to DF, then to File
@@ -112,9 +159,9 @@ def multiview(triples, items, kge_name, epochs, batch_size, learning_rate, rates
             if verbose:
                 print(cluster_df[f'cluster{rate}'].value_counts())
                 print(cluster_df[f'cluster{rate}'].value_counts().value_counts())
-        
-            rate_df = pd.concat([rate_df, cluster_df]) 
-        
+
+            rate_df = pd.concat([rate_df, cluster_df])
+
         rate_df.to_csv(f'./temp/cluster{rate}.tsv', sep='\t', header=False, index=False)
 
 
@@ -181,7 +228,7 @@ def clustering(entities, model, rate, verbose):
     n_entities = len(entities)
     if verbose:
         print('Considering ' + str(n_entities) + ' entities from triple file...')
-    
+
     n_clusters = math.ceil(n_entities*rate/100)
     if verbose:
         print('Clustering with n_clusters = '+str(n_clusters))
@@ -205,6 +252,7 @@ if __name__ == '__main__':
     parser.add_argument('--batch_size', type=int, dest='batch_size', default=100)
     parser.add_argument('--learning_rate', type=str, dest='learning_rate', default='0.0005')
     parser.add_argument('--rates', type=str, dest='rates', default='25,50,75')
+    parser.add_argument('--view', type=str, dest='view', default='0')
     parser.add_argument('--verbose', dest='verbose', default=False, action='store_true')
 
     parsed_args = parser.parse_args()
@@ -223,6 +271,7 @@ if __name__ == '__main__':
         raise argparse.ArgumentTypeError("%r not a floating-point literal" % (learning_rate,))
 
     rates = [ int(rate) for rate in parsed_args.rates.split(',') ]
+    view = parsed_args.view
     verbose = parsed_args.verbose
 
-    kge_k_means(data_home, folder, triples_file, items_file, mode, kge_name, epochs, batch_size, learning_rate, rates, verbose)
+    kge_k_means(data_home, folder, triples_file, items_file, mode, kge_name, epochs, batch_size, learning_rate, rates, view, verbose)

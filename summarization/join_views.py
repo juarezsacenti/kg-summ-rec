@@ -1,5 +1,5 @@
 import argparse
-import sys
+import os
 import numpy as np
 import pandas as pd
 from glob import iglob
@@ -42,19 +42,18 @@ if __name__ == '__main__':
 
     parsed_args = parser.parse_args()
 
-    input_path = parsed_args.input
-    folder = parsed_args.folder
     data_home = parsed_args.datahome
+    folder = parsed_args.folder
     pattern = parsed_args.pattern
     mode = parsed_args.mode
-    ouput_file = parsed_args.output_file
+    output_file = parsed_args.output_file
 
-    try
+    try:
         if mode == 'clusters':
             join_clusters(folder, data_home, pattern, output_file)
         elif mode == 'assignments':
             join_assignments(folder, data_home, pattern, output_file)
-        else
+        else:
             raise ValueError
     except ValueError:
         print(f'Join mode {mode} is invalid.')

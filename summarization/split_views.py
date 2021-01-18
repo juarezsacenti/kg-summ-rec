@@ -1,12 +1,12 @@
 import argparse
+import os
 import pandas as pd
 import numpy as np
-from ampligraph.datasets import load_from_ntriples
 
 
-def split_for_sun_mo(kg_uig, output_path, verbose):
+def split_for_sun_mo(kg_euig, output_path, verbose):
     # Select all entities, except items
-    triples_df = pd.DataFrame(kg_uig, columns=['s', 'p', 'o'])
+    triples_df = pd.DataFrame(kg_euig, columns=['s', 'p', 'o', 'dot'])
     relations = triples_df.p.unique()
 
     p_actor='<http://ml1m-sun/actor>'
@@ -22,13 +22,13 @@ def split_for_sun_mo(kg_uig, output_path, verbose):
     df_actor_type = triples_df.loc[triples_df['o'] == o_actor]
     df_users = triples_df.loc[triples_df['p'] == p_rates]
     actor_view = pd.concat([df_actors, df_actor_type, df_users])
-    output_file = os.path.join(output_path, f'kg-ig-0.nt')
+    output_file = os.path.join(output_path, f'kg-euig-0.nt')
     save_as_ntriples(actor_view, output_file)
 
     df_directors = triples_df.loc[triples_df['p'] == p_director]
     df_director_type = triples_df.loc[triples_df['o'] == o_director]
     director_view = pd.concat([df_directors, df_director_type, df_users])
-    output_file = os.path.join(output_path, f'kg-ig-1.nt')
+    output_file = os.path.join(output_path, f'kg-euig-1.nt')
     save_as_ntriples(director_view, output_file)
 
     df_genres = triples_df.loc[triples_df['p'] == p_genre]
@@ -37,13 +37,13 @@ def split_for_sun_mo(kg_uig, output_path, verbose):
     df_genre_type = df_genre_type.merge(df_director_type, indicator='i', how='outer').query('i == "left_only"').drop('i', 1)
     df_genre_subclassof = triples_df.loc[triples_df['p'] == p_subclassof]
     genre_view = pd.concat([df_genres, df_genre_type, df_genre_subclassof, df_users])
-    output_file = os.path.join(output_path, f'kg-ig-2.nt')
+    output_file = os.path.join(output_path, f'kg-euig-2.nt')
     save_as_ntriples(genre_view, output_file)
 
 
 def split_by_relation(kg_ig, output_path, verbose):
     # Select all entities, except items
-    triples_df = pd.DataFrame(kg_ig, columns=['s', 'p', 'o'])
+    triples_df = pd.DataFrame(kg_ig, columns=['s', 'p', 'o', 'dot'])
     relations = triples_df.p.unique()
 
     for i in range(0, len(relations)):
@@ -52,7 +52,7 @@ def split_by_relation(kg_ig, output_path, verbose):
 
         if verbose:
             print(f'[kg-summ-rec] split_views: by relation {r}')
-            print(f'[kg-summ-rec] split_views: #Triples: {len(kg_ig_view_df)}'
+            print(f'[kg-summ-rec] split_views: #Triples: {len(kg_ig_view_df)}')
 
             subjects = kg_ig_view_df.s.unique()
             objects = kg_ig_view_df.o.unique()
@@ -65,22 +65,29 @@ def split_by_relation(kg_ig, output_path, verbose):
             #print(f'[kge-k-means] #Entities: {len(entities)}')
             #print(entities[0:10])
 
-         output_file = os.path.join(output_path, f'kg-ig-{i}.nt')
-         save_as_ntriples(kg_ig_view_df, output_file)
+        output_file = os.path.join(output_path, f'kg-ig-{i}.nt')
+        save_as_ntriples(kg_ig_view_df, output_file)
 
 
 def save_as_ntriples(kg_ig_view_df, output_file):
-    kg_ig_view_df.to_csv(output_file, sep='\t', header=False, index=False)
+    kg_ig_view_df.to_csv(output_file, sep=' ', header=False, index=False)
 
+
+def load_from_ntriples(file_in):
+    kg = pd.read_csv(file_in, sep=' ', header=None, names= ['s','p','o','dot'])
+    print('KG LEN: '+str(len(kg)) )
+    return kg
 
 def split_views(data_home, folder, input_file, mode, output_path, verbose):
-    kg = load_from_ntriples(folder, input_file, data_home)
-    try
+    kg_file = os.path.join(data_home, folder, input_file)
+    kg = load_from_ntriples(kg_file)
+
+    try:
         if mode == 'relation':
             split_by_relation(kg, output_path, verbose)
         elif mode == 'sun_mo':
             split_for_sun_mo(kg, output_path, verbose)
-        else
+        else:
             raise ValueError
     except ValueError:
         print(f'Split mode {mode} is invalid.')

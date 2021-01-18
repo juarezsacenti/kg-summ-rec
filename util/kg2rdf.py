@@ -14,14 +14,14 @@ def extend_ml_sun_with_mo(nt_file, dataset_path, output_file):
             fout.write(line)
     # copy mo-genre-t-box.nt to output_file
     mo_genre_t_box = os.path.expanduser('~/git/kg-summ-rec/util/mo/mo-genre-t-box.nt')
-    with open(mo_genre_t_box) as fin, open(output_file, 'w+') as fout:
+    with open(mo_genre_t_box) as fin, open(output_file, 'a+') as fout:
         for line in fin:
             fout.write(line)
     kg_map = {}
-    with open(f'{dataset_path}kg_map.dat') as fin, open(output_file, 'w+') as fout:
+    with open(f'{dataset_path}kg_map.dat') as fin, open(output_file, 'a+') as fout:
         for line in fin:
             (entity_name, entity_uri) = line.rstrip('\n').split('\t')
-            kg_map[entity_uri] = entity_name
+            kg_map[entity_name] = entity_uri
             # add actor is a Actor
             if '<http://ml1m-sun/actor' in entity_uri:
                 fout.write(f'{entity_uri} <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/ontology/Actor> .{nl}')
@@ -30,10 +30,11 @@ def extend_ml_sun_with_mo(nt_file, dataset_path, output_file):
                 fout.write(f'{entity_uri} <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/page/Film_Director> {nl}')
     # copy mo-genre-a-box.nt to output_file
     mo_genre_a_box = os.path.expanduser('~/git/kg-summ-rec/util/mo/mo-genre-a-box.tsv')
-    with open(mo_genre_a_box) as fin, open(output_file, 'w+') as fout:
+    with open(mo_genre_a_box) as fin, open(output_file, 'a+') as fout:
         for line in fin:
             (instance, concept) = line.rstrip('\n').split('\t')
-            fout.write(f'{kg_map.get(instance)} <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> {concept} .{nl}')
+            if instance in kg_map:
+                fout.write(f'<{kg_map.get(instance, instance)}> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> {concept} .{nl}')
 
 
 def ig2uig(nt_file, dataset_path, output_file):
@@ -241,7 +242,7 @@ def statistics(kg_path, input_file, output_file, KG_format='nt'):
 
     nl = '\n'
     sep = '\t'
-    with open(output_file, 'w+') as fout:
+    with open(output_file, 'w') as fout:
         fout.write(
             f'#Items{sep}{n_items}{nl}'
             f'#Nodes{sep}{n_nodes}{nl}'
@@ -273,7 +274,7 @@ def infrequent_entities(input_file, output_file, input_format="nt"):
     #entity_frequency = g.query('SELECT ?o (COUNT(?o) AS ?count) WHERE { ?s ?p ?o . } GROUP BY ?o ORDER BY DESC(?count)')
     entity_frequency = g.query('SELECT ?count (COUNT(?count) AS ?count2) WHERE { select ?o (COUNT(?o) as ?count) where {?s ?p ?o . } GROUP BY ?o } GROUP BY ?count ORDER BY ?count')
     nl = '\n'
-    with open(output_file, 'w+') as fout:
+    with open(output_file, 'w') as fout:
         for row in entity_frequency:
             print(f"{row[0].toPython()} {row[1].toPython()}")
             fout.write(f"{row[0].toPython()} {row[1].toPython()}{nl}")
@@ -327,5 +328,5 @@ if __name__ == '__main__':
         assignment2cluster(input_file, input_file_2, output_file)
     elif mode == 'ig2uig':
         ig2uig(input_file, input_file_2, output_file)
-    elif mode == 'extend_ml_sun_with_mo':
-        expand_ml_sun_with_mo(input_file, input_file_2, output_file)
+    elif mode == 'sun_mo':
+        extend_ml_sun_with_mo(input_file, input_file_2, output_file)
