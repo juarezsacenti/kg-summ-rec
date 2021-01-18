@@ -15,8 +15,8 @@ log_duration() {
     LINE=$( tail -n1 < $FIN )
     local TIME2=$(echo $LINE| cut -d' ' -f 2)
 
-    local SEC1=`date +%s -d ${TIME1}`
-    local SEC2=`date +%s -d ${TIME2}`
+    local SEC1=`date -ud ${TIME1} +%s`
+    local SEC2=`date -ud ${TIME2} +%s`
     local DIFFSEC=$(elipsed_time ${SEC1} ${SEC2})
 
     #echo Start ${TIME1}
@@ -38,10 +38,10 @@ comp_cost() {
     local KTUP_SEC=$(log_duration "$HOME/git/results/${experiment}/${dataset_in}/ml1m-jtransup-*.log")
 
     # echo "KG-based RS \t Seconds \t Training Duration"
-    echo "CFKG \t $CFKG_SEC \t "`date +%H:%M:%S -ud @${CFKG_SEC}`
-    echo "CKE \t $CKE_SEC \t "`date +%H:%M:%S -ud @${CKE_SEC}`
-    echo "CoFM \t $COFM_SEC \t "`date +%H:%M:%S -ud @${COFM_SEC}`
-    echo "KTUP \t $KTUP_SEC \t "`date +%H:%M:%S -ud @${KTUP_SEC}`
+    echo "CFKG \t $CFKG_SEC \t "`date -ud @${CFKG_SEC} +%H:%M:%S`
+    echo "CKE \t $CKE_SEC \t "`date -ud @${CKE_SEC} +%H:%M:%S`
+    echo "CoFM \t $COFM_SEC \t "`date -ud @${COFM_SEC} +%H:%M:%S`
+    echo "KTUP \t $KTUP_SEC \t "`date -ud @${KTUP_SEC} +%H:%M:%S`
 }
 
-comp_cost $1 $2
+#comp_cost $1 $2

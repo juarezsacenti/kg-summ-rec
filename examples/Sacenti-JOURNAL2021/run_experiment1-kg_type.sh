@@ -43,7 +43,7 @@
 #   recommend_sun_sfKG
 #   run_experiments
 #######################################
-experiment='Sacenti-JOURNAL2021-kg_type'
+experiment='Sacenti-JOURNAL2021'
 overall_comp_cost="$HOME/git/results/${experiment}/overall_comp_cost.tsv"
 
 #######################################
@@ -134,7 +134,7 @@ preprocess_sun_oKG() {
     fi
 
     local ENDTIME=$(date +%s)
-    echo "preprocess_sun_oKG\t$(($ENDTIME - $STARTTIME))\t${STARTTIME}\t${ENDTIME}" >> overall_comp_cost
+    echo -e "preprocess_sun_oKG\t$(($ENDTIME - $STARTTIME))\t${STARTTIME}\t${ENDTIME}" >> ${overall_comp_cost}
 }
 
 preprocess_sun_fKG() {
@@ -174,7 +174,7 @@ preprocess_sun_fKG() {
     fi
 
     local ENDTIME=$(date +%s)
-    echo "preprocess_sun_fKG\t$(($ENDTIME - $STARTTIME))\t${STARTTIME}\t${ENDTIME}" >> overall_comp_cost
+    echo -e "preprocess_sun_fKG\t$(($ENDTIME - $STARTTIME))\t${STARTTIME}\t${ENDTIME}" >> ${overall_comp_cost}
 }
 
 ####
@@ -255,7 +255,7 @@ summarize() {
     kge-k-means ${experiment} ${dataset_in} "${dataset_out}_${kg_type}-${summarization_mode}" ${kg_filename} ${summarization_mode} \
     ${kge} ${epochs} ${batch_size} ${learning_rate} ${low_frequence}
     local ENDTIME=$(date +%s)
-    echo "summarize-${dataset_out}_${kg_type}-${summarization_mode}\t$(($ENDTIME - $STARTTIME))\t${STARTTIME}\t${ENDTIME}" >> overall_comp_cost
+    echo -e "summarize-${dataset_out}_${kg_type}-${summarization_mode}\t$(($ENDTIME - $STARTTIME))\t${STARTTIME}\t${ENDTIME}" >> ${overall_comp_cost}
 
     summarization_mode='mv'
 
@@ -265,7 +265,7 @@ summarize() {
     kge-k-means ${experiment} ${dataset_in} "${dataset_out}_${kg_type}-${summarization_mode}" ${kg_filename} ${summarization_mode} \
     ${kge} ${epochs} ${batch_size} ${learning_rate} ${low_frequence}
     ENDTIME=$(date +%s)
-    echo "summarize-${dataset_out}_${kg_type}-${summarization_mode}\t$(($ENDTIME - $STARTTIME))\t${STARTTIME}\t${ENDTIME}" >> overall_comp_cost
+    echo -e "summarize-${dataset_out}_${kg_type}-${summarization_mode}\t$(($ENDTIME - $STARTTIME))\t${STARTTIME}\t${ENDTIME}" >> ${overall_comp_cost}
 }
 
 preprocess_uig() {
@@ -282,7 +282,7 @@ preprocess_uig() {
         cd $HOME/git/kg-summ-rec
 
         local ENDTIME=$(date +%s)
-        echo "preprocess_uig\t$(($ENDTIME - $STARTTIME))\t${STARTTIME}\t${ENDTIME}" >> overall_comp_cost
+        echo -e "preprocess_uig\t$(($ENDTIME - $STARTTIME))\t${STARTTIME}\t${ENDTIME}" >> ${overall_comp_cost}
     fi
 }
 
@@ -299,7 +299,7 @@ preprocess_euig() {
         --output "$HOME/git/datasets/${experiment}/${dataset_in}/kg-euig.nt"
         cd $HOME/git/kg-summ-rec
         local ENDTIME=$(date +%s)
-        echo "preprocess_euig\t$(($ENDTIME - $STARTTIME))\t${STARTTIME}\t${ENDTIME}" >> overall_comp_cost
+        echo -e "preprocess_euig\t$(($ENDTIME - $STARTTIME))\t${STARTTIME}\t${ENDTIME}" >> ${overall_comp_cost}
     fi
 }
 
@@ -326,7 +326,7 @@ preprocess_summ() {
                 STARTTIME=$(date +%s)
                 cao-format_summ "${dataset_in}" "${dataset_out}_${kg_type}-${m}-${a}-${r}" "${low_frequence}"
                 ENDTIME=$(date +%s)
-                echo "preprocess_summ-${dataset_out}_${kg_type}-${m}-${a}-${r}\t$(($ENDTIME - $STARTTIME))\t${STARTTIME}\t${ENDTIME}" >> overall_comp_cost
+                echo -e "preprocess_summ-${dataset_out}_${kg_type}-${m}-${a}-${r}\t$(($ENDTIME - $STARTTIME))\t${STARTTIME}\t${ENDTIME}" >> ${overall_comp_cost}
             done
         done
     done
@@ -365,7 +365,7 @@ measure_summ_impact() {
                     --input "$HOME/git/datasets/${experiment}/${dirName}/kg-ig.nt" \
                     --output "$HOME/git/results/${experiment}/${dirName}/kg-ig_stats.tsv"
                     ENDTIME=$(date +%s)
-                    echo "measure_summ_impact-${dirName}\t$(($ENDTIME - $STARTTIME))\t${STARTTIME}\t${ENDTIME}" >> overall_comp_cost
+                    echo -e "measure_summ_impact-${dirName}\t$(($ENDTIME - $STARTTIME))\t${STARTTIME}\t${ENDTIME}" >> ${overall_comp_cost}
                 fi
             done
         done
@@ -474,7 +474,7 @@ kg_recommendation() {
     local dataset_in=$1
     local dataset_out=$2
 
-    summ_types=(ig uig)
+    summ_types=(ig uig euig)
     summ_modes=(sv mv)
     summ_algos=(complex)
     summ_rates=(25 50 75)
@@ -535,7 +535,7 @@ recommend() {
         wait $!
         mv ~/git/results/$experiment/$DATASET/ml1m-transe-*.ckpt_final ~/git/results/$experiment/$DATASET/ml1m-transe-pretrained.ckpt
         ENDTIME=$(date +%s)
-        echo "recommend-TRANSE-${DATASET}\t$(($ENDTIME - $STARTTIME))\t${STARTTIME}\t${ENDTIME}" >> overall_comp_cost
+        echo -e "recommend-TRANSE-${DATASET}\t$(($ENDTIME - $STARTTIME))\t${STARTTIME}\t${ENDTIME}" >> ${overall_comp_cost}
     fi
 
     #[TRANSH]
@@ -547,7 +547,7 @@ recommend() {
         wait $!
         mv ~/git/results/$experiment/$DATASET/ml1m-transh-*.ckpt_final ~/git/results/$experiment/$DATASET/ml1m-transh-pretrained.ckpt
         ENDTIME=$(date +%s)
-        echo "recommend-TRANSH-${DATASET}\t$(($ENDTIME - $STARTTIME))\t${STARTTIME}\t${ENDTIME}" >> overall_comp_cost
+        echo -e "recommend-TRANSH-${DATASET}\t$(($ENDTIME - $STARTTIME))\t${STARTTIME}\t${ENDTIME}" >> ${overall_comp_cost}
     fi
 
     #BPRMF - Steffen Rendle, Christoph Freudenthaler, Zeno Gantner, and Lars Schmidt-Thieme. 2009. BPR: Bayesian personalized ranking from implicit feedback. In UAI.
@@ -559,7 +559,7 @@ recommend() {
         wait $!
         mv ~/git/results/$experiment/$DATASET/ml1m-bprmf-*.ckpt ~/git/results/$experiment/$DATASET/ml1m-bprmf-pretrained.ckpt
         ENDTIME=$(date +%s)
-        echo "recommend-BPRMF-${DATASET}\t$(($ENDTIME - $STARTTIME))\t${STARTTIME}\t${ENDTIME}" >> overall_comp_cost
+        echo -e "recommend-BPRMF-${DATASET}\t$(($ENDTIME - $STARTTIME))\t${STARTTIME}\t${ENDTIME}" >> ${overall_comp_cost}
     fi
 
     #TransUP
@@ -571,7 +571,7 @@ recommend() {
         wait $!
         mv ~/git/results/$experiment/$DATASET/ml1m-transup-*.ckpt ~/git/results/$experiment/$DATASET/ml1m-transup-pretrained.ckpt
         ENDTIME=$(date +%s)
-        echo "recommend-TRANSUP-${DATASET}\t$(($ENDTIME - $STARTTIME))\t${STARTTIME}\t${ENDTIME}" >> overall_comp_cost
+        echo -e "recommend-TRANSUP-${DATASET}\t$(($ENDTIME - $STARTTIME))\t${STARTTIME}\t${ENDTIME}" >> ${overall_comp_cost}
     fi
 
 
@@ -583,7 +583,7 @@ recommend() {
 #        CUDA_VISIBLE_DEVICES=0 nohup python run_knowledgable_recommendation.py -data_path ~/git/datasets/$experiment/$DATASET/cao-format/ -log_path ~/git/results/$experiment/$DATASET/ -rec_test_files valid.dat:test.dat  -kg_test_files valid.dat:test.dat -l2_lambda 0 -model_type cfkg -nohas_visualization -dataset ml1m -batch_size ${BATCH_SIZE} -embedding_size 100 -learning_rate ${LEARNING_RATE} -topn 10 -seed 3 -eval_interval_steps ${KNOWLEDGABLE_RECOMMENDATION_EPOCHS[0]} -training_steps ${KNOWLEDGABLE_RECOMMENDATION_EPOCHS[1]} -early_stopping_steps_to_wait ${KNOWLEDGABLE_RECOMMENDATION_EPOCHS[2]} -optimizer_type Adam -joint_ratio 0.5 -share_embeddings -L1_flag -norm_lambda 1 -kg_lambda 1 -use_st_gumbel -load_ckpt_file "$HOME/git/results/$experiment/$DATASET/ml1m-bprmf-pretrained.ckpt:$HOME/git/results/$experiment/$DATASET/ml1m-transe-pretrained.ckpt" &
 #        wait $!
 #        ENDTIME=$(date +%s)
-#        echo "recommend-CFKG-${DATASET}\t$(($ENDTIME - $STARTTIME))\t${STARTTIME}\t${ENDTIME}" >> overall_comp_cost
+#        echo -e "recommend-CFKG-${DATASET}\t$(($ENDTIME - $STARTTIME))\t${STARTTIME}\t${ENDTIME}" >> ${overall_comp_cost}
 #    fi
     #CKE (TransR) - Fuzheng Zhang, Nicholas Jing Yuan, Defu Lian, Xing Xie, and Wei-Ying Ma. 2016. Collaborative Knowledge Base Embedding for Recommender Systems. In SIGKDD.
 #    if no_exist "$HOME/git/results/$experiment/$DATASET/ml1m-cke-*.log"
@@ -593,7 +593,7 @@ recommend() {
 #        CUDA_VISIBLE_DEVICES=0 nohup python run_knowledgable_recommendation.py -data_path ~/git/datasets/$experiment/$DATASET/cao-format/ -log_path ~/git/results/$experiment/$DATASET/ -rec_test_files valid.dat:test.dat -kg_test_files valid.dat:test.dat -l2_lambda 0 -model_type cke -nohas_visualization -dataset ml1m -batch_size ${BATCH_SIZE} -embedding_size 100 -learning_rate ${LEARNING_RATE} -topn 10 -seed 3 -eval_interval_steps ${KNOWLEDGABLE_RECOMMENDATION_EPOCHS[0]} -training_steps ${KNOWLEDGABLE_RECOMMENDATION_EPOCHS[1]} -early_stopping_steps_to_wait ${KNOWLEDGABLE_RECOMMENDATION_EPOCHS[2]} -optimizer_type Adam -joint_ratio 0.5 -noshare_embeddings -L1_flag -norm_lambda 1 -kg_lambda 1 -use_st_gumbel -load_ckpt_file "$HOME/git/results/$experiment/$DATASET/ml1m-bprmf-pretrained.ckpt:$HOME/git/results/$experiment/$DATASET/ml1m-transe-pretrained.ckpt" &
 #        wait $!
 #        ENDTIME=$(date +%s)
-#        echo "recommend-CKE-${DATASET}\t$(($ENDTIME - $STARTTIME))\t${STARTTIME}\t${ENDTIME}" >> overall_comp_cost
+#        echo -e "recommend-CKE-${DATASET}\t$(($ENDTIME - $STARTTIME))\t${STARTTIME}\t${ENDTIME}" >> ${overall_comp_cost}
 #    fi
     #CoFM (FM+TransE) - Guangyuan Piao and John G. Breslin. 2018. Transfer Learning for Item Recommendations and Knowledge Graph Completion in Item Related Domains via a Co-Factorization Model. In ESWC.
 #    if no_exist "$HOME/git/results/$experiment/$DATASET/ml1m-cofm-*.log"
@@ -603,7 +603,7 @@ recommend() {
 #        CUDA_VISIBLE_DEVICES=0 nohup python run_knowledgable_recommendation.py -data_path ~/git/datasets/$experiment/$DATASET/cao-format/ -log_path ~/git/results/$experiment/$DATASET/ -rec_test_files valid.dat:test.dat -kg_test_files valid.dat:test.dat -l2_lambda 0 -model_type cofm -nohas_visualization -dataset ml1m -batch_size ${BATCH_SIZE} -embedding_size 100 -learning_rate ${LEARNING_RATE} -topn 10 -seed 3 -eval_interval_steps ${KNOWLEDGABLE_RECOMMENDATION_EPOCHS[0]} -training_steps ${KNOWLEDGABLE_RECOMMENDATION_EPOCHS[1]} -early_stopping_steps_to_wait ${KNOWLEDGABLE_RECOMMENDATION_EPOCHS[2]} -optimizer_type Adam -joint_ratio 0.5 -load_ckpt_file "$HOME/git/results/$experiment/$DATASET/ml1m-bprmf-pretrained.ckpt:$HOME/git/results/$experiment/$DATASET/ml1m-transe-pretrained.ckpt" -noshare_embeddings -L1_flag -norm_lambda 1 -kg_lambda 1 &
 #        wait $!
 #        ENDTIME=$(date +%s)
-#        echo "recommend-CoFM-${DATASET}\t$(($ENDTIME - $STARTTIME))\t${STARTTIME}\t${ENDTIME}" >> overall_comp_cost
+#        echo -e "recommend-CoFM-${DATASET}\t$(($ENDTIME - $STARTTIME))\t${STARTTIME}\t${ENDTIME}" >> ${overall_comp_cost}
 #    fi
 
 #JTransUP
@@ -614,7 +614,7 @@ recommend() {
         CUDA_VISIBLE_DEVICES=0 nohup python run_knowledgable_recommendation.py -data_path ~/git/datasets/$experiment/$DATASET/cao-format/ -log_path ~/git/results/$experiment/$DATASET/ -rec_test_files valid.dat:test.dat -kg_test_files valid.dat:test.dat -l2_lambda 0 -model_type jtransup -nohas_visualization -dataset ml1m -batch_size ${BATCH_SIZE} -embedding_size 100 -learning_rate ${LEARNING_RATE} -topn 10 -seed 3 -eval_interval_steps ${KNOWLEDGABLE_RECOMMENDATION_EPOCHS[0]} -training_steps ${KNOWLEDGABLE_RECOMMENDATION_EPOCHS[1]} -early_stopping_steps_to_wait ${KNOWLEDGABLE_RECOMMENDATION_EPOCHS[2]} -optimizer_type Adam -joint_ratio 0.5 -noshare_embeddings -L1_flag -norm_lambda 1 -kg_lambda 1 -nouse_st_gumbel -load_ckpt_file "$HOME/git/results/$experiment/$DATASET/ml1m-transup-pretrained.ckpt:$HOME/git/results/$experiment/$DATASET/ml1m-transh-pretrained.ckpt" &
         wait $!
         ENDTIME=$(date +%s)
-        echo "recommend-KTUP-${DATASET}\t$(($ENDTIME - $STARTTIME))\t${STARTTIME}\t${ENDTIME}" >> overall_comp_cost
+        echo -e "recommend-KTUP-${DATASET}\t$(($ENDTIME - $STARTTIME))\t${STARTTIME}\t${ENDTIME}" >> ${overall_comp_cost}
     fi
 
     ####
@@ -625,11 +625,15 @@ recommend() {
 }
 
 run_experiment() {
+    experiment=$1
+    overall_comp_cost="$HOME/git/results/${experiment}/overall_comp_cost.tsv"
+
     if [ ! -d "$HOME/git/datasets/${experiment}" ]
     then
        echo "[kg-summ-rec] Creating ~/git/datasets/${experiment}"
        mkdir "$HOME/git/datasets/${experiment}"
        mkdir "$HOME/git/results/${experiment}"
+       touch ${overall_comp_cost}
     fi
 
     # Preprocessing
@@ -644,4 +648,4 @@ run_experiment() {
     recommend_sun_sKG
     #recommend_sun_sfKG
 }
-run_experiment
+run_experiment $1

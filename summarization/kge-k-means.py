@@ -82,9 +82,24 @@ def singleview(triples, items, kge_name, epochs, batch_size, learning_rate, rate
     # Select all entities, except items
     triples_df = pd.DataFrame(triples, columns=['s', 'p', 'o'])
     subjects = triples_df.s.unique()
+    for i in subjects:
+        if type(i) != str:
+            print('subjects ', i, type(i))
     objects = triples_df.o.unique()
-    nodes = np.unique(np.concatenate((subjects, objects)))
+    for i in objects:
+        if type(i) != str:
+            print('objects ', i, type(i))
+    concatenated = np.concatenate((subjects, objects)) 
+    for i in concatenated:
+        if type(i) != str:
+            print('concat ', i, type(i))
+
+    print("Concat: " + str(concatenated))
+    nodes = np.unique(concatenated)
+    print("NODES: " + str(nodes))
+    #nodes = np.unique(np.concatenate((subjects, objects)))
     entities = np.setdiff1d(nodes,items)
+    print("Entities: " + str(entities))
 
     if verbose:
         print(f'[kge-k-means] #Nodes: {len(nodes)}')
