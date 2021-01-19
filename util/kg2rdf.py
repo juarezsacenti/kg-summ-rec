@@ -92,7 +92,7 @@ def nt2edges(nt_file, output_file, edge_map_file):
             fout.write(f'{k}{sep}{v}{nl}')
 
 
-#assignment (gemsec format) to nt
+#assignment (gemsec format) to cluster
 def assignment2cluster(assignment_file, edge_map_file, output_file):
     #open id-entity mapping
     edge_map = {}

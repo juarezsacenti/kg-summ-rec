@@ -53,20 +53,20 @@ gemsec() {
 
     if [ ${summarization_mode} = 'sv' ]
     then
-        sv_gemsec "${experiment}" "${dataset_in}" "${dataset_out}" "${kg_filename}" \ 
-        "${model}" "${learning_rate_init}" "${learning_rate_min}" "25"
-        sv_gemsec "${experiment}" "${dataset_in}" "${dataset_out}" "${kg_filename}" \ 
-        "${model}" "${learning_rate_init}" "${learning_rate_min}" "50"
-        sv_gemsec "${experiment}" "${dataset_in}" "${dataset_out}" "${kg_filename}" \ 
+        sv_gemsec "${experiment}" "${dataset_in}" "${dataset_out}" "${kg_filename}" \
         "${model}" "${learning_rate_init}" "${learning_rate_min}" "75"
+        sv_gemsec "${experiment}" "${dataset_in}" "${dataset_out}" "${kg_filename}" \
+        "${model}" "${learning_rate_init}" "${learning_rate_min}" "50"
+        sv_gemsec "${experiment}" "${dataset_in}" "${dataset_out}" "${kg_filename}" \
+        "${model}" "${learning_rate_init}" "${learning_rate_min}" "25"
     elif [ ${summarization_mode} = 'mv' ]
     then
-        mv_gemsec "${experiment}" "${dataset_in}" "${dataset_out}" "${kg_filename}" \ 
-        "${model}" "${learning_rate_init}" "${learning_rate_min}" "25"
-        mv_gemsec "${experiment}" "${dataset_in}" "${dataset_out}" "${kg_filename}" \ 
-        "${model}" "${learning_rate_init}" "${learning_rate_min}" "50"
-        mv_gemsec "${experiment}" "${dataset_in}" "${dataset_out}" "${kg_filename}" \ 
+        mv_gemsec "${experiment}" "${dataset_in}" "${dataset_out}" "${kg_filename}" \
         "${model}" "${learning_rate_init}" "${learning_rate_min}" "75"
+        mv_gemsec "${experiment}" "${dataset_in}" "${dataset_out}" "${kg_filename}" \
+        "${model}" "${learning_rate_init}" "${learning_rate_min}" "50"
+        mv_gemsec "${experiment}" "${dataset_in}" "${dataset_out}" "${kg_filename}" \
+        "${model}" "${learning_rate_init}" "${learning_rate_min}" "25"
     else
         echo "[kg-summ-rec] gemsec: Parameter error: summarization mode ${summarization_mode} should be sv or mv."
     fi
@@ -98,27 +98,49 @@ sv_gemsec() {
     ############################################################################
     ###                  Clusterize ${dataset_in} with gemsec                ###
     ############################################################################
-    # Dependencies:
-    #[~/git/datasets/${experiment}/${dataset_out}/${kg_filename}]
-    if no_exist "$HOME/git/kg-summ-rec/docker/gemsec_data/temp/kg.csv"
+    if no_exist "$HOME/git/datasets/${experiment}/${dataset_out}-gemsec-${ratio}/cluster${ratio}.tsv"
     then
+        echo "[kg-summ-rec] Creating ~/git/datasets/${experiment}/${dataset_out}-gemsec-${ratio}/cluster${ratio}.tsv"
+
+        # KG ntriples format to edges
+        if [ -f "$HOME/git/kg-summ-rec/docker/gemsec_data/temp/kg.csv" ]
+        then
+            echo '[kg-summ-rec] Deleting ~/git/kg-summ-rec/docker/gemsec_data/temp/kg.csv'
+            rm "$HOME/git/kg-summ-rec/docker/gemsec_data/temp/kg.csv"
+            rm "$HOME/git/kg-summ-rec/docker/gemsec_data/temp/edge_map.csv"
+        fi
         echo '[kg-summ-rec] Creating ~/git/kg-summ-rec/docker/gemsec_data/temp/kg.csv'
-        cd $HOME/git/kg-summ-rec/util
         #[activate kg-summ-rec]
         conda deactivate
         conda activate kg-summ-rec
+        cd $HOME/git/kg-summ-rec/util
         python kg2rdf.py --mode 'nt2edges' --input "$HOME/git/datasets/${experiment}/${dataset_in}/${kg_filename}" \
         --output "$HOME/git/kg-summ-rec/docker/gemsec_data/temp/kg.csv" \
         --output2 "$HOME/git/kg-summ-rec/docker/gemsec_data/temp/edge_map.csv"
         cd $HOME/git/kg-summ-rec/summarization
-    fi
-    
-    local num_entities=($(wc -l "$HOME/git/datasets/${experiment}/${dataset_in}/cao-format/ml1m/kg/e_map.dat"))
-    local cluster_number=$((${num_entities[0]}*${ratio}/100))
-    
-    if no_exist "$HOME/git/datasets/${experiment}/${dataset_out}-gemsec-${ratio}/assignment.json"
-    then
-        echo "[kg-summ-rec] Creating ~/git/datasets/${experiment}/${dataset_out}-gemsec-${ratio}/assignment.json"
+
+        # Define number of clusters based on ratio value
+        local num_nodes=($(wc -l "$HOME/git/datasets/${experiment}/${dataset_in}/cao-format/ml1m/kg/e_map.dat"))
+        local num_user_nodes=($(wc -l "$HOME/git/datasets/${experiment}/${dataset_in}/cao-format/ml1m/u_map.dat"))
+        local num_entities=${num_nodes[0]}
+        if [ ${kg_filename} = 'kg-uig.nt' ]
+        then
+            num_entities=$((${num_nodes[0]} + ${num_user_nodes[0]}))
+        fi
+        if [ ${kg_filename} = 'kg-euig.nt' ]
+        then
+            local num_superclasses=($(wc -l "$HOME/git/kg-summ-rec/util/mo/mo-genre-t-box.nt"))
+            num_entities=$((${num_nodes[0]} + ${num_user_nodes[0]} + ${num_superclasses[0]}))
+        fi
+        local cluster_number=$((${num_entities}*${ratio}/100))
+
+        # GEMSEC
+        if [ -f "$HOME/git/kg-summ-rec/docker/gemsec_data/temp/assignment.json" ]
+        then
+            echo '[kg-summ-rec] Deleting ~/git/kg-summ-rec/docker/gemsec_data/temp/assignment.json'
+            rm "$HOME/git/kg-summ-rec/docker/gemsec_data/temp/assignment.json"
+        fi
+        echo "[kg-summ-rec] Creating ~/git/kg-summ-rec/docker/gemsec_data/temp/assignment.json"
         cd $HOME/git/kg-summ-rec/docker
         cp gemsec_Dockerfile Dockerfile
         docker build -t gemsec:1.0 .
@@ -128,30 +150,36 @@ sv_gemsec() {
         --input '/data/temp/kg.csv' --embedding-output '/data/temp/embedding.csv' \
         --cluster-mean-output '/data/temp/means.csv' --log-output '/data/temp/log.json' \
         --assignment-output '/data/temp/assignment.json' --dump-matrices True \
-        --model 'GEMSECWithRegularization' --P 1 --Q 1 --walker 'first' \
+        --model ${model} --P 1 --Q 1 --walker 'first' \
         --dimensions 16 --random-walk-length 80 --num-of-walks 5 --window-size 5 \
         --distortion 0.75 --negative-sample-number 10 --initial-learning-rate ${learning_rate_init} \
         --minimal-learning-rate ${learning_rate_min} --annealing-factor 1 --initial-gamma 0.1 \
         --final-gamma 0.5 --lambd 0.0625 --cluster-number ${cluster_number} --overlap-weighting \
         'normalized_overlap' --regularization-noise 1e-8"
 
-        cp "$HOME/git/kg-summ-rec/docker/gemsec_data/temp/assignment.json" "$HOME/git/datasets/${experiment}/${dataset_out}-gemsec-${ratio}/assignment.json"
-        cd $HOME/git/kg-summ-rec/summarization
+        #[activate kg-summ-rec]
+        conda deactivate
+        conda activate kg-summ-rec
+        cd $HOME/git/kg-summ-rec/util
+        python kg2rdf.py --mode 'assignment2cluster' \
+        --input "$HOME/git/kg-summ-rec/docker/gemsec_data/temp/assignment.json" \
+        --input2 "$HOME/git/kg-summ-rec/docker/gemsec_data/temp/edge_map.csv" \
+        --output "$HOME/git/datasets/${experiment}/${dataset_out}-gemsec-${ratio}/cluster${ratio}.tsv"
+        cd $HOME/git/kg-summ-rec
     fi
+
     ############################################################################
     ###                Summarize ${dataset_out} with gemsec                  ###
     ############################################################################
-    #[activate kg-summ-rec]
-    conda deactivate
-    conda activate kg-summ-rec
 
     if no_exist "$HOME/git/datasets/${experiment}/${dataset_out}-gemsec-${ratio}/kg-ig.nt"
     then
         echo "[kg-summ-rec] Creating ~/git/datasets/${experiment}/${dataset_out}-gemsec-${ratio}/kg-ig.nt"
+        #[activate kg-summ-rec]
+        conda deactivate
+        conda activate kg-summ-rec
         cd $HOME/git/kg-summ-rec/util
-        python kg2rdf.py --mode 'assignment2cluster' --input "$HOME/git/datasets/${experiment}/${dataset_out}-gemsec-${ratio}/assignment.json" \
-        --input2 "$HOME/git/kg-summ-rec/docker/gemsec_data/temp/edge_map.csv" --output "$HOME/git/datasets/${experiment}/${dataset_out}-gemsec-${ratio}/cluster.tsv"
-        python kg2rdf.py --mode 'cluster' --input2 "$HOME/git/datasets/${experiment}/${dataset_out}-gemsec-${ratio}/cluster.tsv" \
+        python kg2rdf.py --mode 'cluster' --input2 "$HOME/git/datasets/${experiment}/${dataset_out}-gemsec-${ratio}/cluster${ratio}.tsv" \
         --input "$HOME/git/datasets/${experiment}/${dataset_in}/kg-ig.nt" --output "$HOME/git/datasets/${experiment}/${dataset_out}-gemsec-${ratio}/kg-ig.nt"
         cd $HOME/git/kg-summ-rec/summarization
     fi
@@ -183,46 +211,110 @@ mv_gemsec() {
     ############################################################################
     ###                  Clusterize ${dataset_in} with gemsec                ###
     ############################################################################
-    if no_exist "$HOME/git/kg-summ-rec/docker/gemsec_data/temp/kg-ig-0.nt"
+    # Split KG in views
+    if no_exist "$HOME/git/kg-summ-rec/docker/gemsec_data/temp/${kg_filename%.*}-0.nt"
     then
-        echo '[kg-summ-rec] gemsec: Creating ~/git/kg-summ-rec/docker/gemsec_data/temp/kg-ig-0.nt'
+        echo "[kg-summ-rec] gemsec: Creating ~/git/kg-summ-rec/docker/gemsec_data/temp/${kg_filename%.*}-0.nt"
+
+        # Copy KG file to gemsec_data
+        if no_exist "$HOME/git/kg-summ-rec/docker/gemsec_data/temp/${kg_filename}"
+        then
+            echo "[kg-summ-rec] Creating ~/git/kg-summ-rec/docker/gemsec_data/temp/${kg_filename}"
+            yes | cp -L ~/git/datasets/${experiment}/${dataset_in}/${kg_filename} ~/git/kg-summ-rec/docker/kge-k-means_data/temp/
+        fi
+
+        # Define split mode
+        local mode='relation'
+        if [ ${kg_filename} = 'kg-euig.nt' ]
+        then
+            mode='sun_mo'
+        fi
+
         #[activate kg-summ-rec]
         conda deactivate
         conda activate kg-summ-rec
+        cd $HOME/git/kg-summ-rec/summarization
         python split_views.py --datahome '../docker/gemsec_data' --folder 'temp' \
-        --input 'kg-ig.nt' --mode 'relation' --output '../docker/gemsec_data/temp/' \
+        --input ${kg_filename} --mode ${mode} --output '../docker/gemsec_data/temp/' \
         --verbose
         cd $HOME/git/kg-summ-rec/summarization
-    fi
 
-    for i in "$HOME/git/kg-summ-rec/docker/gemsec_data/temp/kg-ig-*.nt"
-    do
+        # Complete kg-uig
         if [ ${kg_filename} = 'kg-uig.nt' ]
         then
-        
+            cd $HOME/git/kg-summ-rec/docker/kge-k-means_data/temp
+            cat kg-ig-0.nt > kg-uig-0.nt
+            cat kg-ig-1.nt > kg-uig-1.nt
+            cat kg-ig-2.nt > kg-uig-2.nt
+            cat kg-ig-3.nt >> kg-uig-0.nt
+            cat kg-ig-3.nt >> kg-uig-1.nt
+            cat kg-ig-3.nt >> kg-uig-2.nt
+            rm kg-ig-3.nt
+            cd $HOME/git/kg-summ-rec
         fi
-        if no_exist "$HOME/git/kg-summ-rec/docker/gemsec_data/temp/kg.csv"
+
+        # Clean (remove) kg_filename
+        if [ -f "$HOME/git/kg-summ-rec/docker/kge-k-means_data/temp/${kg_filename}" ]
         then
+            cd $HOME/git/kg-summ-rec/docker/kge-k-means_data/temp
+            rm ${kg_filename}
+            cd $HOME/git/kg-summ-rec
+        fi
+    fi
+
+    if no_exist "$HOME/git/datasets/${experiment}/${dataset_out}-gemsec-${ratio}/cluster${ratio}.tsv"
+    then
+        echo "[kg-summ-rec] Clustering ~/git/datasets/${experiment}/${dataset_out}-gemsec-${ratio}/cluster${ratio}.tsv"
+        cd $HOME/git/kg-summ-rec/docker
+        cp gemsec_Dockerfile Dockerfile
+        docker build -t gemsec:1.0 .
+
+        for i in $HOME/git/kg-summ-rec/docker/gemsec_data/temp/${kg_filename%.*}-*.nt
+        do
+            local basename=${i##*/}
+            local prefix=${basename%.*}
+            local viewnumber=$(echo "$prefix" | cut -d '-' -f 3)
+            echo -e "Basename: ${basename};\tView number: ${viewnumber}\n"
+
+            # KG ntriples format to edges
+            if [ -f "$HOME/git/kg-summ-rec/docker/gemsec_data/temp/kg.csv" ]
+            then
+                echo '[kg-summ-rec] Deleting ~/git/kg-summ-rec/docker/gemsec_data/temp/kg.csv'
+                rm "$HOME/git/kg-summ-rec/docker/gemsec_data/temp/kg.csv"
+                rm "$HOME/git/kg-summ-rec/docker/gemsec_data/temp/edge_map.csv"
+            fi
             echo '[kg-summ-rec] Creating ~/git/kg-summ-rec/docker/gemsec_data/temp/kg.csv'
-            cd $HOME/git/kg-summ-rec/util
             #[activate kg-summ-rec]
             conda deactivate
             conda activate kg-summ-rec
-            python kg2rdf.py --mode 'nt2edges' --input "$HOME/git/datasets/${experiment}/${dataset_in}/${kg_filename}" \
+            cd $HOME/git/kg-summ-rec/util
+            python kg2rdf.py --mode 'nt2edges' --input "${i}" \
             --output "$HOME/git/kg-summ-rec/docker/gemsec_data/temp/kg.csv" \
             --output2 "$HOME/git/kg-summ-rec/docker/gemsec_data/temp/edge_map.csv"
             cd $HOME/git/kg-summ-rec/summarization
-        fi
 
-        local num_entities=($(wc -l "$HOME/git/datasets/${experiment}/${dataset_in}/cao-format/ml1m/kg/e_map.dat"))
-        local cluster_number=$((${num_entities[0]}*${ratio}/100))
+            # Define number of clusters based on ratio value
+            local num_nodes=($(wc -l "$HOME/git/datasets/${experiment}/${dataset_in}/cao-format/ml1m/kg/e_map.dat"))
+            local num_user_nodes=($(wc -l "$HOME/git/datasets/${experiment}/${dataset_in}/cao-format/ml1m/u_map.dat"))
+            local num_entities=${num_nodes[0]}
+            if [ ${kg_filename} = 'kg-uig.nt' ]
+            then
+                num_entities=$((${num_nodes[0]} + ${num_user_nodes[0]}))
+            fi
+            if [ ${kg_filename} = 'kg-euig.nt' ]
+            then
+                local num_superclasses=($(wc -l "$HOME/git/kg-summ-rec/util/mo/mo-genre-t-box.nt"))
+                num_entities=$((${num_nodes[0]} + ${num_user_nodes[0]} + ${num_superclasses[0]}))
+            fi
+            local cluster_number=$((${num_entities}*${ratio}/100))
 
-        if no_exist "$HOME/git/datasets/${experiment}/${dataset_out}-gemsec-${ratio}/assignment.json"
-        then
-            echo "[kg-summ-rec] Creating ~/git/datasets/${experiment}/${dataset_out}-gemsec-${ratio}/assignment.json"
-            cd $HOME/git/kg-summ-rec/docker
-            cp gemsec_Dockerfile Dockerfile
-            docker build -t gemsec:1.0 .
+            # GEMSEC
+            if [ -f "$HOME/git/kg-summ-rec/docker/gemsec_data/temp/assignment.json" ]
+            then
+                echo '[kg-summ-rec] Deleting ~/git/kg-summ-rec/docker/gemsec_data/temp/assignment.json'
+                rm "$HOME/git/kg-summ-rec/docker/gemsec_data/temp/assignment.json"
+            fi
+            echo "[kg-summ-rec] Creating ~/git/kg-summ-rec/docker/gemsec_data/temp/assignment.json"
 
             docker run --rm -it --gpus all -v "$PWD"/gemsec_data:/data -w /data \
             gemsec:1.0 /bin/bash -c "cd /notebooks/GEMSEC && python3 src/embedding_clustering.py \
@@ -236,29 +328,44 @@ mv_gemsec() {
             --final-gamma 0.5 --lambd 0.0625 --cluster-number ${cluster_number} --overlap-weighting \
             'normalized_overlap' --regularization-noise 1e-8"
 
-            cp "$HOME/git/kg-summ-rec/docker/gemsec_data/temp/assignment.json" "$HOME/git/datasets/${experiment}/${dataset_out}-gemsec-${ratio}/assignment.json"
-            cd $HOME/git/kg-summ-rec/summarization
-        fi
-    done
+            #[activate kg-summ-rec]
+            conda deactivate
+            conda activate kg-summ-rec
+            cd $HOME/git/kg-summ-rec/util
+            python kg2rdf.py --mode 'assignment2cluster' \
+            --input "$HOME/git/kg-summ-rec/docker/gemsec_data/temp/assignment.json" \
+            --input2 "$HOME/git/kg-summ-rec/docker/gemsec_data/temp/edge_map.csv" \
+            --output "$HOME/git/kg-summ-rec/docker/gemsec_data/temp/cluster${ratio}-${viewnumber}.tsv"
+            cd $HOME/git/kg-summ-rec
+        done
 
+        #[activate kg-summ-rec]
+        conda deactivate
+        conda activate kg-summ-rec
+        cd $HOME/git/kg-summ-rec/summarization
+        python join_views.py --datahome '../docker/gemsec_data' --folder 'temp' \
+        --pattern "cluster${ratio}-*.tsv" --mode 'clusters' --output "../docker/gemsec_data/temp/cluster${ratio}.tsv" \
+        --verbose
 
+        mv "$HOME/git/kg-summ-rec/docker/gemsec_data/temp/cluster${ratio}.tsv" "$HOME/git/datasets/${experiment}/${dataset_out}-gemsec-${ratio}/cluster${ratio}.tsv"
+        cd $HOME/git/kg-summ-rec
+    fi
 
     ############################################################################
     ###                Summarize ${dataset_out} with gemsec                  ###
     ############################################################################
-    #[activate kg-summ-rec]
-    conda deactivate
-    conda activate kg-summ-rec
-
     if no_exist "$HOME/git/datasets/${experiment}/${dataset_out}-gemsec-${ratio}/kg-ig.nt"
     then
         echo "[kg-summ-rec] Creating ~/git/datasets/${experiment}/${dataset_out}-gemsec-${ratio}/kg-ig.nt"
+        #[activate kg-summ-rec]
+        conda deactivate
+        conda activate kg-summ-rec
         cd $HOME/git/kg-summ-rec/util
-        python kg2rdf.py --mode 'assignment2cluster' --input "$HOME/git/datasets/${experiment}/${dataset_out}-gemsec-${ratio}/assignment.json" \
-        --input2 "$HOME/git/kg-summ-rec/docker/gemsec_data/temp/edge_map.csv" --output "$HOME/git/datasets/${experiment}/${dataset_out}-gemsec-${ratio}/cluster.tsv"
-        python kg2rdf.py --mode 'cluster' --input2 "$HOME/git/datasets/${experiment}/${dataset_out}-gemsec-${ratio}/cluster.tsv" \
-        --input "$HOME/git/datasets/${experiment}/${dataset_in}/kg-ig.nt" --output "$HOME/git/datasets/${experiment}/${dataset_out}-gemsec-${ratio}/kg-ig.nt"
-        cd $HOME/git/kg-summ-rec/summarization
+        python kg2rdf.py --mode 'mv_cluster' \
+        --input2 "$HOME/git/datasets/${experiment}/${dataset_out}-gemsec-${ratio}/cluster.tsv" \
+        --input "$HOME/git/datasets/${experiment}/${dataset_in}/kg-ig.nt" \
+        --output "$HOME/git/datasets/${experiment}/${dataset_out}-gemsec-${ratio}/kg-ig.nt"
+        cd $HOME/git/kg-summ-rec
     fi
 }
 

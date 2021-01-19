@@ -238,9 +238,6 @@ summarize() {
     local low_frequence=$4
 
     # default parameters
-    local model='GEMSECWithRegularization'
-    local learning_rate_init='0.001'
-    local learning_rate_min='0.0001'
     local kge='complex'
     local epochs='150'
     local batch_size='100'

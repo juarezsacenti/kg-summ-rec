@@ -58,19 +58,19 @@ kge-k-means() {
     if [ ${summarization_mode} = 'sv' ]
     then
         sv_kge-k-means "${experiment}" "${dataset_in}" "${dataset_out}" "${kg_filename}" \
-        "${kge}" "${epochs}" "${batch_size}" "${learning_rate}" "${low_frequence}" "25"
+        "${kge}" "${epochs}" "${batch_size}" "${learning_rate}" "${low_frequence}" "75"
         sv_kge-k-means "${experiment}" "${dataset_in}" "${dataset_out}" "${kg_filename}" \
         "${kge}" "${epochs}" "${batch_size}" "${learning_rate}" "${low_frequence}" "50"
         sv_kge-k-means "${experiment}" "${dataset_in}" "${dataset_out}" "${kg_filename}" \
-        "${kge}" "${epochs}" "${batch_size}" "${learning_rate}" "${low_frequence}" "75"
+        "${kge}" "${epochs}" "${batch_size}" "${learning_rate}" "${low_frequence}" "25"
     elif [ ${summarization_mode} = 'mv' ]
     then
         mv_kge-k-means "${experiment}" "${dataset_in}" "${dataset_out}" "${kg_filename}" \
-        "${kge}" "${epochs}" "${batch_size}" "${learning_rate}" "${low_frequence}" "25"
+        "${kge}" "${epochs}" "${batch_size}" "${learning_rate}" "${low_frequence}" "75"
         mv_kge-k-means "${experiment}" "${dataset_in}" "${dataset_out}" "${kg_filename}" \
         "${kge}" "${epochs}" "${batch_size}" "${learning_rate}" "${low_frequence}" "50"
         mv_kge-k-means "${experiment}" "${dataset_in}" "${dataset_out}" "${kg_filename}" \
-        "${kge}" "${epochs}" "${batch_size}" "${learning_rate}" "${low_frequence}" "75"
+        "${kge}" "${epochs}" "${batch_size}" "${learning_rate}" "${low_frequence}" "25"
     else
         echo "[kg-summ-rec] kge-k-means: Parameter error: summarization mode ${summarization_mode} should be sv or mv."
     fi
@@ -201,17 +201,17 @@ mv_kge-k-means() {
         --verbose
         cd $HOME/git/kg-summ-rec
     fi
-    
+
     if [ ${kg_filename} = 'kg-uig.nt' ]
     then
-	cd $HOME/git/kg-summ-rec/docker/kge-k-means_data/temp
+        cd $HOME/git/kg-summ-rec/docker/kge-k-means_data/temp
         cat kg-ig-0.nt > kg-uig-0.nt
         cat kg-ig-1.nt > kg-uig-1.nt
         cat kg-ig-2.nt > kg-uig-2.nt
-	cat kg-ig-3.nt >> kg-uig-0.nt
-	cat kg-ig-3.nt >> kg-uig-1.nt
-	cat kg-ig-3.nt >> kg-uig-2.nt
-	rm kg-ig-3.nt
+        cat kg-ig-3.nt >> kg-uig-0.nt
+        cat kg-ig-3.nt >> kg-uig-1.nt
+        cat kg-ig-3.nt >> kg-uig-2.nt
+        rm kg-ig-3.nt
         cd $HOME/git/kg-summ-rec
     fi
 
@@ -237,13 +237,13 @@ mv_kge-k-means() {
         cp kge-k-means_Dockerfile Dockerfile
         docker build -t kge-k-means:1.0 .
 
-        for i in "$HOME/git/kg-summ-rec/docker/kge-k-means_data/temp/${kg_filename%.*}-*.nt"
+        for i in $HOME/git/kg-summ-rec/docker/kge-k-means_data/temp/${kg_filename%.*}-*.nt
         do
             local basename=${i##*/}
             local prefix=${basename%.*}
             local viewnumber=$(echo "$prefix" | cut -d '-' -f 3)
             echo -e "Basename: ${basename};\tView number: ${viewnumber}\n"
-            
+
             docker run --rm -it --gpus all -v "$PWD"/kge-k-means_data:/data -w /data \
             kge-k-means:1.0 /bin/bash -c "python kge-k-means.py --triples ${basename} \
             --mode splitview --kge ${kge} --epochs ${epochs} --batch_size ${batch_size} \
