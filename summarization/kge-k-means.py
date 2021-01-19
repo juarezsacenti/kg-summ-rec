@@ -24,7 +24,7 @@ from ampligraph.discovery import find_clusters
 from math import ceil
 
 
-def kge_k_means(data_home, folder, triples_file, items_file, mode, kge_name, epochs, batch_size, learning_rate, rates, view, verbose):
+def kge_k_means(data_home, folder, triples_file, items_file, mode, kge_name, epochs, batch_size, learning_rate, rates, view, relations, verbose):
     # Load triples:
     triples = load_from_ntriples(folder, triples_file, data_home)
     # Load items:
@@ -41,7 +41,7 @@ def kge_k_means(data_home, folder, triples_file, items_file, mode, kge_name, epo
     if mode == 'singleview':
         singleview(triples, items, kge_name, epochs, batch_size, learning_rate, rates, verbose)
     elif mode == 'multiview':
-        multiview(triples, items, kge_name, epochs, batch_size, learning_rate, rates, verbose)
+        multiview(triples, items, kge_name, epochs, batch_size, learning_rate, rates, relations, verbose)
     elif mode == 'splitview':
         splitview(triples, items, kge_name, epochs, batch_size, learning_rate, rates, view, verbose)
     else:
@@ -89,7 +89,7 @@ def singleview(triples, items, kge_name, epochs, batch_size, learning_rate, rate
     for i in objects:
         if type(i) != str:
             print('objects ', i, type(i))
-    concatenated = np.concatenate((subjects, objects)) 
+    concatenated = np.concatenate((subjects, objects))
     for i in concatenated:
         if type(i) != str:
             print('concat ', i, type(i))
@@ -123,10 +123,10 @@ def singleview(triples, items, kge_name, epochs, batch_size, learning_rate, rate
         cluster_df.to_csv(f'./temp/cluster{rate}.tsv', sep='\t', header=False, index=False)
 
 
-def multiview(triples, items, kge_name, epochs, batch_size, learning_rate, rates, verbose):
+def multiview(triples, items, kge_name, epochs, batch_size, learning_rate, rates, relations, verbose):
     # Select all entities, except items
     triples_df = pd.DataFrame(triples, columns=['s', 'p', 'o'])
-    relations = triples_df.p.unique()
+    relations = relations.split(',')
 
     # Train KGE model
     model = kge(triples, kge_name, epochs, batch_size, learning_rate, verbose)
@@ -253,6 +253,7 @@ if __name__ == '__main__':
     parser.add_argument('--learning_rate', type=str, dest='learning_rate', default='0.0005')
     parser.add_argument('--rates', type=str, dest='rates', default='25,50,75')
     parser.add_argument('--view', type=str, dest='view', default='0')
+    parser.add_argument('--relations', type=str, dest='relations', default='<http://ml1m-sun/actor>,<http://ml1m-sun/director>,<http://ml1m-sun/genre>')
     parser.add_argument('--verbose', dest='verbose', default=False, action='store_true')
 
     parsed_args = parser.parse_args()
@@ -272,6 +273,7 @@ if __name__ == '__main__':
 
     rates = [ int(rate) for rate in parsed_args.rates.split(',') ]
     view = parsed_args.view
+    relations = parsed_args.relations
     verbose = parsed_args.verbose
 
-    kge_k_means(data_home, folder, triples_file, items_file, mode, kge_name, epochs, batch_size, learning_rate, rates, view, verbose)
+    kge_k_means(data_home, folder, triples_file, items_file, mode, kge_name, epochs, batch_size, learning_rate, rates, view, relations, verbose)

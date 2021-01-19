@@ -8,7 +8,7 @@ from glob import iglob
 def join_clusters(folder, data_home, pattern, output_file):
     nl='\n'
     tab='\t'
-    view_prop = {0: '<http://ml1m-sun/actor>', 1: '<http://ml1m-sun/director>', 2: '<http://ml1m-sun/genre>'}
+    view_prop = {'0': '<http://ml1m-sun/actor>', '1': '<http://ml1m-sun/director>', '2': '<http://ml1m-sun/genre>'}
     input_files = os.path.join(data_home, folder, pattern)
     with open(output_file, 'w') as fout:
         for view_file in iglob(input_files):

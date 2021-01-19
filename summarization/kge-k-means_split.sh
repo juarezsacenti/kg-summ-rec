@@ -175,18 +175,61 @@ mv_kge-k-means() {
         mkdir ~/git/results/${experiment}/${dataset_out}-${kge}-${ratio}/
     fi
     ############################################################################
-    ###          Clusterize ${dataset_out} with ${kge} - {ratio}          ###
+    ###                              Split views                             ###
     ############################################################################
     if no_exist "$HOME/git/kg-summ-rec/docker/kge-k-means_data/temp/${kg_filename}"
     then
         echo "[kg-summ-rec] Creating ~/git/kg-summ-rec/docker/kge-k-means_data/temp/${kg_filename}"
         yes | cp -L ~/git/datasets/${experiment}/${dataset_in}/${kg_filename} ~/git/kg-summ-rec/docker/kge-k-means_data/temp/
     fi
+
+    local mode='relation'
+    if [ ${kg_filename} = 'kg-euig.nt' ]
+    then
+        mode='sun_mo'
+    fi
+
+    if no_exist "$HOME/git/kg-summ-rec/docker/kge-k-means_data/temp/${kg_filename%.*}-0.nt"
+    then
+        echo "[kg-summ-rec] kge-k-means: Creating ~/git/kg-summ-rec/docker/kge-k-means_data/temp/${kg_filename%.*}-0.nt ${kg_filename}"
+        #[activate kg-summ-rec]
+        conda deactivate
+        conda activate kg-summ-rec
+        cd $HOME/git/kg-summ-rec/summarization
+        python split_views.py --datahome '../docker/kge-k-means_data' --folder 'temp' \
+        --input ${kg_filename} --mode ${mode} --output '../docker/kge-k-means_data/temp/' \
+        --verbose
+        cd $HOME/git/kg-summ-rec
+    fi
+
+    if [ ${kg_filename} = 'kg-uig.nt' ]
+    then
+        cd $HOME/git/kg-summ-rec/docker/kge-k-means_data/temp
+        cat kg-ig-0.nt > kg-uig-0.nt
+        cat kg-ig-1.nt > kg-uig-1.nt
+        cat kg-ig-2.nt > kg-uig-2.nt
+        cat kg-ig-3.nt >> kg-uig-0.nt
+        cat kg-ig-3.nt >> kg-uig-1.nt
+        cat kg-ig-3.nt >> kg-uig-2.nt
+        rm kg-ig-3.nt
+        cd $HOME/git/kg-summ-rec
+    fi
+
+    if [ -f "$HOME/git/kg-summ-rec/docker/kge-k-means_data/temp/${kg_filename}" ]
+    then
+        cd $HOME/git/kg-summ-rec/docker/kge-k-means_data/temp
+        rm ${kg_filename}
+        cd $HOME/git/kg-summ-rec
+    fi
+    ############################################################################
+    ###          Clusterize ${dataset_out} with ${kge} - {ratio}          ###
+    ############################################################################
     if no_exist "$HOME/git/kg-summ-rec/docker/kge-k-means_data/temp/i2kg_map.tsv"
     then
         echo '[kg-summ-rec] Creating ~/git/kg-summ-rec/docker/kge-k-means_data/temp/i2kg_map.tsv'
         yes | cp -L ~/git/datasets/${experiment}/${dataset_in}/cao-format/ml1m/i2kg_map.tsv  ~/git/kg-summ-rec/docker/kge-k-means_data/temp/
     fi
+
     if no_exist "$HOME/git/datasets/${experiment}/${dataset_out}-${kge}-${ratio}/cluster${ratio}.tsv"
     then
         echo "[kg-summ-rec] Creating ~/git/datasets/${experiment}/${dataset_out}-${kge}-${ratio}/cluster${ratio}.tsv"
@@ -194,11 +237,26 @@ mv_kge-k-means() {
         cp kge-k-means_Dockerfile Dockerfile
         docker build -t kge-k-means:1.0 .
 
-        docker run --rm -it --gpus all -v "$PWD"/kge-k-means_data:/data -w /data \
-        kge-k-means:1.0 /bin/bash -c "python kge-k-means.py --triples ${kg_filename} \
-        --mode multiview --relations '<http://ml1m-sun/actor>,<http://ml1m-sun/director>,<http://ml1m-sun/genre>' \
-        --kge ${kge} --epochs ${epochs} --batch_size ${batch_size} \
-        --learning_rate ${learning_rate} --rates ${ratio} --verbose"
+        for i in $HOME/git/kg-summ-rec/docker/kge-k-means_data/temp/${kg_filename%.*}-*.nt
+        do
+            local basename=${i##*/}
+            local prefix=${basename%.*}
+            local viewnumber=$(echo "$prefix" | cut -d '-' -f 3)
+            echo -e "Basename: ${basename};\tView number: ${viewnumber}\n"
+
+            docker run --rm -it --gpus all -v "$PWD"/kge-k-means_data:/data -w /data \
+            kge-k-means:1.0 /bin/bash -c "python kge-k-means.py --triples ${basename} \
+            --mode splitview --kge ${kge} --epochs ${epochs} --batch_size ${batch_size} \
+            --learning_rate ${learning_rate} --rates ${ratio} --view ${viewnumber} --verbose"
+        done
+
+        cd $HOME/git/kg-summ-rec/summarization
+        #[activate kg-summ-rec]
+        conda deactivate
+        conda activate kg-summ-rec
+        python join_views.py --datahome '../docker/kge-k-means_data' --folder 'temp' \
+        --pattern "cluster${ratio}-*.tsv" --mode 'clusters' --output "../docker/kge-k-means_data/temp/cluster${ratio}.tsv" \
+        --verbose
 
         mv "$HOME/git/kg-summ-rec/docker/kge-k-means_data/temp/cluster${ratio}.tsv" "$HOME/git/datasets/${experiment}/${dataset_out}-${kge}-${ratio}/cluster${ratio}.tsv"
         cd $HOME/git/kg-summ-rec
