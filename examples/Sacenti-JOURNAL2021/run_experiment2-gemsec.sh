@@ -196,6 +196,7 @@ summarize() {
     local model='GEMSECWithRegularization'
     local learning_rate_init='0.001'
     local learning_rate_min='0.0001'
+    local kg_filename="kg-${kg_type}.nt"
 
     local summarization_mode='sv'
     local STARTTIME=$(date +%s)
