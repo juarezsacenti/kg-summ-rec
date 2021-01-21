@@ -125,14 +125,14 @@ sv_gemsec() {
         local num_entities=${num_nodes[0]}
         if [ ${kg_filename} = 'kg-uig.nt' ]
         then
-            num_entities=$((${num_nodes[0]} + ${num_user_nodes[0]}))
+            num_entities=$((num_nodes[0] + num_user_nodes[0]))
         fi
         if [ ${kg_filename} = 'kg-euig.nt' ]
         then
             local num_superclasses=($(wc -l "$HOME/git/kg-summ-rec/util/mo/mo-genre-t-box.nt"))
-            num_entities=$((${num_nodes[0]} + ${num_user_nodes[0]} + ${num_superclasses[0]}))
+            num_entities=$((num_nodes[0] + num_user_nodes[0] + num_superclasses[0]))
         fi
-        local cluster_number=$((${num_entities}*${ratio}/100))
+        local cluster_number=$((num_entities * ratio / 100))
 
         # GEMSEC
         if [ -f "$HOME/git/kg-summ-rec/docker/gemsec_data/temp/assignment.json" ]
@@ -299,14 +299,14 @@ mv_gemsec() {
             local num_entities=${num_nodes[0]}
             if [ ${kg_filename} = 'kg-uig.nt' ]
             then
-                num_entities=$((${num_nodes[0]} + ${num_user_nodes[0]}))
+                num_entities=$((num_nodes[0] + num_user_nodes[0]))
             fi
             if [ ${kg_filename} = 'kg-euig.nt' ]
             then
                 local num_superclasses=($(wc -l "$HOME/git/kg-summ-rec/util/mo/mo-genre-t-box.nt"))
-                num_entities=$((${num_nodes[0]} + ${num_user_nodes[0]} + ${num_superclasses[0]}))
+                num_entities=$((num_nodes[0] + num_user_nodes[0] + num_superclasses[0]))
             fi
-            local cluster_number=$((${num_entities}*${ratio}/100))
+            local cluster_number=$((num_entities * ratio / 100))
 
             # GEMSEC
             if [ -f "$HOME/git/kg-summ-rec/docker/gemsec_data/temp/assignment.json" ]
