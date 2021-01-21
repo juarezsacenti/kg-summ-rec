@@ -100,7 +100,7 @@ source $HOME/git/kg-summ-rec/util/comp_cost.sh
 ####
 preprocess_sun_oKG() {
     local STARTTIME=$(date +%s)
-
+    # Create folders for Sun's original KG (oKG)
     if no_exist "$HOME/git/datasets/${experiment}/ml-sun_ho_oKG"
     then
         # Create folders for Sun's original KG (oKG)
@@ -199,24 +199,24 @@ summarize() {
 
     local summarization_mode='sv'
     local STARTTIME=$(date +%s)
-    if [ ! no_exist "$HOME/git/kg-summ-rec/docker/gemsec_data/temp/*.*" ]
+    if ! no_exist "$HOME/git/kg-summ-rec/docker/gemsec_data/temp/*.*"
     then
         echo "[kg-summ-rec] summarize: Cleaning ~/git/kg-summ-rec/docker/gemsec_data/"
         clean_gemsec
     fi
-    gemsec ${experiment} ${dataset_in} "${dataset_out}_${kg_type}-${summarization_mode}" ${kg_filename} ${summarization_mode} \
+    gemsec ${experiment} ${dataset_in} "${dataset_out}_${kg_type}-${summarization_mode}" \
     ${kg_filename} ${summarization_mode} ${model} ${learning_rate_init} ${learning_rate_min}
     local ENDTIME=$(date +%s)
     echo -e "summarize-${dataset_out}_${kg_type}-${summarization_mode}\t$(($ENDTIME - $STARTTIME))\t${STARTTIME}\t${ENDTIME}" >> ${overall_comp_cost}
 
     summarization_mode='mv'
     local STARTTIME=$(date +%s)
-    if [ ! no_exist "$HOME/git/kg-summ-rec/docker/gemsec_data/temp/*.*" ]
+    if ! no_exist "$HOME/git/kg-summ-rec/docker/gemsec_data/temp/*.*"
     then
         echo "[kg-summ-rec] summarize: Cleaning $HOME/git/kg-summ-rec/docker/gemsec_data/"
         clean_gemsec
     fi
-    gemsec ${experiment} ${dataset_in} "${dataset_out}_${kg_type}-${summarization_mode}" ${kg_filename} ${summarization_mode} \
+    gemsec ${experiment} ${dataset_in} "${dataset_out}_${kg_type}-${summarization_mode}" \
     ${kg_filename} ${summarization_mode} ${model} ${learning_rate_init} ${learning_rate_min}
     ENDTIME=$(date +%s)
     echo -e "summarize-${dataset_out}_${kg_type}-${summarization_mode}\t$(($ENDTIME - $STARTTIME))\t${STARTTIME}\t${ENDTIME}" >> ${overall_comp_cost}
