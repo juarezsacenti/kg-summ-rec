@@ -1,5 +1,5 @@
-### BUILD:  docker build -t gemsec:1.0 .
-### RUN:    docker run --rm -it --gpus all gemsec:1.0 $CMD
+### BUILD:  docker build -t regpartions:1.0 .
+### RUN:    docker run --rm -it --gpus all regpartions:1.0 $CMD
 
 FROM python:3.6.12-buster
 # CONTENT
@@ -21,5 +21,5 @@ RUN pip3 install -r graph-summarization-using-regular-partitions/scripts/require
 
 # 4. Run application
 # or --dataset book, use -h to check optional arguments in main.py
-CMD cd graph-summarization-using-regular-partitions/scripts/  \ 
-    && sh experiment.sh
+CMD /bin/bash -c "cd graph-summarization-using-regular-partitions/scripts  \
+                  && sh experiments.sh"
