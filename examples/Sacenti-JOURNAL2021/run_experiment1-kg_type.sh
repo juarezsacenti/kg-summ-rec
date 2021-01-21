@@ -484,11 +484,8 @@ kg_recommendation() {
                 for r in "${summ_rates[@]}"
                 do
                     local dirName="${dataset_out}_${t}-${m}-${a}-${r}"
-                    if no_exist "$HOME/git/results/${experiment}/${dirName}/*.log"
-                    then
-                        echo "[kg-summ-rec] kg_recommendation: Creating ~/git/results/${experiment}/${dirName}/*.log"
-                        recommend "${dirName}" '4873,487300,24363' '2663,266300,13317' '266,26630,1331' '10392,1039200,51960' 256 0.005
-                    fi
+                    echo "[kg-summ-rec] kg_recommendation: Creating ~/git/results/${experiment}/${dirName}/*.log"
+                    recommend "${dirName}" '4873,487300,24363' '2663,266300,13317' '266,26630,1331' '10392,1039200,51960' 256 0.005
                 done
             done
         done
@@ -618,7 +615,10 @@ recommend() {
     # Collect computational cost of $DATASET
     ####
     cd ~/git/kg-summ-rec
-    comp_cost "${experiment}" "${DATASET}" > "$HOME/git/results/${experiment}/${DATASET}/comp_cost.tsv"
+    if no_exist "$HOME/git/results/${experiment}/${DATASET}/comp_cost.tsv"
+    then
+        comp_cost "${experiment}" "${DATASET}" > "$HOME/git/results/${experiment}/${DATASET}/comp_cost.tsv"
+    fi
 }
 
 run_experiment() {
