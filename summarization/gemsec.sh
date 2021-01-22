@@ -214,13 +214,13 @@ mv_gemsec() {
     # Split KG in views
     if no_exist "$HOME/git/kg-summ-rec/docker/gemsec_data/temp/${kg_filename%.*}-0.nt"
     then
-        echo "[kg-summ-rec] gemsec: Creating ~/git/kg-summ-rec/docker/gemsec_data/temp/${kg_filename%.*}-0.nt"
+        echo "[kg-summ-rec] mv_gemsec: Creating ~/git/kg-summ-rec/docker/gemsec_data/temp/${kg_filename%.*}-0.nt"
 
         # Copy KG file to gemsec_data
         if no_exist "$HOME/git/kg-summ-rec/docker/gemsec_data/temp/${kg_filename}"
         then
-            echo "[kg-summ-rec] Creating ~/git/kg-summ-rec/docker/gemsec_data/temp/${kg_filename}"
-            yes | cp -L ~/git/datasets/${experiment}/${dataset_in}/${kg_filename} ~/git/kg-summ-rec/docker/kge-k-means_data/temp/
+            echo "[kg-summ-rec] mv_gemsec: Creating ~/git/kg-summ-rec/docker/gemsec_data/temp/${kg_filename}"
+            yes | cp -L ~/git/datasets/${experiment}/${dataset_in}/${kg_filename} ~/git/kg-summ-rec/docker/gemsec_data/temp/
         fi
 
         # Define split mode
@@ -242,7 +242,7 @@ mv_gemsec() {
         # Complete kg-uig
         if [ ${kg_filename} = 'kg-uig.nt' ]
         then
-            cd $HOME/git/kg-summ-rec/docker/kge-k-means_data/temp
+            cd $HOME/git/kg-summ-rec/docker/gemsec_data/temp
             cat kg-ig-0.nt > kg-uig-0.nt
             cat kg-ig-1.nt > kg-uig-1.nt
             cat kg-ig-2.nt > kg-uig-2.nt
@@ -254,9 +254,9 @@ mv_gemsec() {
         fi
 
         # Clean (remove) kg_filename
-        if [ -f "$HOME/git/kg-summ-rec/docker/kge-k-means_data/temp/${kg_filename}" ]
+        if [ -f "$HOME/git/kg-summ-rec/docker/gemsec_data/temp/${kg_filename}" ]
         then
-            cd $HOME/git/kg-summ-rec/docker/kge-k-means_data/temp
+            cd $HOME/git/kg-summ-rec/docker/gemsec_data/temp
             rm ${kg_filename}
             cd $HOME/git/kg-summ-rec
         fi
