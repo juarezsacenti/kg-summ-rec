@@ -106,8 +106,8 @@ sv_gemsec() {
         if [ -f "$HOME/git/kg-summ-rec/docker/gemsec_data/temp/kg.csv" ]
         then
             echo '[kg-summ-rec] Deleting ~/git/kg-summ-rec/docker/gemsec_data/temp/kg.csv'
-            rm "$HOME/git/kg-summ-rec/docker/gemsec_data/temp/kg.csv"
-            rm "$HOME/git/kg-summ-rec/docker/gemsec_data/temp/edge_map.csv"
+            yes | rm "$HOME/git/kg-summ-rec/docker/gemsec_data/temp/kg.csv"
+            yes | rm "$HOME/git/kg-summ-rec/docker/gemsec_data/temp/edge_map.csv"
         fi
         echo '[kg-summ-rec] Creating ~/git/kg-summ-rec/docker/gemsec_data/temp/kg.csv'
         #[activate kg-summ-rec]
@@ -138,7 +138,7 @@ sv_gemsec() {
         if [ -f "$HOME/git/kg-summ-rec/docker/gemsec_data/temp/assignment.json" ]
         then
             echo '[kg-summ-rec] Deleting ~/git/kg-summ-rec/docker/gemsec_data/temp/assignment.json'
-            rm "$HOME/git/kg-summ-rec/docker/gemsec_data/temp/assignment.json"
+            yes | rm "$HOME/git/kg-summ-rec/docker/gemsec_data/temp/assignment.json"
         fi
         echo "[kg-summ-rec] Creating ~/git/kg-summ-rec/docker/gemsec_data/temp/assignment.json"
         cd $HOME/git/kg-summ-rec/docker
@@ -181,7 +181,7 @@ sv_gemsec() {
         cd $HOME/git/kg-summ-rec/util
         python kg2rdf.py --mode 'cluster' --input2 "$HOME/git/datasets/${experiment}/${dataset_out}-gemsec-${ratio}/cluster${ratio}.tsv" \
         --input "$HOME/git/datasets/${experiment}/${dataset_in}/kg-ig.nt" --output "$HOME/git/datasets/${experiment}/${dataset_out}-gemsec-${ratio}/kg-ig.nt"
-        cd $HOME/git/kg-summ-rec/summarization
+        cd $HOME/git/kg-summ-rec
     fi
 }
 
@@ -280,8 +280,8 @@ mv_gemsec() {
             if [ -f "$HOME/git/kg-summ-rec/docker/gemsec_data/temp/kg.csv" ]
             then
                 echo '[kg-summ-rec] Deleting ~/git/kg-summ-rec/docker/gemsec_data/temp/kg.csv'
-                rm "$HOME/git/kg-summ-rec/docker/gemsec_data/temp/kg.csv"
-                rm "$HOME/git/kg-summ-rec/docker/gemsec_data/temp/edge_map.csv"
+                yes | rm "$HOME/git/kg-summ-rec/docker/gemsec_data/temp/kg.csv"
+                yes | rm "$HOME/git/kg-summ-rec/docker/gemsec_data/temp/edge_map.csv"
             fi
             echo '[kg-summ-rec] Creating ~/git/kg-summ-rec/docker/gemsec_data/temp/kg.csv'
             #[activate kg-summ-rec]
@@ -312,7 +312,7 @@ mv_gemsec() {
             if [ -f "$HOME/git/kg-summ-rec/docker/gemsec_data/temp/assignment.json" ]
             then
                 echo '[kg-summ-rec] Deleting ~/git/kg-summ-rec/docker/gemsec_data/temp/assignment.json'
-                rm "$HOME/git/kg-summ-rec/docker/gemsec_data/temp/assignment.json"
+                yes | rm "$HOME/git/kg-summ-rec/docker/gemsec_data/temp/assignment.json"
             fi
             echo "[kg-summ-rec] Creating ~/git/kg-summ-rec/docker/gemsec_data/temp/assignment.json"
 
@@ -362,7 +362,7 @@ mv_gemsec() {
         conda activate kg-summ-rec
         cd $HOME/git/kg-summ-rec/util
         python kg2rdf.py --mode 'mv_cluster' \
-        --input2 "$HOME/git/datasets/${experiment}/${dataset_out}-gemsec-${ratio}/cluster.tsv" \
+        --input2 "$HOME/git/datasets/${experiment}/${dataset_out}-gemsec-${ratio}/cluster${ratio}.tsv" \
         --input "$HOME/git/datasets/${experiment}/${dataset_in}/kg-ig.nt" \
         --output "$HOME/git/datasets/${experiment}/${dataset_out}-gemsec-${ratio}/kg-ig.nt"
         cd $HOME/git/kg-summ-rec
