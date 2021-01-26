@@ -108,6 +108,9 @@ sv_gemsec() {
             echo '[kg-summ-rec] Deleting ~/git/kg-summ-rec/docker/gemsec_data/temp/kg.csv'
             yes | rm "$HOME/git/kg-summ-rec/docker/gemsec_data/temp/kg.csv"
             yes | rm "$HOME/git/kg-summ-rec/docker/gemsec_data/temp/edge_map.csv"
+            yes | rm "$HOME/git/kg-summ-rec/docker/gemsec_data/temp/embedding.csv"
+            yes | rm "$HOME/git/kg-summ-rec/docker/gemsec_data/temp/log.json"
+            yes | rm "$HOME/git/kg-summ-rec/docker/gemsec_data/temp/means.csv"
         fi
         echo '[kg-summ-rec] Creating ~/git/kg-summ-rec/docker/gemsec_data/temp/kg.csv'
         #[activate kg-summ-rec]
