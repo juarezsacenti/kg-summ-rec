@@ -283,7 +283,7 @@ mv_gemsec() {
                 yes | rm "$HOME/git/kg-summ-rec/docker/gemsec_data/temp/kg.csv"
                 yes | rm "$HOME/git/kg-summ-rec/docker/gemsec_data/temp/edge_map.csv"
             fi
-            echo '[kg-summ-rec] Creating ~/git/kg-summ-rec/docker/gemsec_data/temp/kg.csv'
+            echo "[kg-summ-rec] Creating ~/git/kg-summ-rec/docker/gemsec_data/temp/kg.csv from ${i}"
             #[activate kg-summ-rec]
             conda deactivate
             conda activate kg-summ-rec
@@ -317,7 +317,7 @@ mv_gemsec() {
             echo "[kg-summ-rec] Creating ~/git/kg-summ-rec/docker/gemsec_data/temp/assignment.json"
 
             ls $HOME/git/kg-summ-rec/docker/gemsec_data/temp/
-            docker run --rm -it --gpus all -v "$PWD"/gemsec_data:/data -w /data gemsec:1.0 /bin/bash -c "ls"
+            docker run --rm -it --gpus all -v "$PWD"/gemsec_data:/data -w /data gemsec:1.0 /bin/bash -c "ls ./temp/"
 
             docker run --rm -it --gpus all -v "$PWD"/gemsec_data:/data -w /data \
             gemsec:1.0 /bin/bash -c "cd /notebooks/GEMSEC && python3 src/embedding_clustering.py \
