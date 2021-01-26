@@ -214,14 +214,14 @@ mv_gemsec() {
     # Split KG in views
     if no_exist "$HOME/git/kg-summ-rec/docker/gemsec_data/temp/${kg_filename%.*}-0.nt"
     then
-        echo "[kg-summ-rec] mv_gemsec: Creating ~/git/kg-summ-rec/docker/gemsec_data/temp/${kg_filename%.*}-0.nt"
-
         # Copy KG file to gemsec_data
         if no_exist "$HOME/git/kg-summ-rec/docker/gemsec_data/temp/${kg_filename}"
         then
             echo "[kg-summ-rec] mv_gemsec: Creating ~/git/kg-summ-rec/docker/gemsec_data/temp/${kg_filename}"
             cp ~/git/datasets/${experiment}/${dataset_in}/${kg_filename} ~/git/kg-summ-rec/docker/gemsec_data/temp/
         fi
+
+        echo "[kg-summ-rec] mv_gemsec: Creating ~/git/kg-summ-rec/docker/gemsec_data/temp/${kg_filename%.*}-0.nt"
 
         # Define split mode
         local mode='relation'
@@ -316,6 +316,9 @@ mv_gemsec() {
             fi
             echo "[kg-summ-rec] Creating ~/git/kg-summ-rec/docker/gemsec_data/temp/assignment.json"
 
+            ls $HOME/git/kg-summ-rec/docker/gemsec_data/temp/
+            docker run --rm -it --gpus all -v "$PWD"/gemsec_data:/data -w /data gemsec:1.0 /bin/bash -c "ls"
+
             docker run --rm -it --gpus all -v "$PWD"/gemsec_data:/data -w /data \
             gemsec:1.0 /bin/bash -c "cd /notebooks/GEMSEC && python3 src/embedding_clustering.py \
             --input '/data/temp/kg.csv' --embedding-output '/data/temp/embedding.csv' \
@@ -327,8 +330,6 @@ mv_gemsec() {
             --minimal-learning-rate ${learning_rate_min} --annealing-factor 1 --initial-gamma 0.1 \
             --final-gamma 0.5 --lambd 0.0625 --cluster-number ${cluster_number} --overlap-weighting \
             'normalized_overlap' --regularization-noise 1e-8"
-
-            ls $HOME/git/kg-summ-rec/docker/gemsec_data/temp/
 
             #[activate kg-summ-rec]
             conda deactivate
