@@ -328,6 +328,8 @@ mv_gemsec() {
             --final-gamma 0.5 --lambd 0.0625 --cluster-number ${cluster_number} --overlap-weighting \
             'normalized_overlap' --regularization-noise 1e-8"
 
+            ls $HOME/git/kg-summ-rec/docker/gemsec_data/temp/
+
             #[activate kg-summ-rec]
             conda deactivate
             conda activate kg-summ-rec
