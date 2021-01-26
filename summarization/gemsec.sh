@@ -237,7 +237,7 @@ mv_gemsec() {
         python split_views.py --datahome '../docker/gemsec_data' --folder 'temp' \
         --input ${kg_filename} --mode ${mode} --output '../docker/gemsec_data/temp/' \
         --verbose
-        cd $HOME/git/kg-summ-rec/summarization
+        cd $HOME/git/kg-summ-rec
 
         # Complete kg-uig
         if [ ${kg_filename} = 'kg-uig.nt' ]
@@ -291,7 +291,7 @@ mv_gemsec() {
             python kg2rdf.py --mode 'nt2edges' --input "${i}" \
             --output "$HOME/git/kg-summ-rec/docker/gemsec_data/temp/kg.csv" \
             --output2 "$HOME/git/kg-summ-rec/docker/gemsec_data/temp/edge_map.csv"
-            cd $HOME/git/kg-summ-rec/summarization
+            cd $HOME/git/kg-summ-rec
 
             # Define number of clusters based on ratio value
             local num_nodes=($(wc -l "$HOME/git/datasets/${experiment}/${dataset_in}/cao-format/ml1m/kg/e_map.dat"))
@@ -316,6 +316,9 @@ mv_gemsec() {
             fi
             echo "[kg-summ-rec] Creating ~/git/kg-summ-rec/docker/gemsec_data/temp/assignment.json"
 
+
+            cd $HOME/git/kg-summ-rec/docker
+
             ls $HOME/git/kg-summ-rec/docker/gemsec_data/temp/
             docker run --rm -it --gpus all -v "$PWD"/gemsec_data:/data -w /data gemsec:1.0 /bin/bash -c "ls ./temp/"
 
@@ -330,6 +333,8 @@ mv_gemsec() {
             --minimal-learning-rate ${learning_rate_min} --annealing-factor 1 --initial-gamma 0.1 \
             --final-gamma 0.5 --lambd 0.0625 --cluster-number ${cluster_number} --overlap-weighting \
             'normalized_overlap' --regularization-noise 1e-8"
+
+            cd $HOME/git/kg-summ-rec
 
             #[activate kg-summ-rec]
             conda deactivate
