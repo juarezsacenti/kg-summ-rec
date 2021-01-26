@@ -282,6 +282,9 @@ mv_gemsec() {
                 echo '[kg-summ-rec] Deleting ~/git/kg-summ-rec/docker/gemsec_data/temp/kg.csv'
                 yes | rm "$HOME/git/kg-summ-rec/docker/gemsec_data/temp/kg.csv"
                 yes | rm "$HOME/git/kg-summ-rec/docker/gemsec_data/temp/edge_map.csv"
+                yes | rm "$HOME/git/kg-summ-rec/docker/gemsec_data/temp/embedding.csv"
+                yes | rm "$HOME/git/kg-summ-rec/docker/gemsec_data/temp/log.json"
+                yes | rm "$HOME/git/kg-summ-rec/docker/gemsec_data/temp/means.csv"
             fi
             echo "[kg-summ-rec] Creating ~/git/kg-summ-rec/docker/gemsec_data/temp/kg.csv from ${i}"
             #[activate kg-summ-rec]
@@ -307,6 +310,7 @@ mv_gemsec() {
                 num_entities=$((num_nodes[0] + num_user_nodes[0] + num_superclasses[0]))
             fi
             local cluster_number=$((num_entities * ratio / 100))
+            echo "[kg-summ-rec] mv_gemsec: Number of clusters is ${cluster_number}."
 
             # GEMSEC
             if [ -f "$HOME/git/kg-summ-rec/docker/gemsec_data/temp/assignment.json" ]
@@ -319,8 +323,8 @@ mv_gemsec() {
 
             cd $HOME/git/kg-summ-rec/docker
 
-            ls $HOME/git/kg-summ-rec/docker/gemsec_data/temp/
-            docker run --rm -it --gpus all -v "$PWD"/gemsec_data:/data -w /data gemsec:1.0 /bin/bash -c "ls ./temp/"
+            #ls $HOME/git/kg-summ-rec/docker/gemsec_data/temp/
+            #docker run --rm -it --gpus all -v "$PWD"/gemsec_data:/data -w /data gemsec:1.0 /bin/bash -c "ls ./temp/"
 
             docker run --rm -it --gpus all -v "$PWD"/gemsec_data:/data -w /data \
             gemsec:1.0 /bin/bash -c "cd /notebooks/GEMSEC && python3 src/embedding_clustering.py \
