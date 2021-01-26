@@ -220,7 +220,7 @@ mv_gemsec() {
         if no_exist "$HOME/git/kg-summ-rec/docker/gemsec_data/temp/${kg_filename}"
         then
             echo "[kg-summ-rec] mv_gemsec: Creating ~/git/kg-summ-rec/docker/gemsec_data/temp/${kg_filename}"
-            yes | cp -L ~/git/datasets/${experiment}/${dataset_in}/${kg_filename} ~/git/kg-summ-rec/docker/gemsec_data/temp/
+            cp ~/git/datasets/${experiment}/${dataset_in}/${kg_filename} ~/git/kg-summ-rec/docker/gemsec_data/temp/
         fi
 
         # Define split mode
