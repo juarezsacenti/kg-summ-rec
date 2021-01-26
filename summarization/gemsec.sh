@@ -120,8 +120,9 @@ sv_gemsec() {
         cd $HOME/git/kg-summ-rec/summarization
 
         # Define number of clusters based on ratio value
-        local num_nodes=($(wc -l "$HOME/git/datasets/${experiment}/${dataset_in}/cao-format/ml1m/kg/e_map.dat"))
-        local num_user_nodes=($(wc -l "$HOME/git/datasets/${experiment}/${dataset_in}/cao-format/ml1m/u_map.dat"))
+        #local num_nodes=($(wc -l "$HOME/git/datasets/${experiment}/${dataset_in}/cao-format/ml1m/kg/e_map.dat"))
+        local num_nodes=($(tr '.' ' ' < "$HOME/git/datasets/${experiment}/${dataset_in}/${kg_filename}" | tr -s ' ' '\n' | awk '!a[$0]++{c++} END{print c}' | awk -v c=2 '{print $0-c}'))
+        local num_user_nodes=($(wc -l "$HOME/git/datasets/${experiment}/${dataset_in}/cao-format/ml1m/u_map.dat" | awk -v c=1 '{print $0-c}'))
         local num_entities=${num_nodes[0]}
         if [ ${kg_filename} = 'kg-uig.nt' ]
         then
@@ -129,10 +130,12 @@ sv_gemsec() {
         fi
         if [ ${kg_filename} = 'kg-euig.nt' ]
         then
-            local num_superclasses=($(wc -l "$HOME/git/kg-summ-rec/util/mo/mo-genre-t-box.nt"))
+            local num_superclasses=($(wc -l "$HOME/git/kg-summ-rec/util/mo/mo-genre-t-box.nt" | awk -v c=2 '{print $0-c}'))
             num_entities=$((num_nodes[0] + num_user_nodes[0] + num_superclasses[0]))
         fi
         local cluster_number=$((num_entities * ratio / 100))
+        local edges=($(wc -l "$HOME/git/kg-summ-rec/docker/gemsec_data/temp/edge_map.csv"))
+        echo "[kg-summ-rec] mv_gemsec: Number of clusters is ${cluster_number}, nodes is ${num_entities}  and edges is ${edges}, ."
 
         # GEMSEC
         if [ -f "$HOME/git/kg-summ-rec/docker/gemsec_data/temp/assignment.json" ]
@@ -297,8 +300,9 @@ mv_gemsec() {
             cd $HOME/git/kg-summ-rec
 
             # Define number of clusters based on ratio value
-            local num_nodes=($(wc -l "$HOME/git/datasets/${experiment}/${dataset_in}/cao-format/ml1m/kg/e_map.dat"))
-            local num_user_nodes=($(wc -l "$HOME/git/datasets/${experiment}/${dataset_in}/cao-format/ml1m/u_map.dat"))
+            #local num_nodes=($(wc -l "$HOME/git/datasets/${experiment}/${dataset_in}/cao-format/ml1m/kg/e_map.dat"))
+            local num_nodes=($(tr '.' ' ' < "${i}" | tr -s ' ' '\n' | awk '!a[$0]++{c++} END{print c}' | awk -v c=2 '{print $0-c}'))
+            local num_user_nodes=($(wc -l "$HOME/git/datasets/${experiment}/${dataset_in}/cao-format/ml1m/u_map.dat" | awk -v c=1 '{print $0-c}'))
             local num_entities=${num_nodes[0]}
             if [ ${kg_filename} = 'kg-uig.nt' ]
             then
@@ -306,11 +310,12 @@ mv_gemsec() {
             fi
             if [ ${kg_filename} = 'kg-euig.nt' ]
             then
-                local num_superclasses=($(wc -l "$HOME/git/kg-summ-rec/util/mo/mo-genre-t-box.nt"))
+                local num_superclasses=($(wc -l "$HOME/git/kg-summ-rec/util/mo/mo-genre-t-box.nt" | awk -v c=2 '{print $0-c}'))
                 num_entities=$((num_nodes[0] + num_user_nodes[0] + num_superclasses[0]))
             fi
             local cluster_number=$((num_entities * ratio / 100))
-            echo "[kg-summ-rec] mv_gemsec: Number of clusters is ${cluster_number}."
+            local edges=($(wc -l "$HOME/git/kg-summ-rec/docker/gemsec_data/temp/edge_map.csv"))
+            echo "[kg-summ-rec] mv_gemsec: Number of clusters is ${cluster_number}, nodes is ${num_entities}  and edges is ${edges}, ."
 
             # GEMSEC
             if [ -f "$HOME/git/kg-summ-rec/docker/gemsec_data/temp/assignment.json" ]
