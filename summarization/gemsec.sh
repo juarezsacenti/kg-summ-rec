@@ -120,7 +120,7 @@ sv_gemsec() {
         python kg2rdf.py --mode 'nt2edges' --input "$HOME/git/datasets/${experiment}/${dataset_in}/${kg_filename}" \
         --output "$HOME/git/kg-summ-rec/docker/gemsec_data/temp/kg.csv" \
         --output2 "$HOME/git/kg-summ-rec/docker/gemsec_data/temp/edge_map.csv"
-        cd $HOME/git/kg-summ-rec/summarization
+        cd $HOME/git/kg-summ-rec
 
         # Define number of clusters based on ratio value
         #local num_nodes=($(wc -l "$HOME/git/datasets/${experiment}/${dataset_in}/cao-format/ml1m/kg/e_map.dat"))
@@ -138,7 +138,7 @@ sv_gemsec() {
         fi
         local cluster_number=$((num_entities * ratio / 100))
         local edges=($(wc -l "$HOME/git/kg-summ-rec/docker/gemsec_data/temp/edge_map.csv"))
-        echo "[kg-summ-rec] mv_gemsec: Number of clusters is ${cluster_number}, nodes is ${num_entities}  and edges is ${edges}, ."
+        echo "[kg-summ-rec] mv_gemsec: Number of clusters is ${cluster_number}, nodes is ${num_entities}  and edges is ${edges}."
 
         # GEMSEC
         if [ -f "$HOME/git/kg-summ-rec/docker/gemsec_data/temp/assignment.json" ]
@@ -162,6 +162,8 @@ sv_gemsec() {
         --minimal-learning-rate ${learning_rate_min} --annealing-factor 1 --initial-gamma 0.1 \
         --final-gamma 0.5 --lambd 0.0625 --cluster-number ${cluster_number} --overlap-weighting \
         'normalized_overlap' --regularization-noise 1e-8"
+
+        cd $HOME/git/kg-summ-rec
 
         #[activate kg-summ-rec]
         conda deactivate
@@ -274,6 +276,7 @@ mv_gemsec() {
         cd $HOME/git/kg-summ-rec/docker
         cp gemsec_Dockerfile Dockerfile
         docker build -t gemsec:1.0 .
+        cd $HOME/git/kg-summ-rec
 
         for i in $HOME/git/kg-summ-rec/docker/gemsec_data/temp/${kg_filename%.*}-*.nt
         do
@@ -318,7 +321,7 @@ mv_gemsec() {
             fi
             local cluster_number=$((num_entities * ratio / 100))
             local edges=($(wc -l "$HOME/git/kg-summ-rec/docker/gemsec_data/temp/edge_map.csv"))
-            echo "[kg-summ-rec] mv_gemsec: Number of clusters is ${cluster_number}, nodes is ${num_entities}  and edges is ${edges}, ."
+            echo "[kg-summ-rec] mv_gemsec: Number of clusters is ${cluster_number}, nodes is ${num_entities}  and edges is ${edges}."
 
             # GEMSEC
             if [ -f "$HOME/git/kg-summ-rec/docker/gemsec_data/temp/assignment.json" ]
@@ -327,7 +330,6 @@ mv_gemsec() {
                 yes | rm "$HOME/git/kg-summ-rec/docker/gemsec_data/temp/assignment.json"
             fi
             echo "[kg-summ-rec] Creating ~/git/kg-summ-rec/docker/gemsec_data/temp/assignment.json"
-
 
             cd $HOME/git/kg-summ-rec/docker
 
