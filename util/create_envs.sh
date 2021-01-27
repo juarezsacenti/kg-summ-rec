@@ -79,3 +79,6 @@ conda install numpy=1.14.5
 conda install scikit-learn=0.19.1
 pip install tensorflow-gpu==1.4.0
 
+
+# kg-summ-rec/evaluation
+export PYTHONPATH="${HOME}/git/kg-summ-rec/evaluation:${PYTHONPATH}"
