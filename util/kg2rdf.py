@@ -109,7 +109,8 @@ def assignment2cluster(assignment_file, edge_map_file, output_file):
     with open(output_file, 'w') as fout:
         #for each cluster, each triple, each entity in cluster, replace entity in triple with cluster
         for k, v in c_map.items():
-            fout.write(f'<{edge_map[k]}>{sep}cluster{v}{nl}')
+            if 'movie' not in edge_map[k]:
+                fout.write(f'<{edge_map[k]}>{sep}cluster{v}{nl}')
 
 
 def remove_duplicates(input_file, output_file):

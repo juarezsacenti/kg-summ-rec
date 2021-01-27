@@ -136,8 +136,9 @@ sv_gemsec() {
             local num_superclasses=($(wc -l "$HOME/git/kg-summ-rec/util/mo/mo-genre-t-box.nt" | awk -v c=2 '{print $0-c}'))
             num_entities=$((num_nodes[0] + num_user_nodes[0] + num_superclasses[0]))
         fi
-        local cluster_number=$((num_entities * ratio / 100))
         local edges=($(wc -l "$HOME/git/kg-summ-rec/docker/gemsec_data/temp/edge_map.csv"))
+        #local cluster_number=$((num_entities * ratio / 100))
+        local cluster_number=${((edges * ratio / 100))}
         echo "[kg-summ-rec] mv_gemsec: Number of clusters is ${cluster_number}, nodes is ${num_entities}  and edges is ${edges}."
 
         # GEMSEC
@@ -319,8 +320,9 @@ mv_gemsec() {
                 local num_superclasses=($(wc -l "$HOME/git/kg-summ-rec/util/mo/mo-genre-t-box.nt" | awk -v c=2 '{print $0-c}'))
                 num_entities=$((num_nodes[0] + num_user_nodes[0] + num_superclasses[0]))
             fi
-            local cluster_number=$((num_entities * ratio / 100))
             local edges=($(wc -l "$HOME/git/kg-summ-rec/docker/gemsec_data/temp/edge_map.csv"))
+            #local cluster_number=$((num_entities * ratio / 100))
+            local cluster_number=${((edges * ratio / 100))}
             echo "[kg-summ-rec] mv_gemsec: Number of clusters is ${cluster_number}, nodes is ${num_entities}  and edges is ${edges}."
 
             # GEMSEC
