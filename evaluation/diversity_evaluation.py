@@ -201,7 +201,7 @@ def read_i2genre_map(dataset_path, mode, ratio):
         cluster_file = os.path.join(dataset_path, f'cluster{ratio}.tsv')
         with open(cluster_file) as fin:
             for line in fin:
-                if mode == 'sv': 
+                if mode == 'sv':
                     (entity_uri, cluster_uri) = line.rstrip('\n').split('\t')
                     if 'genre' in entity_uri:
                         cluster.setdefault(f'<http://know-rec/{cluster_uri}>', []).append(entity_uri)
@@ -272,3 +272,6 @@ if __name__ == '__main__':
     output_file = os.path.expanduser(parsed_args.output_file)
 
     evaluate_predictions2(input_file, dataset_path, mode, ratio, test_file, output_file)
+
+
+# python evaluation/diversity_evaluation.py --input ~/git/results/Sacenti-JOURNAL2021/ml-sun_ho_sKG_euig-mv-complex-25/ml1m-jtransup-1611159326_pred.dat --datapath "$HOME/git/datasets/Sacenti-JOURNAL2021/ml-sun_ho_sKG_euig-mv-complex-25/" --mode 'mv' --ratio '25' --test "$HOME/git/datasets/Sacenti-JOURNAL2021/ml-sun_ho_sKG_euig-mv-complex-25/cao-format/ml1m/test.dat" --output "$HOME/git/results/Sacenti-JOURNAL2021/ml-sun_ho_sKG_euig-mv-complex-25/rec_quality.log"
