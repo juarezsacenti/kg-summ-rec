@@ -15,9 +15,12 @@
 
 import numpy as np
 import random
+import argparse
+import os
 
 from caserec.evaluation.base_evaluation import BaseEvaluation
 from diversity_functions import genre_coverage_at_k
+from diversity_functions import genre_redundancy_at_k
 
 from caserec.utils.process_data import ReadFile, WriteFile
 from caserec.evaluation.item_recommendation import ItemRecommendationEvaluation
@@ -28,7 +31,7 @@ __author__ = 'Juarez Sacenti <juarez[DOT]sacenti[AT]gmail[DOT]com>'
 
 class DiversityEvaluation(BaseEvaluation):
     def __init__(self, sep='\t', n_ranks=list([1, 3, 5, 10]),
-                 metrics=list(['GENRE_COVERAGE']), all_but_one_eval=False,
+                 metrics=list(['GENRE_COVERAGE', 'GENRE_REDUNDANCY']), all_but_one_eval=False,
                  verbose=True, as_table=False, table_sep='\t'):
         """
         Class to evaluate predictions in a item recommendation (ranking) scenario
@@ -58,7 +61,7 @@ class DiversityEvaluation(BaseEvaluation):
 
         if type(metrics) == list:
             metrics = [m + '@' + str(n) for m in metrics for n in n_ranks]
-        super(ItemRecommendationEvaluation, self).__init__(sep=sep, metrics=metrics, all_but_one_eval=all_but_one_eval,
+        super(DiversityEvaluation, self).__init__(sep=sep, metrics=metrics, all_but_one_eval=all_but_one_eval,
                                                            verbose=verbose, as_table=as_table, table_sep=table_sep)
 
         self.n_ranks = n_ranks
@@ -131,85 +134,118 @@ class DiversityEvaluation(BaseEvaluation):
         return eval_results
 
 
-def evaluate_predictions(input_file, dataset_path, ratio, output_file):
+def evaluate_predictions(input_file, dataset_path, mode, ratio, test_file, output_file):
     predictions_data = ReadFile(input_file=input_file).read()
-    i2genre_map = read_i2genre_map(dataset_path, ratio)
+    i2genre_map = read_i2genre_map(dataset_path, mode, ratio)
+    print(len(i2genre_map))
+    eval_data = ReadFile(input_file=test_file).read()
     # Creating kg-summ-rec evaluator with diversity parameters
     evaluator = DiversityEvaluation(n_ranks=[10])
     # Getting evaluation
     diversity_metrics = evaluator.evaluate(predictions_data['feedback'], eval_data, i2genre_map)
-    with open(output_file) as fout:
+    with open(output_file, 'w+') as fout:
         fout.write("From kg-summ-rec diversity evaluator: {}.".format(str(diversity_metrics)))
 
 
-def evaluate_predictions2(prediction_file, dataset_path, ratio, test_file, output_file):
+def evaluate_predictions2(prediction_file, dataset_path, mode, ratio, test_file, output_file):
     predictions_data = ReadFile(input_file=prediction_file).read()
     eval_data = ReadFile(input_file=test_file).read()
     # Creating CaseRecommender evaluator with item-recommendation parameters
     evaluator = ItemRecommendationEvaluation(n_ranks=[10])
     # Getting evaluation
     item_rec_metrics = evaluator.evaluate(predictions_data['feedback'], eval_data)
-    i2genre_map = read_i2genre_map(dataset_path, ratio)
+    i2genre_map = read_i2genre_map(dataset_path, mode, ratio)
     # Creating kg-summ-rec evaluator with diversity parameters
     evaluator = DiversityEvaluation(n_ranks=[10])
     # Getting evaluation
     diversity_metrics = evaluator.evaluate(predictions_data['feedback'], eval_data, i2genre_map)
-    with open(output_file) as fout:
+    with open(output_file, 'w+') as fout:
         fout.write("From kg-summ-rec diversity evaluator: {}.".format(str(item_rec_metrics)))
         fout.write("From kg-summ-rec diversity evaluator: {}.".format(str(diversity_metrics)))
 
 
-def read_i2genre_map(dataset_path, ratio):
+def read_i2genre_map(dataset_path, mode, ratio):
     i2genre_map = {}
+
+    i_map = {}
+    i_map_file = os.path.join(dataset_path, 'cao-format','ml1m','i_map.dat')
+    with open(i_map_file) as fin:
+        for line in fin:
+            (new_id, orig_id) = line.rstrip('\n').split('\t')
+            i_map.setdefault(new_id, []).append(orig_id)
 
     i2kg_map = {}
     i2kg_map_file = os.path.join(dataset_path, 'cao-format','ml1m','i2kg_map.tsv')
     with open(i2kg_map_file) as fin:
         for line in fin:
             (item_id, name, item_uri) = line.rstrip('\n').split('\t')
-            i2kg_map.get(item_id, []).append(f'<{item_uri}>')
+            i2kg_map.setdefault(item_id, []).append(f'<{item_uri}>')
+    #print(i2kg_map_file)
+    #print(i2kg_map)
 
     kg = {}
-    genre_set = ()
+    genre_set = set()
     kg_file = os.path.join(dataset_path, 'kg-ig.nt')
     with open(kg_file) as fin:
         for line in fin:
             (s, p, o, dot) = line.rstrip('\n').split(' ')
-            if 'movie' in s && 'genre' in p:
-                kg.get(s, []).append(o)
+            if 'movie' in s and 'genre' in p:
+                kg.setdefault(s, []).append(o)
                 genre_set.add(o)
+    #print(kg)
+
 
     cluster = {}
     if ratio != '100':
+        genre_set = set()
         cluster_file = os.path.join(dataset_path, f'cluster{ratio}.tsv')
         with open(cluster_file) as fin:
             for line in fin:
-                (entity_uri, cluster_uri) = line.rstrip('\n').split('\t')
-                cluster.get(f'<{cluster_uri}>', []).append(entity_uri)
+                if mode == 'sv': 
+                    (entity_uri, cluster_uri) = line.rstrip('\n').split('\t')
+                    if 'genre' in entity_uri:
+                        cluster.setdefault(f'<http://know-rec/{cluster_uri}>', []).append(entity_uri)
+                        genre_set.add(entity_uri)
+                else:
+                    (property_uri, entity_uri, cluster_uri) = line.rstrip('\n').split('\t')
+                    if 'genre' in entity_uri and 'genre' in property_uri:
+                        cluster.setdefault(f'<http://know-rec/relation2-{cluster_uri}>', []).append(entity_uri)
+                        genre_set.add(entity_uri)
+        #print(cluster)
+        #print('cluster:'+str( len(cluster)))
 
-    e_map = {}
-    e_map_file = os.path.join(dataset_path,'cao-format','ml1m','kg','e_map.dat')
-    with open(e_map_file) as fin:
-        for line in fin:
-            (entity_id, entity_uri) = line.rstrip('\n').split('\t')
-            e_map.get(f'<{entity_uri}>', []).append(entity_id)
+    #e_map = {}
+    #e_map_file = os.path.join(dataset_path,'cao-format','ml1m','kg','e_map.dat')
+    #with open(e_map_file) as fin:
+    #    for line in fin:
+    #        (entity_id, entity_uri) = line.rstrip('\n').split('\t')
+    #        if 'genre' in entity_uri:
+    #            e_map.setdefault(f'<{entity_uri}>', []).append(entity_id)
+    #print(e_map)
 
-    for item_id, item_uri_list in i2kg_map.items():
-        for item_uri in item_uri_list:
-            if ratio != '100':
-                cluster_uri_list = kg.get(item_uri, [])
-                for cluster_uri in cluster_uri_list:
-                    genre_uri_list = cluster.get(cluster_uri,[])
+
+    for new_id, orig_id_list in i_map.items():
+        for orig_id in orig_id_list:
+            item_uri_list = i2kg_map.get(orig_id, [])
+            for item_uri in item_uri_list:
+                if ratio != '100':
+                    cluster_uri_list = kg.get(item_uri, [])
+                    for cluster_uri in cluster_uri_list:
+                        genre_uri_list = cluster.get(cluster_uri,[])
+                        for genre_uri in genre_uri_list:
+                            i2genre_map.setdefault(new_id, []).append(genre_uri)
+                            #genre_id_list = e_map.get(genre_uri, [])
+                            #print(genre_uri, genre_id_list)
+                            #for genre_id in genre_id_list:
+                                #print(genre_id)
+                                #i2genre_map.setdefault(new_id,[]).append(genre_id)
+                else:
+                    genre_uri_list = kg.get(item_uri, [])
                     for genre_uri in genre_uri_list:
-                        genre_id_list = e_map.get(genre_uri, [])
-                        for genre_id in genre_id_list:
-                            i2genre_map.get(item_id,[]).append(genre_id)
-            else:
-                genre_uri_list = kg.get(item_uri, [])
-                for genre_uri in genre_uri_list:
-                    genre_id_list = e_map.get(genre_uri, [])
-                    for genre_id in genre_id_list:
-                        i2genre_map.get(item_id,[]).append(genre_id)
+                        i2genre_map.setdefault(new_id, []).append(genre_uri)
+                        #genre_id_list = e_map.get(genre_uri, [])
+                        #for genre_id in genre_id_list:
+                            #i2genre_map.setdefault(new_id,[]).append(genre_id)
 
     i2genre_map['distinct_genres'] = list(genre_set)
 
@@ -221,6 +257,7 @@ if __name__ == '__main__':
 
     parser.add_argument('--input', type=str, dest='input_file', default='../../results/Sacenti-JOURNAL2021/ml-sun_ho_oKG/ml1m-jtransup-1611183692_pred.dat')
     parser.add_argument('--datapath', type=str, dest='datapath', default='../../datasets/Sacenti-JOURNAL2021/ml-sun_ho_oKG/')
+    parser.add_argument('--mode', type=str, dest='mode', default='sv')
     parser.add_argument('--ratio', type=str, dest='ratio', default='100')
     parser.add_argument('--test', type=str, dest='test', default='../../datasets/Sacenti-JOURNAL2021/ml-sun_ho_oKG/')
     parser.add_argument('--output', type=str, dest='output_file', default='../../results/Sacenti-JOURNAL2021/ml-sun_ho_oKG/rec_quality.log')
@@ -228,9 +265,10 @@ if __name__ == '__main__':
     parsed_args = parser.parse_args()
 
     input_file = os.path.expanduser(parsed_args.input_file)
-    datapath = os.path.expanduser(parsed_args.datapath)
+    dataset_path = os.path.expanduser(parsed_args.datapath)
+    mode = parsed_args.mode
     ratio = parsed_args.ratio
     test_file = os.path.expanduser(parsed_args.test)
     output_file = os.path.expanduser(parsed_args.output_file)
 
-    evaluate_predictions(input_file, dataset_path, ratio, output_file)
+    evaluate_predictions2(input_file, dataset_path, mode, ratio, test_file, output_file)

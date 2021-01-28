@@ -138,7 +138,7 @@ sv_gemsec() {
         fi
         local edges=($(wc -l "$HOME/git/kg-summ-rec/docker/gemsec_data/temp/edge_map.csv"))
         #local cluster_number=$((num_entities * ratio / 100))
-        local cluster_number=${((edges * ratio / 100))}
+        local cluster_number=$((edges * ratio / 100))
         echo "[kg-summ-rec] mv_gemsec: Number of clusters is ${cluster_number}, nodes is ${num_entities}  and edges is ${edges}."
 
         # GEMSEC
@@ -322,7 +322,7 @@ mv_gemsec() {
             fi
             local edges=($(wc -l "$HOME/git/kg-summ-rec/docker/gemsec_data/temp/edge_map.csv"))
             #local cluster_number=$((num_entities * ratio / 100))
-            local cluster_number=${((edges * ratio / 100))}
+            local cluster_number=$((edges * ratio / 100))
             echo "[kg-summ-rec] mv_gemsec: Number of clusters is ${cluster_number}, nodes is ${num_entities}  and edges is ${edges}."
 
             # GEMSEC
