@@ -36,13 +36,14 @@ def genre_coverage_at_k(recommended_items, i2genre_map, k):
         raise ValueError('Recommended item list length < k')
 
     total_genres = len(i2genre_map.get('distinct_genres',[]))
-    recommended_genres=()
+    recommended_genres = set()
     for i in recommended_items:
-        for g in i2genre_map.get(i,[]):
+        for g in i2genre_map.get(str(i),[]):
             recommended_genres.add(g)
     total_recommended_genres = len(recommended_genres)
     genre_coverage = total_recommended_genres / total_genres
-    assert genre_coverage >= 0 and genre_coverage < 1
+    nl='\n'
+    assert genre_coverage >= 0 and genre_coverage <= 1, f'{genre_coverage} = {total_recommended_genres} / {total_genres} {nl} {recommended_genres}'
 
     return genre_coverage
 
@@ -70,13 +71,14 @@ def genre_redundancy_at_k(recommended_items, i2genre_map, k):
         raise ValueError('Recommended item list length < k')
 
     total_redundant_genres=0
-    distinct_genres=()
+    distinct_genres = set()
     for i in recommended_items:
-        for g in i2genre_map.get(i,[]):
+        for g in i2genre_map.get(str(i),[]):
             distinct_genres.add(g)
             total_redundant_genres+=1
     total_distinct_genres = len(distinct_genres)
     genre_redundancy = total_distinct_genres / total_redundant_genres
-    assert genre_redundancy >= 0 and genre_redundancy < 1
+    nl='\n'
+    assert genre_redundancy >= 0 and genre_redundancy <= 1, f'{genre_redundancy} = {total_distinct_genres} / {total_redundant_genres} {nl} {distinct_genres}'
 
     return genre_redundancy
