@@ -7,7 +7,6 @@ import numpy as np
 def split_for_sun_mo(kg_euig, output_path, verbose):
     # Select all entities, except items
     triples_df = pd.DataFrame(kg_euig, columns=['s', 'p', 'o', 'dot'])
-    relations = triples_df.p.unique()
 
     p_actor='<http://ml1m-sun/actor>'
     p_director='<http://ml1m-sun/director>'
@@ -45,6 +44,7 @@ def split_by_relation(kg_ig, output_path, verbose):
     # Select all entities, except items
     triples_df = pd.DataFrame(kg_ig, columns=['s', 'p', 'o', 'dot'])
     relations = triples_df.p.unique()
+    relations.sort()
 
     for i in range(0, len(relations)):
         r = relations[i]
