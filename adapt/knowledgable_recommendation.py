@@ -82,6 +82,7 @@ def case_rec_evaluateRec(FLAGS, model, eval_iter, eval_dict, all_dicts, i_map, l
     pbar.close()
 
     predictions = [result[5] for result in results] # [(pred[0], top_ids, gold), ...], gold is test
+    print("Saving predictions. Size: {}.".format(str(len(predictions))))
 
     predictions_output_filepath = os.path.join(FLAGS.log_path, FLAGS.experiment_name+'_pred.dat')
     print_list = []
@@ -100,10 +101,12 @@ def case_rec_evaluateRec(FLAGS, model, eval_iter, eval_dict, all_dicts, i_map, l
     test_path = os.path.join(dataset_path, eval_files[i])
     eval_data = ReadFile(input_file=test_path).read()
     predictions_data = ReadFile(input_file=predictions_output_filepath).read()
+    print("Reading predictions. Size: {}.".format(str(len(predictions_data['feedback']))))
 
     # Creating CaseRecommender evaluator with item-recommendation parameters
     evaluator = ItemRecommendationEvaluation(n_ranks=[10])
     item_rec_metrics = evaluator.evaluate(predictions_data['feedback'], eval_data)
+    print("From CaseRecommender evaluator: {}.".format(str(item_rec_metrics)))
     logger.info("From CaseRecommender evaluator: {}.".format(str(item_rec_metrics)))
 
     # Creating kg-summ-rec evaluator with diversity parameters
@@ -119,6 +122,7 @@ def case_rec_evaluateRec(FLAGS, model, eval_iter, eval_dict, all_dicts, i_map, l
         ratio = '100'
     i2genre_map = read_i2genre_map(dataset_path, mode, ratio)
     diversity_metrics = evaluator2.evaluate(predictions_data['feedback'], eval_data, i2genre_map)
+    print("From kg-summ-rec diversity evaluator: {}.".format(str(diversity_metrics)))
     logger.info("From kg-summ-rec diversity evaluator: {}.".format(str(diversity_metrics)))
 
     model.enable_grad()
@@ -318,7 +322,7 @@ def train_loop(FLAGS, model, trainer, rating_train_dataset, triple_train_dataset
 
                 rec_performances.append( evaluateRec(FLAGS, model, eval_data[0], eval_data[3], all_eval_dicts, i_map, logger, eval_descending=True if trainer.model_target == 1 else False, is_report=is_report))
 		# ADAPT: Execute CaseRecommender evaluation
-                rec_performances.append( case_rec_evaluateRec(FLAGS, model, eval_data[0], eval_data[3], all_eval_dicts, i_map, logger, i, eval_descending=True if trainer.model_target == 1 else False, is_report=is_report))
+                #case_rec_evaluateRec(FLAGS, model, eval_data[0], eval_data[3], all_eval_dicts, i_map, logger, i, eval_descending=True if trainer.model_target == 1 else False, is_report=is_report)
 
             kg_performances = []
             for i, eval_data in enumerate(triple_eval_datasets):
@@ -631,6 +635,23 @@ def run(only_forward=False):
             logger,
             vis=vis,
             is_report=False)
+        # ADAPT: Execute CaseRecommender evaluation
+        for i, eval_data in enumerate(rating_eval_datasets):
+            all_dicts = None
+            if FLAGS.filter_wrong_corrupted:
+                all_dicts = [rating_train_dict] + [tmp_data[3] for j, tmp_data in enumerate(rating_eval_datasets) if j!=i]
+            case_rec_evaluateRec(
+                FLAGS,
+                joint_model,
+                eval_data[0],
+                eval_data[3],
+                all_dicts,
+                i_map,
+                logger,
+                i,
+                eval_descending=True if trainer.model_target == 1 else False,
+                is_report=FLAGS.is_report)
+
     if vis is not None:
         vis.log("Finish!", win_name="Best Performances")
 
