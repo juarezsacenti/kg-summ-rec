@@ -194,6 +194,19 @@ def kge(triples, kge_name, epochs, batch_size, learning_rate, verbose):
                         regularizer_params={'p':3, 'lambda':1e-5},
                         seed=0,
                         verbose=verbose)
+    elif kge_name == 'hole':
+        # HolE model
+        model = HolE(batches_count=batch_size,
+                        epochs=epochs,
+                        k=100,
+                        eta=20,
+                        optimizer='adam',
+                        optimizer_params={'lr':learning_rate},
+                        loss='multiclass_nll',
+                        regularizer='LP',
+                        regularizer_params={'p':3, 'lambda':1e-5},
+                        seed=0,
+                        verbose=verbose)
     else:
         sys.exit('Given kge_name is not valid.')
 
@@ -260,10 +273,12 @@ def plot_2d_genres(entities, model, cluster_df, ratio, view):
     # Project embeddings into 2D space via PCA
     embeddings_2d = PCA(n_components=2).fit_transform(genres_embeddings_array)
 
+    genre_clusters_df = cluster_df.set_index('entities').loc[list(genres)].reset_index(inplace=False)
+
     genres_df = pd.DataFrame({"genre_uri": list(genres),
                         "x_projection": embeddings_2d[:, 0],
                         "y_projection": embeddings_2d[:, 1],
-                        "cluster": "cluster" + cluster_df.set_index('entities').loc[list(genres)].reset_index(inplace=False)['cluster{ratio}'].astype(str)
+                        "cluster": "cluster" + genre_clusters_df['cluster{ratio}'].astype(str)
                         )
 
     # Plot 2D embeddings about genres with labels
