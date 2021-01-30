@@ -23,6 +23,13 @@ from incf.countryutils import transformations
 from ampligraph.discovery import find_clusters
 from math import ceil
 
+# Plot figures
+import matplotlib as mpl
+import matplotlib.pyplot as plt
+mpl.rc('axes', labelsize=14)
+mpl.rc('xtick', labelsize=12)
+mpl.rc('ytick', labelsize=12)
+
 
 def kge_k_means(data_home, folder, triples_file, items_file, mode, kge_name, epochs, batch_size, learning_rate, rates, view, relations, verbose):
     # Load triples:
@@ -121,6 +128,7 @@ def singleview(triples, items, kge_name, epochs, batch_size, learning_rate, rate
             print(cluster_df[f'cluster{rate}'].value_counts().value_counts())
         # DF to file
         cluster_df.to_csv(f'./temp/cluster{rate}.tsv', sep='\t', header=False, index=False)
+        plot_2d_genres(entities, model, cluster_df, ratio=rate, view)
 
 
 def multiview(triples, items, kge_name, epochs, batch_size, learning_rate, rates, relations, verbose):
@@ -161,6 +169,7 @@ def multiview(triples, items, kge_name, epochs, batch_size, learning_rate, rates
                 print(cluster_df[f'cluster{rate}'].value_counts().value_counts())
 
             rate_df = pd.concat([rate_df, cluster_df])
+            plot_2d_genres(entities, model, cluster_df, ratio=rate, view)
 
         rate_df.to_csv(f'./temp/cluster{rate}.tsv', sep='\t', header=False, index=False)
 
@@ -236,6 +245,44 @@ def clustering(entities, model, rate, verbose):
     clustering_algorithm = KMeans(n_clusters=n_clusters, n_init=10, max_iter=300, random_state=0)
     clusters = find_clusters(entities, model, clustering_algorithm, mode='entity')
     return clusters
+
+
+def plot_2d_genres(entities, model, cluster_df, ratio, view):
+    genres = set()
+    for e in entities:
+        if 'genre' in e:
+            genres.add(e)
+
+    # Zip genres and their corresponding embeddings
+    genres_embeddings = dict(zip(genres, model.get_embeddings(genres)))
+    genres_embeddings_array = np.array([i for i in genres_embeddings.values()])
+
+    # Project embeddings into 2D space via PCA
+    embeddings_2d = PCA(n_components=2).fit_transform(genres_embeddings_array)
+
+    genres_df = pd.DataFrame({"genre_uri": list(genres),
+                        "x_projection": embeddings_2d[:, 0],
+                        "y_projection": embeddings_2d[:, 1],
+                        "cluster": "cluster" + cluster_df.set_index('entities').loc[list(genres)].reset_index(inplace=False)['cluster{ratio}'].astype(str)
+                        )
+
+    # Plot 2D embeddings about genres with labels
+    plt.figure(figsize=(12, 12))
+    plt.title("Genres".capitalize())
+    ax = sns.scatterplot(data=genres_df,
+                         x="x_projection", y="y_projection")
+    texts = []
+    for i, point in genres_df.iterrows():
+        texts.append(plt.text(point['x_projection']+0.02,
+                              point['y_projection']+0.01,
+                              str(point["genre_uri"])))
+    adjust_text(texts)
+
+    # Saving figure
+    path = f'./temp/cluster{rate}-{view}.png'
+    print("Saving figure in", path)
+    plt.tight_layout()
+    plt.savefig(path, format='png', dpi=300)
 
 
 if __name__ == '__main__':

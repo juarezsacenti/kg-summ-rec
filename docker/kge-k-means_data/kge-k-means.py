@@ -23,8 +23,15 @@ from incf.countryutils import transformations
 from ampligraph.discovery import find_clusters
 from math import ceil
 
+# Plot figures
+import matplotlib as mpl
+import matplotlib.pyplot as plt
+mpl.rc('axes', labelsize=14)
+mpl.rc('xtick', labelsize=12)
+mpl.rc('ytick', labelsize=12)
 
-def kge_k_means(data_home, folder, triples_file, items_file, mode, kge_name, epochs, batch_size, learning_rate, rates, view, verbose):
+
+def kge_k_means(data_home, folder, triples_file, items_file, mode, kge_name, epochs, batch_size, learning_rate, rates, view, relations, verbose):
     # Load triples:
     triples = load_from_ntriples(folder, triples_file, data_home)
     # Load items:
@@ -41,7 +48,7 @@ def kge_k_means(data_home, folder, triples_file, items_file, mode, kge_name, epo
     if mode == 'singleview':
         singleview(triples, items, kge_name, epochs, batch_size, learning_rate, rates, verbose)
     elif mode == 'multiview':
-        multiview(triples, items, kge_name, epochs, batch_size, learning_rate, rates, verbose)
+        multiview(triples, items, kge_name, epochs, batch_size, learning_rate, rates, relations, verbose)
     elif mode == 'splitview':
         splitview(triples, items, kge_name, epochs, batch_size, learning_rate, rates, view, verbose)
     else:
@@ -89,7 +96,7 @@ def singleview(triples, items, kge_name, epochs, batch_size, learning_rate, rate
     for i in objects:
         if type(i) != str:
             print('objects ', i, type(i))
-    concatenated = np.concatenate((subjects, objects)) 
+    concatenated = np.concatenate((subjects, objects))
     for i in concatenated:
         if type(i) != str:
             print('concat ', i, type(i))
@@ -121,12 +128,13 @@ def singleview(triples, items, kge_name, epochs, batch_size, learning_rate, rate
             print(cluster_df[f'cluster{rate}'].value_counts().value_counts())
         # DF to file
         cluster_df.to_csv(f'./temp/cluster{rate}.tsv', sep='\t', header=False, index=False)
+        plot_2d_genres(entities, model, cluster_df, ratio=rate, view)
 
 
-def multiview(triples, items, kge_name, epochs, batch_size, learning_rate, rates, verbose):
+def multiview(triples, items, kge_name, epochs, batch_size, learning_rate, rates, relations, verbose):
     # Select all entities, except items
     triples_df = pd.DataFrame(triples, columns=['s', 'p', 'o'])
-    relations = triples_df.p.unique()
+    relations = relations.split(',')
 
     # Train KGE model
     model = kge(triples, kge_name, epochs, batch_size, learning_rate, verbose)
@@ -161,6 +169,7 @@ def multiview(triples, items, kge_name, epochs, batch_size, learning_rate, rates
                 print(cluster_df[f'cluster{rate}'].value_counts().value_counts())
 
             rate_df = pd.concat([rate_df, cluster_df])
+            plot_2d_genres(entities, model, cluster_df, ratio=rate, view)
 
         rate_df.to_csv(f'./temp/cluster{rate}.tsv', sep='\t', header=False, index=False)
 
@@ -238,6 +247,44 @@ def clustering(entities, model, rate, verbose):
     return clusters
 
 
+def plot_2d_genres(entities, model, cluster_df, ratio, view):
+    genres = set()
+    for e in entities:
+        if 'genre' in e:
+            genres.add(e)
+
+    # Zip genres and their corresponding embeddings
+    genres_embeddings = dict(zip(genres, model.get_embeddings(genres)))
+    genres_embeddings_array = np.array([i for i in genres_embeddings.values()])
+
+    # Project embeddings into 2D space via PCA
+    embeddings_2d = PCA(n_components=2).fit_transform(genres_embeddings_array)
+
+    genres_df = pd.DataFrame({"genre_uri": list(genres),
+                        "x_projection": embeddings_2d[:, 0],
+                        "y_projection": embeddings_2d[:, 1],
+                        "cluster": "cluster" + cluster_df.set_index('entities').loc[list(genres)].reset_index(inplace=False)['cluster{ratio}'].astype(str)
+                        )
+
+    # Plot 2D embeddings about genres with labels
+    plt.figure(figsize=(12, 12))
+    plt.title("Genres".capitalize())
+    ax = sns.scatterplot(data=genres_df,
+                         x="x_projection", y="y_projection")
+    texts = []
+    for i, point in genres_df.iterrows():
+        texts.append(plt.text(point['x_projection']+0.02,
+                              point['y_projection']+0.01,
+                              str(point["genre_uri"])))
+    adjust_text(texts)
+
+    # Saving figure
+    path = f'./temp/cluster{rate}-{view}.png'
+    print("Saving figure in", path)
+    plt.tight_layout()
+    plt.savefig(path, format='png', dpi=300)
+
+
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description='''Using Ampligraph KGE models with K-means to cluster and then summarize KGs''')
@@ -253,6 +300,7 @@ if __name__ == '__main__':
     parser.add_argument('--learning_rate', type=str, dest='learning_rate', default='0.0005')
     parser.add_argument('--rates', type=str, dest='rates', default='25,50,75')
     parser.add_argument('--view', type=str, dest='view', default='0')
+    parser.add_argument('--relations', type=str, dest='relations', default='<http://ml1m-sun/actor>,<http://ml1m-sun/director>,<http://ml1m-sun/genre>')
     parser.add_argument('--verbose', dest='verbose', default=False, action='store_true')
 
     parsed_args = parser.parse_args()
@@ -272,6 +320,7 @@ if __name__ == '__main__':
 
     rates = [ int(rate) for rate in parsed_args.rates.split(',') ]
     view = parsed_args.view
+    relations = parsed_args.relations
     verbose = parsed_args.verbose
 
-    kge_k_means(data_home, folder, triples_file, items_file, mode, kge_name, epochs, batch_size, learning_rate, rates, view, verbose)
+    kge_k_means(data_home, folder, triples_file, items_file, mode, kge_name, epochs, batch_size, learning_rate, rates, view, relations, verbose)
