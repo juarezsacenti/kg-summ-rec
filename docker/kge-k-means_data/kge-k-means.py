@@ -31,7 +31,7 @@ mpl.rc('xtick', labelsize=12)
 mpl.rc('ytick', labelsize=12)
 
 
-def kge_k_means(data_home, folder, triples_file, items_file, mode, kge_name, epochs, batch_size, learning_rate, rates, view, relations, verbose):
+def kge_k_means(data_home, folder, triples_file, items_file, mode, kge_name, epochs, batch_size, learning_rate, rates, view, relations, kg_map_file, verbose):
     # Load triples:
     triples = load_from_ntriples(folder, triples_file, data_home)
     # Load items:
@@ -46,16 +46,16 @@ def kge_k_means(data_home, folder, triples_file, items_file, mode, kge_name, epo
 
     # Select mode:
     if mode == 'singleview':
-        singleview(triples, items, kge_name, epochs, batch_size, learning_rate, rates, verbose)
+        singleview(triples, items, kge_name, epochs, batch_size, learning_rate, rates, kg_map_file, verbose)
     elif mode == 'multiview':
-        multiview(triples, items, kge_name, epochs, batch_size, learning_rate, rates, relations, verbose)
+        multiview(triples, items, kge_name, epochs, batch_size, learning_rate, rates, relations, kg_map_file, verbose)
     elif mode == 'splitview':
-        splitview(triples, items, kge_name, epochs, batch_size, learning_rate, rates, view, verbose)
+        splitview(triples, items, kge_name, epochs, batch_size, learning_rate, rates, view, kg_map_file, verbose)
     else:
         sys.exit('Given mode is not valid.')
 
 
-def splitview(triples, items, kge_name, epochs, batch_size, learning_rate, rates, view, verbose):
+def splitview(triples, items, kge_name, epochs, batch_size, learning_rate, rates, view, kg_map_file, verbose):
     # Select all entities, except items
     triples_df = pd.DataFrame(triples, columns=['s', 'p', 'o'])
     subjects = triples_df.s.unique()
@@ -83,9 +83,10 @@ def splitview(triples, items, kge_name, epochs, batch_size, learning_rate, rates
             print(cluster_df[f'cluster{rate}'].value_counts().value_counts())
         # DF to file
         cluster_df.to_csv(f'./temp/cluster{rate}-{view}.tsv', sep='\t', header=False, index=False)
+        plot_2d_genres(entities, model, cluster_df, ratio=rate, view=view, kg_map_file=kg_map_file)
 
 
-def singleview(triples, items, kge_name, epochs, batch_size, learning_rate, rates, verbose):
+def singleview(triples, items, kge_name, epochs, batch_size, learning_rate, rates, kg_map_file, verbose):
     # Select all entities, except items
     triples_df = pd.DataFrame(triples, columns=['s', 'p', 'o'])
     subjects = triples_df.s.unique()
@@ -128,10 +129,10 @@ def singleview(triples, items, kge_name, epochs, batch_size, learning_rate, rate
             print(cluster_df[f'cluster{rate}'].value_counts().value_counts())
         # DF to file
         cluster_df.to_csv(f'./temp/cluster{rate}.tsv', sep='\t', header=False, index=False)
-        plot_2d_genres(entities, model, cluster_df, ratio=rate, view)
+        plot_2d_genres(entities, model, cluster_df, ratio=rate, view=view, kg_map_file=kg_map_file)
 
 
-def multiview(triples, items, kge_name, epochs, batch_size, learning_rate, rates, relations, verbose):
+def multiview(triples, items, kge_name, epochs, batch_size, learning_rate, rates, relations,kg_map_file, verbose):
     # Select all entities, except items
     triples_df = pd.DataFrame(triples, columns=['s', 'p', 'o'])
     relations = relations.split(',')
@@ -169,7 +170,7 @@ def multiview(triples, items, kge_name, epochs, batch_size, learning_rate, rates
                 print(cluster_df[f'cluster{rate}'].value_counts().value_counts())
 
             rate_df = pd.concat([rate_df, cluster_df])
-            plot_2d_genres(entities, model, cluster_df, ratio=rate, view)
+            plot_2d_genres(entities, model, cluster_df, ratio=rate, view=view, kg_map_file=kg_map_file)
 
         rate_df.to_csv(f'./temp/cluster{rate}.tsv', sep='\t', header=False, index=False)
 
@@ -260,11 +261,19 @@ def clustering(entities, model, rate, verbose):
     return clusters
 
 
-def plot_2d_genres(entities, model, cluster_df, ratio, view):
+def plot_2d_genres(entities, model, cluster_df, ratio, view, kg_map_file):
+    kg_map = {}
+    with open(kg_map_file) as fin:
+    	for line in fin:
+            (entity_name, entity_uri) = line.rstrip('\n').split('\t')
+            if 'genre' in entity_uri:
+                kg_map[entity_uri] = entity_name
+
     genres = set()
     for e in entities:
         if 'genre' in e:
             genres.add(e)
+    genres = sorted(genres)
 
     # Zip genres and their corresponding embeddings
     genres_embeddings = dict(zip(genres, model.get_embeddings(genres)))
@@ -273,13 +282,13 @@ def plot_2d_genres(entities, model, cluster_df, ratio, view):
     # Project embeddings into 2D space via PCA
     embeddings_2d = PCA(n_components=2).fit_transform(genres_embeddings_array)
 
-    genre_clusters_df = cluster_df.set_index('entities').loc[list(genres)].reset_index(inplace=False)
-
+    genre_clusters_df = cluster_df.set_index('entities').loc[genres].reset_index(inplace=False)
+    print(genre_clusters_df)
+    print(f'cluster{ratio}')
     genres_df = pd.DataFrame({"genre_uri": list(genres),
                         "x_projection": embeddings_2d[:, 0],
                         "y_projection": embeddings_2d[:, 1],
-                        "cluster": "cluster" + genre_clusters_df['cluster{ratio}'].astype(str)
-                        )
+                        "cluster": "cluster" + genre_clusters_df[f'cluster{ratio}'].astype(str)})
 
     # Plot 2D embeddings about genres with labels
     plt.figure(figsize=(12, 12))
@@ -290,11 +299,11 @@ def plot_2d_genres(entities, model, cluster_df, ratio, view):
     for i, point in genres_df.iterrows():
         texts.append(plt.text(point['x_projection']+0.02,
                               point['y_projection']+0.01,
-                              str(point["genre_uri"])))
+                              str(kg_map[str(point["genre_uri"])[1:-1]])))
     adjust_text(texts)
 
     # Saving figure
-    path = f'./temp/cluster{rate}-{view}.png'
+    path = f'./temp/cluster{ratio}-{view}.png'
     print("Saving figure in", path)
     plt.tight_layout()
     plt.savefig(path, format='png', dpi=300)
@@ -316,6 +325,7 @@ if __name__ == '__main__':
     parser.add_argument('--rates', type=str, dest='rates', default='25,50,75')
     parser.add_argument('--view', type=str, dest='view', default='0')
     parser.add_argument('--relations', type=str, dest='relations', default='<http://ml1m-sun/actor>,<http://ml1m-sun/director>,<http://ml1m-sun/genre>')
+    parser.add_argument('--kgmap', type=str, dest='kgmap', default='/data/temp/kg_map.dat')
     parser.add_argument('--verbose', dest='verbose', default=False, action='store_true')
 
     parsed_args = parser.parse_args()
@@ -336,6 +346,7 @@ if __name__ == '__main__':
     rates = [ int(rate) for rate in parsed_args.rates.split(',') ]
     view = parsed_args.view
     relations = parsed_args.relations
+    kg_map_file = parsed_args.kgmap
     verbose = parsed_args.verbose
 
-    kge_k_means(data_home, folder, triples_file, items_file, mode, kge_name, epochs, batch_size, learning_rate, rates, view, relations, verbose)
+    kge_k_means(data_home, folder, triples_file, items_file, mode, kge_name, epochs, batch_size, learning_rate, rates, view, relations, kg_map_file, verbose)
