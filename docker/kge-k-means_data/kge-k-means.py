@@ -10,6 +10,7 @@ import requests
 
 from ampligraph.datasets import load_from_ntriples
 from ampligraph.latent_features import ComplEx
+from ampligraph.latent_features import HolE
 from ampligraph.evaluation import evaluate_performance
 from ampligraph.evaluation import mr_score, mrr_score, hits_at_n_score
 from ampligraph.evaluation import train_test_split_no_unseen
