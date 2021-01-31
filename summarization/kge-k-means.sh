@@ -137,7 +137,7 @@ sv_kge-k-means() {
         #docker run --rm -it --gpus all -v "$PWD"/kge-k-means_data:/data -w /data kge-k-means:1.0 /bin/bash -c "python kge-k-means.py --triples 'kg-ig.nt' --mode 'singleview' --kge 'complex' --epochs '150' --batch_size '100' --learning_rate '0.005' --rates '75' --verbose"
 
         mv "$HOME/git/kg-summ-rec/docker/kge-k-means_data/temp/cluster${ratio}.tsv" "$HOME/git/datasets/${experiment}/${dataset_out}-${kge}-${ratio}/cluster${ratio}.tsv"
-        mv "$HOME/git/kg-summ-rec/docker/kge-k-means_data/temp/cluster${ratio}-0.png" "$HOME/git/datasets/${experiment}/${dataset_out}-${kge}-${ratio}/cluster${ratio}-0.png"
+        mv "$HOME/git/kg-summ-rec/docker/kge-k-means_data/temp/cluster${ratio}.png" "$HOME/git/datasets/${experiment}/${dataset_out}-${kge}-${ratio}/cluster${ratio}.png"
         cd $HOME/git/kg-summ-rec
     fi
 
@@ -214,7 +214,7 @@ mv_kge-k-means() {
         --learning_rate ${learning_rate} --rates ${ratio} --verbose"
 
         mv "$HOME/git/kg-summ-rec/docker/kge-k-means_data/temp/cluster${ratio}.tsv" "$HOME/git/datasets/${experiment}/${dataset_out}-${kge}-${ratio}/cluster${ratio}.tsv"
-        mv "$HOME/git/kg-summ-rec/docker/kge-k-means_data/temp/cluster${ratio}-0.png" "$HOME/git/datasets/${experiment}/${dataset_out}-${kge}-${ratio}/cluster${ratio}-0.png"
+        mv "$HOME/git/kg-summ-rec/docker/kge-k-means_data/temp/cluster${ratio}.png" "$HOME/git/datasets/${experiment}/${dataset_out}-${kge}-${ratio}/cluster${ratio}.png"
         cd $HOME/git/kg-summ-rec
     fi
 
