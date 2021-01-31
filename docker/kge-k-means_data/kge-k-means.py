@@ -91,24 +91,10 @@ def singleview(triples, items, kge_name, epochs, batch_size, learning_rate, rate
     # Select all entities, except items
     triples_df = pd.DataFrame(triples, columns=['s', 'p', 'o'])
     subjects = triples_df.s.unique()
-    for i in subjects:
-        if type(i) != str:
-            print('subjects ', i, type(i))
     objects = triples_df.o.unique()
-    for i in objects:
-        if type(i) != str:
-            print('objects ', i, type(i))
     concatenated = np.concatenate((subjects, objects))
-    for i in concatenated:
-        if type(i) != str:
-            print('concat ', i, type(i))
-
-    print("Concat: " + str(concatenated))
     nodes = np.unique(concatenated)
-    print("NODES: " + str(nodes))
-    #nodes = np.unique(np.concatenate((subjects, objects)))
     entities = np.setdiff1d(nodes,items)
-    print("Entities: " + str(entities))
 
     if verbose:
         print(f'[kge-k-means] #Nodes: {len(nodes)}')
@@ -270,7 +256,7 @@ def plot_2d_genres(model, cluster_df, ratio, kg_map_file):
             (entity_name, entity_uri) = line.rstrip('\n').split('\t')
             if 'genre' in entity_uri:
                 kg_map[entity_uri] = entity_name
-                genres.add(entity_uri)
+                genres.add(f'<{entity_uri}>')
     genres = sorted(genres)
 
     # Zip genres and their corresponding embeddings
