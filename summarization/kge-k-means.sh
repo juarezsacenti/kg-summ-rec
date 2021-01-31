@@ -195,6 +195,11 @@ mv_kge-k-means() {
         echo '[kg-summ-rec] Creating ~/git/kg-summ-rec/docker/kge-k-means_data/temp/i2kg_map.tsv'
         yes | cp -L ~/git/datasets/${experiment}/${dataset_in}/cao-format/ml1m/i2kg_map.tsv  ~/git/kg-summ-rec/docker/kge-k-means_data/temp/
     fi
+    if no_exist "$HOME/git/kg-summ-rec/docker/kge-k-means_data/temp/kg_map.dat"
+    then
+        echo '[kg-summ-rec] Creating ~/git/kg-summ-rec/docker/kge-k-means_data/temp/kg_map.dat'
+        yes | cp -L ~/git/datasets/${experiment}/${dataset_in}/cao-format/ml1m/kg_map.dat  ~/git/kg-summ-rec/docker/kge-k-means_data/temp/
+    fi
     if no_exist "$HOME/git/datasets/${experiment}/${dataset_out}-${kge}-${ratio}/cluster${ratio}.tsv"
     then
         echo "[kg-summ-rec] Creating ~/git/datasets/${experiment}/${dataset_out}-${kge}-${ratio}/cluster${ratio}.tsv"
