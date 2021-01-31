@@ -84,7 +84,7 @@ def splitview(triples, items, kge_name, epochs, batch_size, learning_rate, rates
             print(cluster_df[f'cluster{rate}'].value_counts().value_counts())
         # DF to file
         cluster_df.to_csv(f'./temp/cluster{rate}-{view}.tsv', sep='\t', header=False, index=False)
-        plot_2d_genres(entities, model, cluster_df, ratio=rate, view=view, kg_map_file=kg_map_file)
+        plot_2d_genres(model, rate_df, ratio=rate, kg_map_file=kg_map_file)
 
 
 def singleview(triples, items, kge_name, epochs, batch_size, learning_rate, rates, kg_map_file, verbose):
@@ -130,7 +130,7 @@ def singleview(triples, items, kge_name, epochs, batch_size, learning_rate, rate
             print(cluster_df[f'cluster{rate}'].value_counts().value_counts())
         # DF to file
         cluster_df.to_csv(f'./temp/cluster{rate}.tsv', sep='\t', header=False, index=False)
-        plot_2d_genres(entities, model, cluster_df, ratio=rate, view=view, kg_map_file=kg_map_file)
+        plot_2d_genres(model, cluster_df, ratio=rate, kg_map_file=kg_map_file)
 
 
 def multiview(triples, items, kge_name, epochs, batch_size, learning_rate, rates, relations,kg_map_file, verbose):
@@ -171,9 +171,9 @@ def multiview(triples, items, kge_name, epochs, batch_size, learning_rate, rates
                 print(cluster_df[f'cluster{rate}'].value_counts().value_counts())
 
             rate_df = pd.concat([rate_df, cluster_df])
-            plot_2d_genres(entities, model, cluster_df, ratio=rate, view=view, kg_map_file=kg_map_file)
 
         rate_df.to_csv(f'./temp/cluster{rate}.tsv', sep='\t', header=False, index=False)
+        plot_2d_genres(model, rate_df, ratio=rate, kg_map_file=kg_map_file)
 
 
 def kge(triples, kge_name, epochs, batch_size, learning_rate, verbose):
@@ -262,18 +262,15 @@ def clustering(entities, model, rate, verbose):
     return clusters
 
 
-def plot_2d_genres(entities, model, cluster_df, ratio, view, kg_map_file):
+def plot_2d_genres(model, cluster_df, ratio, kg_map_file):
     kg_map = {}
+    genres = set()
     with open(kg_map_file) as fin:
     	for line in fin:
             (entity_name, entity_uri) = line.rstrip('\n').split('\t')
             if 'genre' in entity_uri:
                 kg_map[entity_uri] = entity_name
-
-    genres = set()
-    for e in entities:
-        if 'genre' in e:
-            genres.add(e)
+                genres.add(entity_uri)
     genres = sorted(genres)
 
     # Zip genres and their corresponding embeddings
@@ -284,8 +281,6 @@ def plot_2d_genres(entities, model, cluster_df, ratio, view, kg_map_file):
     embeddings_2d = PCA(n_components=2).fit_transform(genres_embeddings_array)
 
     genre_clusters_df = cluster_df.set_index('entities').loc[genres].reset_index(inplace=False)
-    print(genre_clusters_df)
-    print(f'cluster{ratio}')
     genres_df = pd.DataFrame({"genre_uri": list(genres),
                         "x_projection": embeddings_2d[:, 0],
                         "y_projection": embeddings_2d[:, 1],
@@ -293,9 +288,9 @@ def plot_2d_genres(entities, model, cluster_df, ratio, view, kg_map_file):
 
     # Plot 2D embeddings about genres with labels
     plt.figure(figsize=(12, 12))
-    plt.title("Genres".capitalize())
+    plt.title("Genres by ".format('cluster').capitalize())
     ax = sns.scatterplot(data=genres_df,
-                         x="x_projection", y="y_projection")
+                         x="x_projection", y="y_projection", hue='cluster')
     texts = []
     for i, point in genres_df.iterrows():
         texts.append(plt.text(point['x_projection']+0.02,
@@ -304,7 +299,7 @@ def plot_2d_genres(entities, model, cluster_df, ratio, view, kg_map_file):
     adjust_text(texts)
 
     # Saving figure
-    path = f'./temp/cluster{ratio}-{view}.png'
+    path = f'./temp/cluster{ratio}.png'
     print("Saving figure in", path)
     plt.tight_layout()
     plt.savefig(path, format='png', dpi=300)
