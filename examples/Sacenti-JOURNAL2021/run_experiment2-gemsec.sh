@@ -392,11 +392,11 @@ kg_recommendation() {
                 for r in "${summ_rates[@]}"
                 do
                     local dirName="${dataset_out}_${t}-${m}-${a}-${r}"
-                    if no_exist "$HOME/git/results/${experiment}/${dirName}/*.log"
-                    then
-                        echo "[kg-summ-rec] kg_recommendation: Creating ~/git/results/${experiment}/${dirName}/*.log"
-                        recommend "${dirName}" '4873,487300,24363' '2663,266300,13317' '266,26630,1331' '10392,1039200,51960' 256 0.005
-                    fi
+                    #if no_exist "$HOME/git/results/${experiment}/${dirName}/*.log"
+                    #then
+                    echo "[kg-summ-rec] kg_recommendation: Creating ~/git/results/${experiment}/${dirName}/*.log"
+                    recommend "${dirName}" '4873,487300,24363' '2663,266300,13317' '266,26630,1331' '10392,1039200,51960' 256 0.005
+                    #fi
                 done
             done
         done
