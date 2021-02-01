@@ -373,7 +373,7 @@ measure_summ_impact() {
 ####
 recommend_sun_sKG() {
     # kg-summ-rec/evaluation
-    if [[ $PYTHONPATH = *git/kg-summ-rec/evaluation* ]]
+    if [[ ! $PYTHONPATH = *git/kg-summ-rec/evaluation* ]]
     then
         export PYTHONPATH="${HOME}/git/kg-summ-rec/evaluation:${PYTHONPATH}"
     fi
