@@ -367,6 +367,16 @@ measure_summ_impact() {
 }
 
 
+recommend_sun_sKG() {
+    # kg-summ-rec/evaluation
+    if [[ $PYTHONPATH = *git/kg-summ-rec/evaluation* ]]
+    then
+        export PYTHONPATH="${HOME}/git/kg-summ-rec/evaluation:${PYTHONPATH}"
+    fi
+
+    kg_recommendation "ml-sun_ho_oKG" "ml-sun_ho_sKG"
+}
+
 ####
 # KG recommendation
 #
@@ -411,57 +421,6 @@ measure_summ_impact() {
 # - ml-sun_ho_sfKG_hole-ig-mv-50
 # - ml-sun_ho_sfKG_hole-ig-mv-25
 ####
-recommend_sun_sKG() {
-    kg_recommendation "ml-sun_ho_oKG" "ml-sun_ho_sKG"
-}
-
-####
-# KG recommendation
-#
-# - TODO ml-sun_ho_sfKG_hole-uig-sv-75
-# - TODO ml-sun_ho_sfKG_hole-uig-sv-50
-# - TODO ml-sun_ho_sfKG_hole-uig-sv-25
-# - TODO ml-sun_ho_sfKG_hole-uig-mv-75
-# - TODO ml-sun_ho_sfKG_hole-uig-mv-50
-# - TODO ml-sun_ho_sfKG_hole-uig-mv-25
-#
-# - ml-sun_ho_sfKG_gemsec-ig-sv-75
-# - ml-sun_ho_sfKG_gemsec-ig-sv-50
-# - ml-sun_ho_sfKG_gemsec-ig-sv-25
-#
-# - TODO ml-sun_ho_sfKG_gemsec-ig-mv-75
-# - TODO ml-sun_ho_sfKG_gemsec-ig-mv-50
-# - TODO ml-sun_ho_sfKG_gemsec-ig-mv-25
-#
-# - TODO ml-sun_ho_sfKG_gemsec-uig-sv-75
-# - TODO ml-sun_ho_sfKG_gemsec-uig-sv-50
-# - TODO ml-sun_ho_sfKG_gemsec-uig-sv-25
-#
-# - TODO ml-sun_ho_sfKG_gemsec-uig-mv-75
-# - TODO ml-sun_ho_sfKG_gemsec-uig-mv-50
-# - TODO ml-sun_ho_sfKG_gemsec-uig-mv-25
-#
-# (Sacenti-JIIS2021)
-# - ml-sun_ho_fKG
-#
-# - ml-sun_ho_sfKG_hole-ig-sv-75
-# - ml-sun_ho_sfKG_hole-ig-sv-50
-# - ml-sun_ho_sfKG_hole-ig-sv-25
-#
-# - ml-sun_ho_sfKG_hole-ig-mv-75
-# - ml-sun_ho_sfKG_hole-ig-mv-50
-# - ml-sun_ho_sfKG_hole-ig-mv-25
-####
-recommend_sun_sfKG() {
-    source kg_recommendation_ho_ml-sun.sh "ml-sun_ho_fKG" '4873,487300,24363' '2663,266300,13317' '266,26630,1331' '10392,1039200,51960' 256 0.005
-    source kg_recommendation_ho_ml-sun.sh "ml-sun_ho_sv_sfKG_hole-75" '4873,487300,24363' '2663,266300,13317' '266,26630,1331' '10392,1039200,51960' 256 0.005
-    source kg_recommendation_ho_ml-sun.sh "ml-sun_ho_sv_sfKG_hole-50" '4873,487300,24363' '2663,266300,13317' '266,26630,1331' '10392,1039200,51960' 256 0.005
-    source kg_recommendation_ho_ml-sun.sh "ml-sun_ho_sv_sfKG_hole-25" '4873,487300,24363' '2663,266300,13317' '266,26630,1331' '10392,1039200,51960' 256 0.005
-    source kg_recommendation_ho_ml-sun.sh "ml-sun_ho_mv_sfKG_hole-75" '4873,487300,24363' '2663,266300,13317' '266,26630,1331' '10392,1039200,51960' 256 0.005
-    source kg_recommendation_ho_ml-sun.sh "ml-sun_ho_mv_sfKG_hole-50" '4873,487300,24363' '2663,266300,13317' '266,26630,1331' '10392,1039200,51960' 256 0.005
-    source kg_recommendation_ho_ml-sun.sh "ml-sun_ho_mv_sfKG_hole-25" '4873,487300,24363' '2663,266300,13317' '266,26630,1331' '10392,1039200,51960' 256 0.005
-}
-
 kg_recommendation() {
     local dataset_in=$1
     local dataset_out=$2

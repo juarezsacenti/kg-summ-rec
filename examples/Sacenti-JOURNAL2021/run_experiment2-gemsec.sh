@@ -372,6 +372,12 @@ measure_summ_impact() {
 # - ml-sun_ho_sfKG_complex-ig-mv-25
 ####
 recommend_sun_sKG() {
+    # kg-summ-rec/evaluation
+    if [[ $PYTHONPATH = *git/kg-summ-rec/evaluation* ]]
+    then
+        export PYTHONPATH="${HOME}/git/kg-summ-rec/evaluation:${PYTHONPATH}"
+    fi
+
     kg_recommendation "ml-sun_ho_oKG" "ml-sun_ho_sKG"
 }
 
