@@ -273,5 +273,5 @@ if __name__ == '__main__':
 
     evaluate_predictions2(input_file, dataset_path, mode, ratio, test_file, output_file)
 
-
+# python evaluation/diversity_evaluation.py --input ~/git/results/Sacenti-JOURNAL2021/ml-sun_ho_sKG_ig-sv-hole-25/ml1m-jtransup-1612204739_pred.dat --datapath "$HOME/git/datasets/Sacenti-JOURNAL2021/ml-sun_ho_oKG/"  --test "$HOME/git/datasets/Sacenti-JOURNAL2021/ml-sun_ho_sKG_ig-sv-hole-25/cao-format/ml1m/test.dat" --output "$HOME/git/results/Sacenti-JOURNAL2021/ml-sun_ho_sKG_ig-mv-hole-25/rec_quality.log"
 # python evaluation/diversity_evaluation.py --input ~/git/results/Sacenti-JOURNAL2021/ml-sun_ho_sKG_euig-mv-complex-25/ml1m-jtransup-1611159326_pred.dat --datapath "$HOME/git/datasets/Sacenti-JOURNAL2021/ml-sun_ho_sKG_euig-mv-complex-25/" --mode 'mv' --ratio '25' --test "$HOME/git/datasets/Sacenti-JOURNAL2021/ml-sun_ho_sKG_euig-mv-complex-25/cao-format/ml1m/test.dat" --output "$HOME/git/results/Sacenti-JOURNAL2021/ml-sun_ho_sKG_euig-mv-complex-25/rec_quality.log"
