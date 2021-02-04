@@ -85,6 +85,9 @@ class DiversityEvaluation(BaseEvaluation):
 
         """
 
+        print('HELLO')
+        print_count=0
+
         eval_results = {}
         num_user = len(test_set['users'])
         partial_map_all = None
@@ -116,6 +119,11 @@ class DiversityEvaluation(BaseEvaluation):
                 partial_genre_coverage.append(genre_coverage_at_k(list(predictions.get(user, []))[:n], i2genre_map, n))
                 partial_genre_redundancy.append(genre_redundancy_at_k(list(predictions.get(user, []))[:n], i2genre_map, n))
 
+                if print_count < 10:
+                    print('HI')
+                    printUserGenreList(user, list(predictions.get(user, []))[:n], test_set['items_seen_by_user'].get(user, []), i2genre_map)
+                    print_count+=1
+
             # create a dictionary with final results
             eval_results.update({
                 'GENRE_COVERAGE@' + str(n): round(sum(partial_genre_coverage) / float(num_user), 6),
@@ -132,6 +140,19 @@ class DiversityEvaluation(BaseEvaluation):
             self.print_results(eval_results)
 
         return eval_results
+
+
+def printUserGenreList(user, pred, test, i2genre_map):
+    sep=' :: '
+    genre_pred = set()
+    for i in pred:
+        for g in i2genre_map.get(str(i),[]):
+            genre_pred.add(g)
+    genre_test = set()
+    for i in test:
+        for g in i2genre_map.get(str(i),[]):
+            genre_test.add(g)
+    print(user, sep, str(pred), sep,str(genre_pred), sep, str(test), sep, str(genre_test))
 
 
 def evaluate_predictions(input_file, dataset_path, mode, ratio, test_file, output_file):
