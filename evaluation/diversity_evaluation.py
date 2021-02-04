@@ -121,7 +121,7 @@ class DiversityEvaluation(BaseEvaluation):
 
                 if print_count < 10:
                     print('HI')
-                    printUserGenreList(user, list(predictions.get(user, []))[:n], test_set['items_seen_by_user'].get(user, []), i2genre_map)
+                    printUserGenreList(user, list(predictions.get(user, []))[:n], list(test_set['items_seen_by_user'].get(user, [])), i2genre_map)
                     print_count+=1
 
             # create a dictionary with final results
