@@ -146,7 +146,7 @@ def printUserGenreList(user, pred, test, i2genre_map):
     sep=' :: '
     kg_map = {}
     kg_map_file = os.path.join('/home/juarez/git/datasets/Sacenti-JOURNAL2021/ml-sun_ho_oKG/cao-format/ml1m/kg_map.dat')
-    with open(i2kg_map_file) as fin:
+    with open(kg_map_file) as fin:
         for line in fin:
             (name, item_uri) = line.rstrip('\n').split('\t')
             kg_map.setdefault(f'<{item_uri}>', []).append(name)
