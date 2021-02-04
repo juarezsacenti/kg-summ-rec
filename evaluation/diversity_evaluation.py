@@ -144,14 +144,23 @@ class DiversityEvaluation(BaseEvaluation):
 
 def printUserGenreList(user, pred, test, i2genre_map):
     sep=' :: '
+    kg_map = {}
+    kg_map_file = os.path.join('/home/juarez/git/datasets/Sacenti-JOURNAL2021/ml-sun_ho_oKG/cao-format/ml1m/kg_map.dat')
+    with open(i2kg_map_file) as fin:
+        for line in fin:
+            (name, item_uri) = line.rstrip('\n').split('\t')
+            kg_map.setdefault(f'<{item_uri}>', []).append(name)
+
     genre_pred = set()
     for i in pred:
         for g in i2genre_map.get(str(i),[]):
-            genre_pred.add(g)
+            for name in kg_map.get(str(g),[]):
+                genre_pred.add(name)
     genre_test = set()
     for i in test:
         for g in i2genre_map.get(str(i),[]):
-            genre_test.add(g)
+            for name in kg_map.get(str(g),[]):
+                genre_pred.add(name)
     print(user, sep, str(pred), sep,str(genre_pred), sep, str(test), sep, str(genre_test))
 
 
