@@ -21,6 +21,7 @@ import os
 from caserec.evaluation.base_evaluation import BaseEvaluation
 from diversity_functions import genre_coverage_at_k
 from diversity_functions import genre_redundancy_at_k
+from diversity_functions import intra_list_diversity_genre
 
 from caserec.utils.process_data import ReadFile, WriteFile
 from caserec.evaluation.item_recommendation import ItemRecommendationEvaluation
@@ -31,7 +32,7 @@ __author__ = 'Juarez Sacenti <juarez[DOT]sacenti[AT]gmail[DOT]com>'
 
 class DiversityEvaluation(BaseEvaluation):
     def __init__(self, sep='\t', n_ranks=list([1, 3, 5, 10]),
-                 metrics=list(['GENRE_COVERAGE', 'GENRE_REDUNDANCY']), all_but_one_eval=False,
+                 metrics=list(['GENRE_COVERAGE', 'GENRE_REDUNDANCY', 'ILD_GENRE']), all_but_one_eval=False,
                  verbose=True, as_table=False, table_sep='\t'):
         """
         Class to evaluate predictions in a item recommendation (ranking) scenario
@@ -85,9 +86,6 @@ class DiversityEvaluation(BaseEvaluation):
 
         """
 
-        print('HELLO')
-        print_count=0
-
         eval_results = {}
         num_user = len(test_set['users'])
         partial_map_all = None
@@ -103,7 +101,9 @@ class DiversityEvaluation(BaseEvaluation):
 
             partial_genre_coverage = list()
             partial_genre_redundancy = list()
+            partial_idl_genre = list()
 
+            #print_count=0
             for user in test_set['users']:
                 hit_cont = 0
                 # Generate user intersection list between the recommended items and test.
@@ -118,16 +118,17 @@ class DiversityEvaluation(BaseEvaluation):
 
                 partial_genre_coverage.append(genre_coverage_at_k(list(predictions.get(user, []))[:n], i2genre_map, n))
                 partial_genre_redundancy.append(genre_redundancy_at_k(list(predictions.get(user, []))[:n], i2genre_map, n))
+                partial_idl_genre.append(intra_list_diversity_genre(list(predictions.get(user, []))[:n], i2genre_map, n))
 
-                if print_count < 10:
-                    print('HI')
-                    printUserGenreList(user, list(predictions.get(user, []))[:n], list(test_set['items_seen_by_user'].get(user, [])), i2genre_map)
-                    print_count+=1
+                #if print_count < 10:
+                #    printUserGenreList(user, list(predictions.get(user, []))[:n], list(test_set['items_seen_by_user'].get(user, [])), i2genre_map)
+                #    print_count+=1
 
             # create a dictionary with final results
             eval_results.update({
                 'GENRE_COVERAGE@' + str(n): round(sum(partial_genre_coverage) / float(num_user), 6),
                 'GENRE_REDUNDANCY@' + str(n): round(sum(partial_genre_redundancy) / float(num_user), 6)
+                'ILD_GENRE@' + str(n): round(sum(partial_idl_genre) / float(num_user), 6)
             })
 
         # if (self.save_eval_file is not None):
