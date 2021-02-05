@@ -166,7 +166,11 @@ def printUserGenreList(user, pred, test, i2genre_map):
                 genre_pred.add(name)
     print(user, sep, str(sorted(pred)), sep,str(sorted(genre_pred)), sep, str(sorted(test)), sep, str(sorted(genre_test)))
     for i in sorted(list(items)):
-        print(i, sep, str(sorted(i2genre_map.get(str(i),[]))))
+        genres = set()
+        for g in i2genre_map.get(str(i),[]):
+            for name in kg_map.get(str(g),[]):
+                genres.add(name)
+        print(i, sep, str(sorted(list(genres))))
 
 
 def evaluate_predictions(input_file, dataset_path, mode, ratio, test_file, output_file):
