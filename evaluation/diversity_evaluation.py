@@ -164,8 +164,10 @@ def printUserGenreList(user, pred, test, i2genre_map):
         items.add(i)
         for g in i2genre_map.get(str(i),[]):
             for name in kg_map.get(str(g),[]):
-                genre_pred.add(name)
+                genre_test.add(name)
+
     print(user, sep, str(sorted(pred)), sep,str(sorted(genre_pred)), sep, str(sorted(test)), sep, str(sorted(genre_test)))
+
     for i in sorted(list(items)):
         genres = set()
         for g in i2genre_map.get(str(i),[]):
