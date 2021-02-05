@@ -103,7 +103,7 @@ class DiversityEvaluation(BaseEvaluation):
             partial_genre_redundancy = list()
             partial_idl_genre = list()
 
-            #print_count=0
+            print_count=0
             for user in test_set['users']:
                 hit_cont = 0
                 # Generate user intersection list between the recommended items and test.
@@ -120,9 +120,9 @@ class DiversityEvaluation(BaseEvaluation):
                 partial_genre_redundancy.append(genre_redundancy_at_k(list(predictions.get(user, []))[:n], i2genre_map, n))
                 partial_idl_genre.append(intra_list_diversity_genre(list(predictions.get(user, []))[:n], i2genre_map, n))
 
-                #if print_count < 10:
-                #    printUserGenreList(user, list(predictions.get(user, []))[:n], list(test_set['items_seen_by_user'].get(user, [])), i2genre_map)
-                #    print_count+=1
+                if print_count < 10:
+                    print_user_genre_list(user, list(predictions.get(user, []))[:n], list(test_set['items_seen_by_user'].get(user, [])), i2genre_map)
+                    print_count+=1
 
             # create a dictionary with final results
             eval_results.update({
@@ -143,7 +143,7 @@ class DiversityEvaluation(BaseEvaluation):
         return eval_results
 
 
-def printUserGenreList(user, pred, test, i2genre_map):
+def print_user_genre_list(user, pred, test, i2genre_map):
     items=set()
     sep=' :: '
     kg_map = {}
