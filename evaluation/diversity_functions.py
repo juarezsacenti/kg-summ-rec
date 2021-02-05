@@ -105,10 +105,10 @@ def jaccard_similarity_genre(genres_i, genres_j):
 
     fst, snd = (genres_i, genres_j) if len(genres_i) < len(genres_j) else (genres_j, genres_i)
     genres_intersection = set(fst).intersection(snd)
-    print(genres_i, genres_j)
+    #print(genres_i, genres_j)
     genres_union = genres_i.copy()
     genres_union.extend(genres_j)
-    print(genres_union)
+    #print(genres_union)
     genres_union = set(genres_union)
     return len(genres_intersection) / len(genres_union)
 
@@ -147,5 +147,5 @@ def intra_list_diversity_genre(recommended_items, i2genre_map, k):
             else:
                 pass
 
-    diversity = (sum * 2) / (k * (k - 1))
-    return genre_redundancy
+    ild_genre = (sum * 2) / (k * (k - 1))
+    return ild_genre
