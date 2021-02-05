@@ -127,7 +127,7 @@ class DiversityEvaluation(BaseEvaluation):
             # create a dictionary with final results
             eval_results.update({
                 'GENRE_COVERAGE@' + str(n): round(sum(partial_genre_coverage) / float(num_user), 6),
-                'GENRE_REDUNDANCY@' + str(n): round(sum(partial_genre_redundancy) / float(num_user), 6)
+                'GENRE_REDUNDANCY@' + str(n): round(sum(partial_genre_redundancy) / float(num_user), 6),
                 'ILD_GENRE@' + str(n): round(sum(partial_idl_genre) / float(num_user), 6)
             })
 
