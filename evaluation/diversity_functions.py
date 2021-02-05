@@ -105,8 +105,9 @@ def jaccard_similarity_genre(genres_i, genres_j):
 
     fst, snd = (genres_i, genres_j) if len(genres_i) < len(genres_j) else (genres_j, genres_i)
     genres_intersection = set(fst).intersection(snd)
-    print(type(genres_i), type(genres_j))
+    print(genres_i, genres_j)
     genres_union = genres_i.extend(genres_j)
+    print(genres_union)
     genres_union = set(genres_union)
     return len(genres_intersection) / len(genres_union)
 
