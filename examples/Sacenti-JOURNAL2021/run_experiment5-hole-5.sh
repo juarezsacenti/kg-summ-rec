@@ -25,7 +25,7 @@
 #   - Algorithms: KGE-K-Means (HolE)
 #   - KG type: item graph (ig), user-item graph (uig), extended user-item graph (euig)
 #   - Summarization mode: single-view (sv) and multi-view (mv)
-#   - Entity preservation ratio: 75, 50 and 25%
+#   - Entity preservation ratio: 5%
 #   - Results: summ_effects, rec_quality, comp_cost
 # - KG Recommendation:
 #   - Algorithms: CFKG, CKE, CoFM, JtransUp (KTUP); TransE, TransH, BPRMF,
@@ -308,14 +308,14 @@ preprocess_summ() {
 
     summ_modes=(sv mv)
     summ_algos=(hole)
-    summ_rates=(25 50 75)
+    summ_ratios=(5)
     local STARTTIME=0
     local ENDTIME=0
     for m in "${summ_modes[@]}"
     do
         for a in "${summ_algos[@]}"
         do
-            for r in "${summ_rates[@]}"
+            for r in "${summ_ratios[@]}"
             do
                 STARTTIME=$(date +%s)
                 cao-format_summ "${dataset_in}" "${dataset_out}_${kg_type}-${m}-${a}-${r}" "${low_frequence}"
@@ -340,14 +340,14 @@ measure_summ_impact() {
 
     summ_modes=(sv mv)
     summ_algos=(hole)
-    summ_rates=(25 50 75)
+    summ_ratios=(5)
     local STARTTIME=0
     local ENDTIME=0
     for m in "${summ_modes[@]}"
     do
         for a in "${summ_algos[@]}"
         do
-            for r in "${summ_rates[@]}"
+            for r in "${summ_ratios[@]}"
             do
                 local dirName="${dataset_out}_${kg_type}-${m}-${a}-${r}"
                 if no_exist "$HOME/git/results/${experiment}/${dirName}/kg-ig_stats.tsv"
@@ -429,14 +429,14 @@ kg_recommendation() {
     summ_types=(ig uig euig)
     summ_modes=(sv mv)
     summ_algos=(hole)
-    summ_rates=(25 50 75)
+    summ_ratios=(5)
     for t in "${summ_types[@]}"
     do
         for m in "${summ_modes[@]}"
         do
             for a in "${summ_algos[@]}"
             do
-                for r in "${summ_rates[@]}"
+                for r in "${summ_ratios[@]}"
                 do
                     local dirName="${dataset_out}_${t}-${m}-${a}-${r}"
                     echo "[kg-summ-rec] kg_recommendation: Creating ~/git/results/${experiment}/${dirName}/*.log"
