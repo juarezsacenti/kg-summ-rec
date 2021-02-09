@@ -75,7 +75,7 @@ def splitview(triples, items, kge_name, epochs, batch_size, learning_rate, rates
     model = kge(triples, kge_name, epochs, batch_size, learning_rate, verbose)
 
     # Simplification
-    simplification(triples, model, 0.2, verbose)
+    simplification(triples, model, 0.045, verbose)
 
     # Group entities into n-clusters where n in rates
     for rate in rates:
@@ -110,7 +110,7 @@ def singleview(triples, items, kge_name, epochs, batch_size, learning_rate, rate
     model = kge(triples, kge_name, epochs, batch_size, learning_rate, verbose)
 
     # Simplification
-    simplification(triples, model, 0.2, verbose)
+    simplification(triples, model, 0.045, verbose)
 
     # Group entities into n-clusters where n in rates
     for rate in rates:
@@ -135,7 +135,7 @@ def multiview(triples, items, kge_name, epochs, batch_size, learning_rate, rates
     model = kge(triples, kge_name, epochs, batch_size, learning_rate, verbose)
 
     # Simplification
-    simplification(triples, model, 0.2, verbose)
+    simplification(triples, model, 0.045, verbose)
 
     # Group entities into n-clusters where n in rates
     for rate in rates:
