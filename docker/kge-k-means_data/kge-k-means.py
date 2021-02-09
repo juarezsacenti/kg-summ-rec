@@ -17,6 +17,7 @@ from ampligraph.evaluation import train_test_split_no_unseen
 
 from sklearn.decomposition import PCA
 from sklearn.cluster import KMeans
+from sklearn.metrics.pairwise import euclidean_distances
 import matplotlib.pyplot as plt
 import seaborn as sns
 from adjustText import adjust_text
@@ -73,6 +74,9 @@ def splitview(triples, items, kge_name, epochs, batch_size, learning_rate, rates
     # Train KGE model
     model = kge(triples, kge_name, epochs, batch_size, learning_rate, verbose)
 
+    # Simplification
+    simplification(triples, model, 0.2, verbose)
+
     # Group entities into n-clusters where n in rates
     for rate in rates:
         clusters = clustering(entities, model, rate, verbose)
@@ -105,6 +109,9 @@ def singleview(triples, items, kge_name, epochs, batch_size, learning_rate, rate
     # Train KGE model
     model = kge(triples, kge_name, epochs, batch_size, learning_rate, verbose)
 
+    # Simplification
+    simplification(triples, model, 0.2, verbose)
+
     # Group entities into n-clusters where n in rates
     for rate in rates:
         clusters = clustering(entities, model, rate, verbose)
@@ -126,6 +133,9 @@ def multiview(triples, items, kge_name, epochs, batch_size, learning_rate, rates
 
     # Train KGE model
     model = kge(triples, kge_name, epochs, batch_size, learning_rate, verbose)
+
+    # Simplification
+    simplification(triples, model, 0.2, verbose)
 
     # Group entities into n-clusters where n in rates
     for rate in rates:
@@ -230,6 +240,25 @@ def kge(triples, kge_name, epochs, batch_size, learning_rate, verbose):
         ''')
 
     return model
+
+
+# Simplification
+def simplification(triples, model, ratio, verbose):
+    sep = '\t'
+    space = ' '
+    dot = '.'
+    nl = '\n'
+    triples_df = pd.DataFrame(triples, columns=['s', 'p', 'o'])
+    with open('/data/temp/simplificated_triples.nt','w') as fout, open('/data/temp/triples_with_rank.tsv','w') as fout:
+        for index, row in df.iterrows():
+            subject = row['s']
+            object = row['o']
+            entities = [subject, object]
+            embeddings = model.get_embeddings(entities, embedding_type='entity')
+            sim = 1 / (1 + euclidean_distances(embeddings[0], embeddings[1]))
+            fout2.write(f'{subject}{sep}{row['p']}{sep}{object}{sep}{sim}{nl}')
+            if sim > ratio:
+                fout.write(f'{subject}{space}{row['p']}{space}{object}{dot}{nl}')
 
 
 # Clustering

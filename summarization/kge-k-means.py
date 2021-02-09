@@ -250,15 +250,15 @@ def simplification(triples, model, ratio, verbose):
     nl = '\n'
     triples_df = pd.DataFrame(triples, columns=['s', 'p', 'o'])
     with open('/data/temp/simplificated_triples.nt','w') as fout, open('/data/temp/triples_with_rank.tsv','w') as fout:
-    for index, row in df.iterrows():
-        subject = row['s']
-        object = row['o']
-        entities = [subject, object]
-        embeddings = model.get_embeddings(entities, embedding_type='entity')
-        sim = 1 / (1 + euclidean_distances(embeddings[0], embeddings[1]))
-        fout2.write(f'{subject}{sep}{row['p']}{sep}{object}{sep}{sim}{nl}')
-        if sim > ratio:
-            fout.write(f'{subject}{space}{row['p']}{space}{object}{dot}{nl}')
+        for index, row in df.iterrows():
+            subject = row['s']
+            object = row['o']
+            entities = [subject, object]
+            embeddings = model.get_embeddings(entities, embedding_type='entity')
+            sim = 1 / (1 + euclidean_distances(embeddings[0], embeddings[1]))
+            fout2.write(f'{subject}{sep}{row['p']}{sep}{object}{sep}{sim}{nl}')
+            if sim > ratio:
+                fout.write(f'{subject}{space}{row['p']}{space}{object}{dot}{nl}')
 
 
 # Clustering
