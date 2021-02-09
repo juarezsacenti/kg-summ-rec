@@ -251,7 +251,7 @@ def simplification(triples, model, verbose):
     triples_df = pd.DataFrame(triples, columns=['s', 'p', 'o'])
     triples_df['rank'] = 1 / (1 + euclidean_distances(model.get_embeddings([triples_df['s'],triples_df['p']], embedding_type='entity'))[0][1])
     triples_df.to_csv(f'./temp/triples_with_rank.tsv', sep='\t', header=False, index=False)
-    simplificated_df = simplification_ratio(triples_df, ratio=0.5, verbose)
+    simplificated_df = simplification_ratio(triples_df, 0.75, verbose)
     #simplificated_df = simplification_top(triples_df, top=3, verbose)
     simplificated_df.drop(columns=['rank'])
     simplificated_df['dot'] = '.'
