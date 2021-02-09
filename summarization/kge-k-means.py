@@ -255,7 +255,7 @@ def simplification(triples, model, ratio, verbose):
         object = row['o']
         entities = [subject, object]
         embeddings = model.get_embeddings(entities, embedding_type='entity')
-        sim = euclidean_distances(embeddings[0], embeddings[1])
+        sim = 1 / (1 + euclidean_distances(embeddings[0], embeddings[1]))
         fout2.write(f'{subject}{sep}{row['p']}{sep}{object}{sep}{sim}{nl}')
         if sim > ratio:
             fout.write(f'{subject}{space}{row['p']}{space}{object}{dot}{nl}')
