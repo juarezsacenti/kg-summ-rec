@@ -249,7 +249,7 @@ def simplification(triples, model, ratio, verbose):
     dot = '.'
     nl = '\n'
     triples_df = pd.DataFrame(triples, columns=['s', 'p', 'o'])
-    with open('/data/temp/simplificated_triples.nt','w') as fout, open('/data/temp/triples_with_rank.tsv','w') as fout:
+    with open('/data/temp/simplificated_triples.nt','w') as fout, open('/data/temp/triples_with_rank.tsv','w') as fout2:
         for index, row in triples_df.iterrows():
             subject = row['s']
             property = row['p']
