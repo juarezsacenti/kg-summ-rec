@@ -252,13 +252,14 @@ def simplification(triples, model, ratio, verbose):
     with open('/data/temp/simplificated_triples.nt','w') as fout, open('/data/temp/triples_with_rank.tsv','w') as fout:
         for index, row in df.iterrows():
             subject = row['s']
+            property = row['p']
             object = row['o']
             entities = [subject, object]
             embeddings = model.get_embeddings(entities, embedding_type='entity')
             sim = 1 / (1 + euclidean_distances(embeddings[0], embeddings[1]))
-            fout2.write(f'{subject}{sep}{row['p']}{sep}{object}{sep}{sim}{nl}')
+            fout2.write(f'{subject}{sep}{property}{sep}{object}{sep}{sim}{nl}')
             if sim > ratio:
-                fout.write(f'{subject}{space}{row['p']}{space}{object}{dot}{nl}')
+                fout.write(f'{subject}{space}{property}{space}{object}{dot}{nl}')
 
 
 # Clustering
