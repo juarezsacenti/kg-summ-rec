@@ -75,7 +75,7 @@ def splitview(triples, items, kge_name, epochs, batch_size, learning_rate, rates
     model = kge(triples, kge_name, epochs, batch_size, learning_rate, verbose)
 
     # Simplification
-    simplification(triples, model, 0.045, verbose)
+    simplification(triples, model, verbose)
 
     # Group entities into n-clusters where n in rates
     for rate in rates:
@@ -110,7 +110,7 @@ def singleview(triples, items, kge_name, epochs, batch_size, learning_rate, rate
     model = kge(triples, kge_name, epochs, batch_size, learning_rate, verbose)
 
     # Simplification
-    simplification(triples, model, 0.045, verbose)
+    simplification(triples, model, verbose)
 
     # Group entities into n-clusters where n in rates
     for rate in rates:
@@ -135,7 +135,7 @@ def multiview(triples, items, kge_name, epochs, batch_size, learning_rate, rates
     model = kge(triples, kge_name, epochs, batch_size, learning_rate, verbose)
 
     # Simplification
-    simplification(triples, model, 0.045, verbose)
+    simplification(triples, model, verbose)
 
     # Group entities into n-clusters where n in rates
     for rate in rates:
@@ -243,24 +243,63 @@ def kge(triples, kge_name, epochs, batch_size, learning_rate, verbose):
 
 
 # Simplification
-def simplification(triples, model, ratio, verbose):
-    sep = '\t'
-    space = ' '
-    dot = '.'
-    nl = '\n'
+def simplification(triples, model, verbose):
+    #sep = '\t'
+    #space = ' '
+    #dot = '.'
+    #nl = '\n'
     triples_df = pd.DataFrame(triples, columns=['s', 'p', 'o'])
-    with open('/data/temp/simplificated_triples.nt','w') as fout, open('/data/temp/triples_with_rank.tsv','w') as fout2:
-        for index, row in triples_df.iterrows():
-            subject = row['s']
-            property = row['p']
-            object = row['o']
-            entities = [subject, object]
-            embeddings = model.get_embeddings(entities, embedding_type='entity')
-            sim = 1 / (1 + euclidean_distances(embeddings)[0][1])
-            fout2.write(f'{subject}{sep}{property}{sep}{object}{sep}{sim}{nl}')
-            print(sim, ratio)
-            if sim > ratio:
-                fout.write(f'{subject}{space}{property}{space}{object}{dot}{nl}')
+    triples_df['rank'] = 1 / (1 + euclidean_distances(model.get_embeddings([triples_df['s'],triples_df['p']], embedding_type='entity'))[0][1])
+    triples_df.to_csv(f'./temp/triples_with_rank.tsv', sep='\t', header=False, index=False)
+    simplificated_df = simplification_ratio(triples_df, ratio=0.5, verbose)
+    #simplificated_df = simplification_top(triples_df, top=3, verbose)
+    simplificated_df.drop(columns=['rank'])
+    simplificated_df['dot'] = '.'
+    simplificated_df.to_csv(f'./temp/simplificated_triples.nt', sep=' ', header=False, index=False)
+    #with open('/data/temp/simplificated_triples.nt','w') as fout, open('/data/temp/triples_with_rank.tsv','w') as fout2:
+    #    for index, row in triples_df.iterrows():
+    #        subject = row['s']
+    #        predicate = row['p']
+    #        object = row['o']
+    #        entities = [subject, object]
+    #        embeddings = model.get_embeddings(entities, embedding_type='entity')
+    #        sim = 1 / (1 + euclidean_distances(embeddings)[0][1])
+#            fout2.write(f'{subject}{sep}{predicate}{sep}{object}{sep}{sim}{nl}')
+#            print(sim, ratio)
+#            if sim > ratio:
+#                fout.write(f'{subject}{space}{predicate}{space}{object}{dot}{nl}')
+
+
+# Simplification threshold
+def simplification_threshold(ranked_triples_df, threshold, verbose):
+    rslt_df = ranked_triples_df[ranked_triples_df['rank'] > threshold]
+    return rslt_df
+
+
+# Simplification ratio
+def simplification_ratio(ranked_triples_df, ratio, verbose):
+    subjects = ranked_triples_df.s.unique()
+    rslt_df = pd.DataFrame(data=None, columns=ranked_triples_df.columns)
+    for s in subjects:
+        subj_df = ranked_triples_df[ranked_triples_df['s'] == s ]
+        subj_df.sort_values(by=['rank'], ascending=False)
+        top = math.ceil(len(subj_df.index)*ratio)
+        rslt_df = pd.concat([rslt_df, subj_df.head(top)], ignore_index=True)
+    return rslt_df
+
+
+# Simplification top
+def simplification_top(ranked_triples_df, top, verbose):
+    subjects = ranked_triples_df.s.unique()
+    predicates = ranked_triples_df.s.unique()
+    rslt_df = pd.DataFrame(data=None, columns=ranked_triples_df.columns)
+    for s in subjects:
+        subj_df = ranked_triples_df[ ranked_triples_df['s'] == s ]
+        for p in predicates:
+            sp_df = subj_df[ subj_df['p'] == p ]
+            sp_df.sort_values(by=['rank'], ascending=False)
+            rslt_df = pd.concat([rslt_df, sp_df.head(top)], ignore_index=True)
+    return rslt_df
 
 
 # Clustering
