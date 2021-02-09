@@ -17,6 +17,7 @@ from ampligraph.evaluation import train_test_split_no_unseen
 
 from sklearn.decomposition import PCA
 from sklearn.cluster import KMeans
+from sklearn.metrics.pairwise import euclidean_distances
 import matplotlib.pyplot as plt
 import seaborn as sns
 from adjustText import adjust_text
@@ -252,7 +253,9 @@ def simplification(triples, model, ratio, verbose):
     for index, row in df.iterrows():
         subject = row['s']
         object = row['o']
-        sim = sim(subject, object)
+        entities = [subject, object]
+        embeddings = model.get_embeddings(entities, embedding_type='entity')
+        sim = euclidean_distances(embeddings[0], embeddings[1])
         fout2.write(f'{subject}{sep}{row['p']}{sep}{object}{sep}{sim}{nl}')
         if sim > ratio:
             fout.write(f'{subject}{space}{row['p']}{space}{object}{dot}{nl}')
