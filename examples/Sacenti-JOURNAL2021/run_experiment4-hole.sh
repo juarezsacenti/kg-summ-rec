@@ -445,12 +445,10 @@ kg_recommendation() {
         done
     done
 
-    if no_exist "$HOME/git/results/${experiment}/${dataset_in}/*.log"
-    then
-        echo "[kg-summ-rec] kg_recommendation: Creating ~/git/results/${experiment}/${dataset_in}/*.log"
-        recommend "${dataset_in}" '4873,487300,24363' '2663,266300,13317' '266,26630,1331' '10392,1039200,51960' 256 0.005
-    fi
 
+    echo "[kg-summ-rec] kg_recommendation: Creating ~/git/results/${experiment}/${dataset_in}/*.log"
+    recommend "${dataset_in}" '4873,487300,24363' '2663,266300,13317' '266,26630,1331' '10392,1039200,51960' 256 0.005
+    
     cd $HOME/git/kg-summ-rec
 }
 
