@@ -75,7 +75,7 @@ def splitview(triples, items, kge_name, epochs, batch_size, learning_rate, rates
     model = kge(triples, kge_name, epochs, batch_size, learning_rate, verbose)
 
     # Simplification
-    simplification(triples, model, verbose)
+    simplification_old(triples, model, verbose)
 
     # Group entities into n-clusters where n in rates
     for rate in rates:
@@ -110,7 +110,7 @@ def singleview(triples, items, kge_name, epochs, batch_size, learning_rate, rate
     model = kge(triples, kge_name, epochs, batch_size, learning_rate, verbose)
 
     # Simplification
-    simplification(triples, model, verbose)
+    simplification_old(triples, model, verbose)
 
     # Group entities into n-clusters where n in rates
     for rate in rates:
@@ -135,7 +135,7 @@ def multiview(triples, items, kge_name, epochs, batch_size, learning_rate, rates
     model = kge(triples, kge_name, epochs, batch_size, learning_rate, verbose)
 
     # Simplification
-    simplification(triples, model, verbose)
+    simplification_old(triples, model, verbose)
 
     # Group entities into n-clusters where n in rates
     for rate in rates:
@@ -243,6 +243,7 @@ def kge(triples, kge_name, epochs, batch_size, learning_rate, verbose):
 
 # Simplification old
 def simplification_old(triples, model, verbose):
+    ratio=0.045
     sep = '\t'
     space = ' '
     dot = '.'
@@ -282,18 +283,6 @@ def simplification(triples, model, verbose):
     simplificated_df.drop(columns=['rank'])
     simplificated_df['dot'] = '.'
     simplificated_df.to_csv(f'./temp/simplificated_triples.nt', sep=' ', header=False, index=False)
-    #with open('/data/temp/simplificated_triples.nt','w') as fout, open('/data/temp/triples_with_rank.tsv','w') as fout2:
-    #    for index, row in triples_df.iterrows():
-    #        subject = row['s']
-    #        predicate = row['p']
-    #        object = row['o']
-    #        entities = [subject, object]
-    #        embeddings = model.get_embeddings(entities, embedding_type='entity')
-    #        sim = 1 / (1 + euclidean_distances(embeddings)[0][1])
-#            fout2.write(f'{subject}{sep}{predicate}{sep}{object}{sep}{sim}{nl}')
-#            print(sim, ratio)
-#            if sim > ratio:
-#                fout.write(f'{subject}{space}{predicate}{space}{object}{dot}{nl}')
 
 
 # Simplification threshold
