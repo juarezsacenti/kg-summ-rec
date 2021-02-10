@@ -241,17 +241,37 @@ def kge(triples, kge_name, epochs, batch_size, learning_rate, verbose):
 
     return model
 
+# Simplification old
+def simplification_old(triples, model, verbose):
+    sep = '\t'
+    space = ' '
+    dot = '.'
+    nl = '\n'
+    triples_df = pd.DataFrame(triples, columns=['s', 'p', 'o'])
+    with open('/data/temp/simplificated_triples.nt','w') as fout, open('/data/temp/triples_with_rank.tsv','w') as fout2:
+        for index, row in triples_df.iterrows():
+            subject = row['s']
+            predicate = row['p']
+            object = row['o']
+            entities = [subject, object]
+            embeddings = model.get_embeddings(entities, embedding_type='entity')
+            sim = 1 / (1 + euclidean_distances(embeddings)[0][1])
+            fout2.write(f'{subject}{sep}{predicate}{sep}{object}{sep}{sim}{nl}')
+            print(sim, ratio)
+            if sim > ratio:
+                fout.write(f'{subject}{space}{predicate}{space}{object}{dot}{nl}')
+
 
 # Simplification
 def simplification(triples, model, verbose):
-    #sep = '\t'
-    #space = ' '
-    #dot = '.'
-    #nl = '\n'
     triples_df = pd.DataFrame(triples, columns=['s', 'p', 'o'])
-    triples_df['entities'] = triples_df[['s', 'o']].values.tolist()
+
+    teams = pd.concat((triples_df.s, triples_df.o))
+
+    triples_df['entities'] = set(triples_df[['s', 'o']].values.tolist())
     print(triples_df['entities'][0])
     print([triples_df['s'][0],triples_df['o'][0]])
+    print(teams[0])
     triples_df['embeddings'] = model.get_embeddings( triples_df['entities'] , embedding_type='entity')
     print(triples_df['embeddings'][0])
     triples_df['rank'] = 1 / ( 1 + euclidean_distances( triples_df['rank'] )[0][1] )
