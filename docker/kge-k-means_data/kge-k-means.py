@@ -251,6 +251,7 @@ def simplification(triples, model, verbose):
     triples_df = pd.DataFrame(triples, columns=['s', 'p', 'o'])
     triples_df['entities'] = triples_df[['s', 'o']].values.tolist()
     print(triples_df['entities'][0])
+    print([triples_df['s'][0],triples_df['o'][0]])
     triples_df['embeddings'] = model.get_embeddings( triples_df['entities'] , embedding_type='entity')
     print(triples_df['embeddings'][0])
     triples_df['rank'] = 1 / ( 1 + euclidean_distances( triples_df['rank'] )[0][1] )
