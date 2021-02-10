@@ -277,7 +277,7 @@ def simplification(triples, model, verbose):
     triples_df.to_csv(f'./temp/triples_with_rank.tsv', sep='\t', header=False, index=False)
     simplificated_df = simplification_ratio(triples_df, 0.75, verbose)
     #simplificated_df = simplification_top(triples_df, top=3, verbose)
-    simplificated_df.drop(columns=['rank'])
+    simplificated_df = simplificated_df.drop(columns=['rank'])
     simplificated_df['dot'] = '.'
     simplificated_df.to_csv(f'./temp/simplificated_triples.nt', sep=' ', header=False, index=False)
 

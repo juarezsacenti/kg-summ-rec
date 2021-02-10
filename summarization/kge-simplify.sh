@@ -155,7 +155,7 @@ sv_kge-k-means() {
         echo "[kg-summ-rec] Creating ~/git/datasets/${experiment}/${dataset_out}-${kge}-${ratio}/kg-ig.nt"
         cd $HOME/git/kg-summ-rec/util
         python kg2rdf.py --mode 'cluster' --input2 "$HOME/git/datasets/${experiment}/${dataset_out}-${kge}-${ratio}/cluster${ratio}.tsv" \
-        --input "$HOME/git/datasets/${experiment}/${dataset_in}/simplificated_triples.nt" --output "$HOME/git/datasets/${experiment}/${dataset_out}-${kge}-${ratio}/kg-ig.nt"
+        --input "$HOME/git/datasets/${experiment}/${dataset_out}-${kge}-${ratio}/simplificated_triples.nt" --output "$HOME/git/datasets/${experiment}/${dataset_out}-${kge}-${ratio}/kg-ig.nt"
         cd $HOME/git/kg-summ-rec
     fi
 }
@@ -234,7 +234,7 @@ mv_kge-k-means() {
         echo "[kg-summ-rec] Creating ~/git/datasets/${experiment}/${dataset_out}-${kge}-${ratio}/kg-ig.nt"
         cd $HOME/git/kg-summ-rec/util
         python kg2rdf.py --mode 'mv_cluster' --input2 "$HOME/git/datasets/${experiment}/${dataset_out}-${kge}-${ratio}/cluster${ratio}.tsv" \
-        --input "$HOME/git/datasets/${experiment}/${dataset_in}/simplificated_triples.nt" --output "$HOME/git/datasets/${experiment}/${dataset_out}-${kge}-${ratio}/kg-ig.nt"
+        --input "$HOME/git/datasets/${experiment}/${dataset_out}-${kge}-${ratio}/simplificated_triples.nt" --output "$HOME/git/datasets/${experiment}/${dataset_out}-${kge}-${ratio}/kg-ig.nt"
         cd $HOME/git/kg-summ-rec
     fi
 }
