@@ -268,7 +268,7 @@ def simplification(triples, model, verbose):
 
     teams = pd.concat((triples_df.s, triples_df.o))
 
-    triples_df['entities'] = set(triples_df[['s', 'o']].values.tolist())
+    triples_df['entities'] = triples_df[['s', 'o']].values.tolist()
     print(triples_df['entities'][0])
     print([triples_df['s'][0],triples_df['o'][0]])
     print(teams[0])
