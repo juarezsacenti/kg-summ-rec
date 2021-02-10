@@ -75,7 +75,7 @@ def splitview(triples, items, kge_name, epochs, batch_size, learning_rate, rates
     model = kge(triples, kge_name, epochs, batch_size, learning_rate, verbose)
 
     # Simplification
-    simplification_old(triples, model, verbose)
+    simplification(triples, model, verbose)
 
     # Group entities into n-clusters where n in rates
     for rate in rates:
@@ -110,7 +110,7 @@ def singleview(triples, items, kge_name, epochs, batch_size, learning_rate, rate
     model = kge(triples, kge_name, epochs, batch_size, learning_rate, verbose)
 
     # Simplification
-    simplification_old(triples, model, verbose)
+    simplification(triples, model, verbose)
 
     # Group entities into n-clusters where n in rates
     for rate in rates:
@@ -135,7 +135,7 @@ def multiview(triples, items, kge_name, epochs, batch_size, learning_rate, rates
     model = kge(triples, kge_name, epochs, batch_size, learning_rate, verbose)
 
     # Simplification
-    simplification_old(triples, model, verbose)
+    simplification(triples, model, verbose)
 
     # Group entities into n-clusters where n in rates
     for rate in rates:
@@ -267,16 +267,13 @@ def simplification_old(triples, model, verbose):
 def simplification(triples, model, verbose):
     triples_df = pd.DataFrame(triples, columns=['s', 'p', 'o'])
 
-    teams = pd.concat((triples_df.s, triples_df.o))
+    triples_df['rank'] = triples_df[['s', 'o']].values.tolist()
+    for index, row in triples_df.iterrows():
+        entities = row['rank']
+        embeddings = model.get_embeddings(entities, embedding_type='entity')
+        sim = 1 / (1 + euclidean_distances(embeddings)[0][1])
+        row['rank'] = sim
 
-    triples_df['entities'] = triples_df[['s', 'o']].values.tolist()
-    print(triples_df['entities'][0])
-    print([triples_df['s'][0],triples_df['o'][0]])
-    print(teams[0])
-    triples_df['embeddings'] = model.get_embeddings( triples_df['entities'] , embedding_type='entity')
-    print(triples_df['embeddings'][0])
-    triples_df['rank'] = 1 / ( 1 + euclidean_distances( triples_df['rank'] )[0][1] )
-    print(triples_df['rank'][0])
     triples_df.to_csv(f'./temp/triples_with_rank.tsv', sep='\t', header=False, index=False)
     simplificated_df = simplification_ratio(triples_df, 0.75, verbose)
     #simplificated_df = simplification_top(triples_df, top=3, verbose)
