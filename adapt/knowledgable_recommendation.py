@@ -122,7 +122,7 @@ def case_rec_evaluateRec(FLAGS, model, eval_iter, eval_dict, all_dicts, i_map, l
     #    ratio = '100'
     tags = dataset_name.split('_')
     dataset_path=os.path.normpath(FLAGS.data_path + os.sep + os.pardir + os.sep + os.pardir + os.sep + tags[0] + '_' + tags[1] + '_' + 'oKG')
-    mode='sv
+    mode='sv'
     ratio='100'
     i2genre_map = read_i2genre_map(dataset_path, mode, ratio)
     diversity_metrics = evaluator2.evaluate(predictions_data['feedback'], eval_data, i2genre_map)
