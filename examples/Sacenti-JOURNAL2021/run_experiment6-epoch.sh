@@ -209,136 +209,181 @@ recommend() {
 
     local STARTTIME=0
     local ENDTIME=0
-    #[TRANSE]
-    if no_exist "$HOME/git/results/${experiment}/${dataset_out}/ml1m-transe-*.log"
-    then
-        STARTTIME=$(date +%s)
-        echo "[kg-summ-rec] recommend: Running TransE with ${dataset_out}"
-        CUDA_VISIBLE_DEVICES=0 nohup python run_knowledge_representation.py -data_path ~/git/datasets/${experiment}/${dataset_in}/cao-format/ -log_path ~/git/results/${experiment}/${dataset_out}/ -kg_test_files valid.dat:test.dat -l2_lambda 0 -model_type transe -nohas_visualization -dataset ml1m -batch_size ${BATCH_SIZE} -embedding_size 100 -learning_rate 0.001 -topn 10 -seed 3 -eval_interval_steps ${KNOWLEDGE_REPRESENTATION_EPOCHS[0]} -training_steps ${KNOWLEDGE_REPRESENTATION_EPOCHS[1]} -early_stopping_steps_to_wait ${KNOWLEDGE_REPRESENTATION_EPOCHS[2]} -optimizer_type Adam -L1_flag -norm_lambda 1 -kg_lambda 1 &
-        wait $!
-        mv ~/git/results/${experiment}/${dataset_out}/ml1m-transe-*.ckpt_final ~/git/results/${experiment}/${dataset_out}/ml1m-transe-pretrained.ckpt
-        ENDTIME=$(date +%s)
-        echo -e "recommend-TRANSE-${dataset_out}\t$(($ENDTIME - $STARTTIME))\t${STARTTIME}\t${ENDTIME}" >> ${overall_comp_cost}
-    fi
+#     #[TRANSE]
+#     if no_exist "$HOME/git/results/${experiment}/${dataset_out}/ml1m-transe-*.log"
+#     then
+#         STARTTIME=$(date +%s)
+#         echo "[kg-summ-rec] recommend: Running TransE with ${dataset_out}"
+#         CUDA_VISIBLE_DEVICES=0 nohup python run_knowledge_representation.py -data_path ~/git/datasets/${experiment}/${dataset_in}/cao-format/ -log_path ~/git/results/${experiment}/${dataset_out}/ -kg_test_files valid.dat:test.dat -l2_lambda 0 -model_type transe -nohas_visualization -dataset ml1m -batch_size ${BATCH_SIZE} -embedding_size 100 -learning_rate 0.001 -topn 10 -seed 3 -eval_interval_steps ${KNOWLEDGE_REPRESENTATION_EPOCHS[0]} -training_steps ${KNOWLEDGE_REPRESENTATION_EPOCHS[1]} -early_stopping_steps_to_wait ${KNOWLEDGE_REPRESENTATION_EPOCHS[2]} -optimizer_type Adam -L1_flag -norm_lambda 1 -kg_lambda 1 &
+#         wait $!
+#         mv ~/git/results/${experiment}/${dataset_out}/ml1m-transe-*.ckpt_final ~/git/results/${experiment}/${dataset_out}/ml1m-transe-pretrained.ckpt
+#         ENDTIME=$(date +%s)
+#         echo -e "recommend-TRANSE-${dataset_out}\t$(($ENDTIME - $STARTTIME))\t${STARTTIME}\t${ENDTIME}" >> ${overall_comp_cost}
+#     fi
+#
+#     #[TRANSH]
+#     if no_exist "$HOME/git/results/${experiment}/${dataset_out}/ml1m-transh-*.log"
+#     then
+#         STARTTIME=$(date +%s)
+#         echo "[kg-summ-rec] recommend: Running TransH with ${dataset_out}"
+#         CUDA_VISIBLE_DEVICES=0 nohup python run_knowledge_representation.py -data_path ~/git/datasets/${experiment}/${dataset_in}/cao-format/ -log_path ~/git/results/${experiment}/${dataset_out}/ -kg_test_files valid.dat:test.dat -l2_lambda 0 -model_type transh -nohas_visualization -dataset ml1m -batch_size ${BATCH_SIZE} -embedding_size 100 -learning_rate 0.001 -topn 10 -seed 3 -eval_interval_steps ${KNOWLEDGE_REPRESENTATION_EPOCHS[0]} -training_steps ${KNOWLEDGE_REPRESENTATION_EPOCHS[1]} -early_stopping_steps_to_wait ${KNOWLEDGE_REPRESENTATION_EPOCHS[2]} -optimizer_type Adam -L1_flag -norm_lambda 1 -kg_lambda 1 -load_ckpt_file "$HOME/git/results/${experiment}/${dataset_out}/ml1m-transe-pretrained.ckpt" &
+#         wait $!
+#         mv ~/git/results/${experiment}/${dataset_out}/ml1m-transh-*.ckpt_final ~/git/results/${experiment}/${dataset_out}/ml1m-transh-pretrained.ckpt
+#         ENDTIME=$(date +%s)
+#         echo -e "recommend-TRANSH-${dataset_out}\t$(($ENDTIME - $STARTTIME))\t${STARTTIME}\t${ENDTIME}" >> ${overall_comp_cost}
+#     fi
+#
+#     #BPRMF - Steffen Rendle, Christoph Freudenthaler, Zeno Gantner, and Lars Schmidt-Thieme. 2009. BPR: Bayesian personalized ranking from implicit feedback. In UAI.
+#     if no_exist "$HOME/git/results/${experiment}/${dataset_out}/ml1m-bprmf-*.log"
+#     then
+#         STARTTIME=$(date +%s)
+#         echo "[kg-summ-rec] recommend: Running BPRMF with ${dataset_out}"
+#         CUDA_VISIBLE_DEVICES=0 nohup python run_item_recommendation.py -data_path ~/git/datasets/${experiment}/${dataset_in}/cao-format/ -log_path ~/git/results/${experiment}/${dataset_out}/ -rec_test_files valid.dat:test.dat -l2_lambda 1e-5 -negtive_samples 1 -model_type bprmf -nohas_visualization -dataset ml1m -batch_size ${BATCH_SIZE} -embedding_size 100 -learning_rate ${LEARNING_RATE} -topn 10 -seed 3 -eval_interval_steps ${ITEM_RECOMMENDATION_EPOCHS[0]} -training_steps ${ITEM_RECOMMENDATION_EPOCHS[1]} -early_stopping_steps_to_wait ${ITEM_RECOMMENDATION_EPOCHS[2]} -optimizer_type Adagrad &
+#         wait $!
+#         mv ~/git/results/${experiment}/${dataset_out}/ml1m-bprmf-*.ckpt ~/git/results/${experiment}/${dataset_out}/ml1m-bprmf-pretrained.ckpt
+#         ENDTIME=$(date +%s)
+#         echo -e "recommend-BPRMF-${dataset_out}\t$(($ENDTIME - $STARTTIME))\t${STARTTIME}\t${ENDTIME}" >> ${overall_comp_cost}
+#     fi
+#
+#     #TransUP
+#     if no_exist "$HOME/git/results/${experiment}/${dataset_out}/ml1m-transup-*.log"
+#     then
+#         STARTTIME=$(date +%s)
+#         echo "[kg-summ-rec] recommend: Running TransUP with ${dataset_out}"
+#         CUDA_VISIBLE_DEVICES=0 nohup python run_item_recommendation.py -data_path ~/git/datasets/${experiment}/${dataset_in}/cao-format/ -log_path ~/git/results/${experiment}/${dataset_out}/ -rec_test_files valid.dat:test.dat -l2_lambda 1e-5 -negtive_samples 1 -model_type transup -nohas_visualization -dataset ml1m -batch_size ${BATCH_SIZE} -embedding_size 100 -learning_rate ${LEARNING_RATE} -topn 10 -seed 3 -eval_interval_steps ${TUP_EPOCHS[0]} -training_steps ${TUP_EPOCHS[1]} -early_stopping_steps_to_wait ${TUP_EPOCHS[2]} -optimizer_type Adagrad -L1_flag -num_preferences 3 -nouse_st_gumbel -load_ckpt_file "$HOME/git/results/${experiment}/${dataset_out}/ml1m-bprmf-pretrained.ckpt" & # ml-sun num_preferences = 3
+#         wait $!
+#         mv ~/git/results/${experiment}/${dataset_out}/ml1m-transup-*.ckpt ~/git/results/${experiment}/${dataset_out}/ml1m-transup-pretrained.ckpt
+#         ENDTIME=$(date +%s)
+#         echo -e "recommend-TRANSUP-${dataset_out}\t$(($ENDTIME - $STARTTIME))\t${STARTTIME}\t${ENDTIME}" >> ${overall_comp_cost}
+#     fi
+#
+#
+#     #CFKG (TransE) - Yongfeng Zhang, Qingyao Ai, Xu Chen, and Pengfei Wang. 2018. Learning over Knowledge-Base Embeddings for Recommendation. In SIGIR.
+# #    if no_exist "$HOME/git/results/${experiment}/${dataset_out}/ml1m-cfkg-*.log"
+# #    then
+# #        STARTTIME=$(date +%s)
+# #        echo "[kg-summ-rec] recommend: Running CFKG with ${dataset_out}"
+# #        CUDA_VISIBLE_DEVICES=0 nohup python run_knowledgable_recommendation.py -data_path ~/git/datasets/${experiment}/${dataset_in}/cao-format/ -log_path ~/git/results/${experiment}/${dataset_out}/ -rec_test_files valid.dat:test.dat  -kg_test_files valid.dat:test.dat -l2_lambda 0 -model_type cfkg -nohas_visualization -dataset ml1m -batch_size ${BATCH_SIZE} -embedding_size 100 -learning_rate ${LEARNING_RATE} -topn 10 -seed 3 -eval_interval_steps ${KNOWLEDGABLE_RECOMMENDATION_EPOCHS[0]} -training_steps ${KNOWLEDGABLE_RECOMMENDATION_EPOCHS[1]} -early_stopping_steps_to_wait ${KNOWLEDGABLE_RECOMMENDATION_EPOCHS[2]} -optimizer_type Adam -joint_ratio 0.5 -share_embeddings -L1_flag -norm_lambda 1 -kg_lambda 1 -use_st_gumbel -load_ckpt_file "$HOME/git/results/${experiment}/${dataset_out}/ml1m-bprmf-pretrained.ckpt:$HOME/git/results/${experiment}/${dataset_out}/ml1m-transe-pretrained.ckpt" &
+# #        wait $!
+# #        ENDTIME=$(date +%s)
+# #        echo -e "recommend-CFKG-${dataset_out}\t$(($ENDTIME - $STARTTIME))\t${STARTTIME}\t${ENDTIME}" >> ${overall_comp_cost}
+# #    fi
+#     #CKE (TransR) - Fuzheng Zhang, Nicholas Jing Yuan, Defu Lian, Xing Xie, and Wei-Ying Ma. 2016. Collaborative Knowledge Base Embedding for Recommender Systems. In SIGKDD.
+# #    if no_exist "$HOME/git/results/${experiment}/${dataset_out}/ml1m-cke-*.log"
+# #    then
+# #        STARTTIME=$(date +%s)
+# #        echo "[kg-summ-rec] recommend: Running CKE with ${dataset_out}"
+# #        CUDA_VISIBLE_DEVICES=0 nohup python run_knowledgable_recommendation.py -data_path ~/git/datasets/${experiment}/${dataset_in}/cao-format/ -log_path ~/git/results/${experiment}/${dataset_out}/ -rec_test_files valid.dat:test.dat -kg_test_files valid.dat:test.dat -l2_lambda 0 -model_type cke -nohas_visualization -dataset ml1m -batch_size ${BATCH_SIZE} -embedding_size 100 -learning_rate ${LEARNING_RATE} -topn 10 -seed 3 -eval_interval_steps ${KNOWLEDGABLE_RECOMMENDATION_EPOCHS[0]} -training_steps ${KNOWLEDGABLE_RECOMMENDATION_EPOCHS[1]} -early_stopping_steps_to_wait ${KNOWLEDGABLE_RECOMMENDATION_EPOCHS[2]} -optimizer_type Adam -joint_ratio 0.5 -noshare_embeddings -L1_flag -norm_lambda 1 -kg_lambda 1 -use_st_gumbel -load_ckpt_file "$HOME/git/results/${experiment}/${dataset_out}/ml1m-bprmf-pretrained.ckpt:$HOME/git/results/${experiment}/${dataset_out}/ml1m-transe-pretrained.ckpt" &
+# #        wait $!
+# #        ENDTIME=$(date +%s)
+# #        echo -e "recommend-CKE-${dataset_out}\t$(($ENDTIME - $STARTTIME))\t${STARTTIME}\t${ENDTIME}" >> ${overall_comp_cost}
+# #    fi
+#     #CoFM (FM+TransE) - Guangyuan Piao and John G. Breslin. 2018. Transfer Learning for Item Recommendations and Knowledge Graph Completion in Item Related Domains via a Co-Factorization Model. In ESWC.
+# #    if no_exist "$HOME/git/results/${experiment}/${dataset_out}/ml1m-cofm-*.log"
+# #    then
+# #        STARTTIME=$(date +%s)
+# #        echo "[kg-summ-rec] recommend: Running CoFM with ${dataset_out}"
+# #        CUDA_VISIBLE_DEVICES=0 nohup python run_knowledgable_recommendation.py -data_path ~/git/datasets/${experiment}/${dataset_in}/cao-format/ -log_path ~/git/results/${experiment}/${dataset_out}/ -rec_test_files valid.dat:test.dat -kg_test_files valid.dat:test.dat -l2_lambda 0 -model_type cofm -nohas_visualization -dataset ml1m -batch_size ${BATCH_SIZE} -embedding_size 100 -learning_rate ${LEARNING_RATE} -topn 10 -seed 3 -eval_interval_steps ${KNOWLEDGABLE_RECOMMENDATION_EPOCHS[0]} -training_steps ${KNOWLEDGABLE_RECOMMENDATION_EPOCHS[1]} -early_stopping_steps_to_wait ${KNOWLEDGABLE_RECOMMENDATION_EPOCHS[2]} -optimizer_type Adam -joint_ratio 0.5 -load_ckpt_file "$HOME/git/results/${experiment}/${dataset_out}/ml1m-bprmf-pretrained.ckpt:$HOME/git/results/${experiment}/${dataset_out}/ml1m-transe-pretrained.ckpt" -noshare_embeddings -L1_flag -norm_lambda 1 -kg_lambda 1 &
+# #        wait $!
+# #        ENDTIME=$(date +%s)
+# #        echo -e "recommend-CoFM-${dataset_out}\t$(($ENDTIME - $STARTTIME))\t${STARTTIME}\t${ENDTIME}" >> ${overall_comp_cost}
+# #    fi
+#
+#     #JTransUP - eval: 1 epoch; early: 5 epochs; max: 1500 epochs
+#     if no_exist "$HOME/git/results/${experiment}/${dataset_out}/ml1m-jtransup-*.log"
+#     then
+#         STARTTIME=$(date +%s)
+#         echo "[kg-summ-rec] recommend:  Running JTransUP with ${dataset_out}"
+#         CUDA_VISIBLE_DEVICES=0 nohup python run_knowledgable_recommendation.py -data_path ~/git/datasets/${experiment}/${dataset_in}/cao-format/ -log_path ~/git/results/${experiment}/${dataset_out}/ -rec_test_files valid.dat:test.dat -kg_test_files valid.dat:test.dat -l2_lambda 0 -model_type jtransup -nohas_visualization -dataset ml1m -batch_size ${BATCH_SIZE} -embedding_size 100 -learning_rate ${LEARNING_RATE} -topn 10 -seed 3 -eval_interval_steps '547' -training_steps '820500' -early_stopping_steps_to_wait '2735' -optimizer_type Adam -joint_ratio 0.5 -noshare_embeddings -L1_flag -norm_lambda 1 -kg_lambda 1 -nouse_st_gumbel -load_ckpt_file "$HOME/git/results/${experiment}/${dataset_out}/ml1m-transup-pretrained.ckpt:$HOME/git/results/${experiment}/${dataset_out}/ml1m-transh-pretrained.ckpt" &
+#         wait $!
+#         ENDTIME=$(date +%s)
+#         echo -e "recommend-KTUP-${dataset_out}\t$(($ENDTIME - $STARTTIME))\t${STARTTIME}\t${ENDTIME}" >> ${overall_comp_cost}
+#     fi
+#
+#     #JTransUP - eval: 5 epochs; early: 25 epochs; max: 1500 epochs
+#     #if no_exist "$HOME/git/results/${experiment}/${dataset_out}/ml1m-jtransup-*.log"
+#     #then
+#     STARTTIME=$(date +%s)
+#     echo "[kg-summ-rec] recommend:  Running JTransUP with ${dataset_out}"
+#     CUDA_VISIBLE_DEVICES=0 nohup python run_knowledgable_recommendation.py -data_path ~/git/datasets/${experiment}/${dataset_in}/cao-format/ -log_path ~/git/results/${experiment}/${dataset_out}/ -rec_test_files valid.dat:test.dat -kg_test_files valid.dat:test.dat -l2_lambda 0 -model_type jtransup -nohas_visualization -dataset ml1m -batch_size ${BATCH_SIZE} -embedding_size 100 -learning_rate ${LEARNING_RATE} -topn 10 -seed 3 -eval_interval_steps '2735' -training_steps '820500' -early_stopping_steps_to_wait '13675' -optimizer_type Adam -joint_ratio 0.5 -noshare_embeddings -L1_flag -norm_lambda 1 -kg_lambda 1 -nouse_st_gumbel -load_ckpt_file "$HOME/git/results/${experiment}/${dataset_out}/ml1m-transup-pretrained.ckpt:$HOME/git/results/${experiment}/${dataset_out}/ml1m-transh-pretrained.ckpt" &
+#     wait $!
+#     ENDTIME=$(date +%s)
+#     echo -e "recommend-KTUP-${dataset_out}\t$(($ENDTIME - $STARTTIME))\t${STARTTIME}\t${ENDTIME}" >> ${overall_comp_cost}
+#     #fi
+#
+#     #JTransUP - eval: 10 epochs; early: 50 epochs; max: 1500 epochs
+#     #if no_exist "$HOME/git/results/${experiment}/${dataset_out}/ml1m-jtransup-*.log"
+#     #then
+#     STARTTIME=$(date +%s)
+#     echo "[kg-summ-rec] recommend:  Running JTransUP with ${dataset_out}"
+#     CUDA_VISIBLE_DEVICES=0 nohup python run_knowledgable_recommendation.py -data_path ~/git/datasets/${experiment}/${dataset_in}/cao-format/ -log_path ~/git/results/${experiment}/${dataset_out}/ -rec_test_files valid.dat:test.dat -kg_test_files valid.dat:test.dat -l2_lambda 0 -model_type jtransup -nohas_visualization -dataset ml1m -batch_size ${BATCH_SIZE} -embedding_size 100 -learning_rate ${LEARNING_RATE} -topn 10 -seed 3 -eval_interval_steps '5470' -training_steps '820500' -early_stopping_steps_to_wait '27350' -optimizer_type Adam -joint_ratio 0.5 -noshare_embeddings -L1_flag -norm_lambda 1 -kg_lambda 1 -nouse_st_gumbel -load_ckpt_file "$HOME/git/results/${experiment}/${dataset_out}/ml1m-transup-pretrained.ckpt:$HOME/git/results/${experiment}/${dataset_out}/ml1m-transh-pretrained.ckpt" &
+#     wait $!
+#     ENDTIME=$(date +%s)
+#     echo -e "recommend-KTUP-${dataset_out}\t$(($ENDTIME - $STARTTIME))\t${STARTTIME}\t${ENDTIME}" >> ${overall_comp_cost}
+#     #fi
+#
+#     #JTransUP - eval: 15 epochs; early: 75 epochs; max: 1500 epochs
+#     #if no_exist "$HOME/git/results/${experiment}/${dataset_out}/ml1m-jtransup-*.log"
+#     #then
+#     STARTTIME=$(date +%s)
+#     echo "[kg-summ-rec] recommend:  Running JTransUP with ${dataset_out}"
+#     CUDA_VISIBLE_DEVICES=0 nohup python run_knowledgable_recommendation.py -data_path ~/git/datasets/${experiment}/${dataset_in}/cao-format/ -log_path ~/git/results/${experiment}/${dataset_out}/ -rec_test_files valid.dat:test.dat -kg_test_files valid.dat:test.dat -l2_lambda 0 -model_type jtransup -nohas_visualization -dataset ml1m -batch_size ${BATCH_SIZE} -embedding_size 100 -learning_rate ${LEARNING_RATE} -topn 10 -seed 3 -eval_interval_steps '8205' -training_steps '820500' -early_stopping_steps_to_wait '41025' -optimizer_type Adam -joint_ratio 0.5 -noshare_embeddings -L1_flag -norm_lambda 1 -kg_lambda 1 -nouse_st_gumbel -load_ckpt_file "$HOME/git/results/${experiment}/${dataset_out}/ml1m-transup-pretrained.ckpt:$HOME/git/results/${experiment}/${dataset_out}/ml1m-transh-pretrained.ckpt" &
+#     wait $!
+#     ENDTIME=$(date +%s)
+#     echo -e "recommend-KTUP-${dataset_out}\t$(($ENDTIME - $STARTTIME))\t${STARTTIME}\t${ENDTIME}" >> ${overall_comp_cost}
+#     #fi
+#
+#     #JTransUP - eval: 20 epochs; early: 100 epochs; max: 2000 epochs
+#     #if no_exist "$HOME/git/results/${experiment}/${dataset_out}/ml1m-jtransup-*.log"
+#     #then
+#     STARTTIME=$(date +%s)
+#     echo "[kg-summ-rec] recommend:  Running JTransUP with ${dataset_out}"
+#     CUDA_VISIBLE_DEVICES=0 nohup python run_knowledgable_recommendation.py -data_path ~/git/datasets/${experiment}/${dataset_in}/cao-format/ -log_path ~/git/results/${experiment}/${dataset_out}/ -rec_test_files valid.dat:test.dat -kg_test_files valid.dat:test.dat -l2_lambda 0 -model_type jtransup -nohas_visualization -dataset ml1m -batch_size ${BATCH_SIZE} -embedding_size 100 -learning_rate ${LEARNING_RATE} -topn 10 -seed 3 -eval_interval_steps '10940' -training_steps '820500' -early_stopping_steps_to_wait '54700' -optimizer_type Adam -joint_ratio 0.5 -noshare_embeddings -L1_flag -norm_lambda 1 -kg_lambda 1 -nouse_st_gumbel -load_ckpt_file "$HOME/git/results/${experiment}/${dataset_out}/ml1m-transup-pretrained.ckpt:$HOME/git/results/${experiment}/${dataset_out}/ml1m-transh-pretrained.ckpt" &
+#     wait $!
+#     ENDTIME=$(date +%s)
+#     echo -e "recommend-KTUP-${dataset_out}\t$(($ENDTIME - $STARTTIME))\t${STARTTIME}\t${ENDTIME}" >> ${overall_comp_cost}
+#     #fi
 
-    #[TRANSH]
-    if no_exist "$HOME/git/results/${experiment}/${dataset_out}/ml1m-transh-*.log"
-    then
-        STARTTIME=$(date +%s)
-        echo "[kg-summ-rec] recommend: Running TransH with ${dataset_out}"
-        CUDA_VISIBLE_DEVICES=0 nohup python run_knowledge_representation.py -data_path ~/git/datasets/${experiment}/${dataset_in}/cao-format/ -log_path ~/git/results/${experiment}/${dataset_out}/ -kg_test_files valid.dat:test.dat -l2_lambda 0 -model_type transh -nohas_visualization -dataset ml1m -batch_size ${BATCH_SIZE} -embedding_size 100 -learning_rate 0.001 -topn 10 -seed 3 -eval_interval_steps ${KNOWLEDGE_REPRESENTATION_EPOCHS[0]} -training_steps ${KNOWLEDGE_REPRESENTATION_EPOCHS[1]} -early_stopping_steps_to_wait ${KNOWLEDGE_REPRESENTATION_EPOCHS[2]} -optimizer_type Adam -L1_flag -norm_lambda 1 -kg_lambda 1 -load_ckpt_file "$HOME/git/results/${experiment}/${dataset_out}/ml1m-transe-pretrained.ckpt" &
-        wait $!
-        mv ~/git/results/${experiment}/${dataset_out}/ml1m-transh-*.ckpt_final ~/git/results/${experiment}/${dataset_out}/ml1m-transh-pretrained.ckpt
-        ENDTIME=$(date +%s)
-        echo -e "recommend-TRANSH-${dataset_out}\t$(($ENDTIME - $STARTTIME))\t${STARTTIME}\t${ENDTIME}" >> ${overall_comp_cost}
-    fi
-
-    #BPRMF - Steffen Rendle, Christoph Freudenthaler, Zeno Gantner, and Lars Schmidt-Thieme. 2009. BPR: Bayesian personalized ranking from implicit feedback. In UAI.
-    if no_exist "$HOME/git/results/${experiment}/${dataset_out}/ml1m-bprmf-*.log"
-    then
-        STARTTIME=$(date +%s)
-        echo "[kg-summ-rec] recommend: Running BPRMF with ${dataset_out}"
-        CUDA_VISIBLE_DEVICES=0 nohup python run_item_recommendation.py -data_path ~/git/datasets/${experiment}/${dataset_in}/cao-format/ -log_path ~/git/results/${experiment}/${dataset_out}/ -rec_test_files valid.dat:test.dat -l2_lambda 1e-5 -negtive_samples 1 -model_type bprmf -nohas_visualization -dataset ml1m -batch_size ${BATCH_SIZE} -embedding_size 100 -learning_rate ${LEARNING_RATE} -topn 10 -seed 3 -eval_interval_steps ${ITEM_RECOMMENDATION_EPOCHS[0]} -training_steps ${ITEM_RECOMMENDATION_EPOCHS[1]} -early_stopping_steps_to_wait ${ITEM_RECOMMENDATION_EPOCHS[2]} -optimizer_type Adagrad &
-        wait $!
-        mv ~/git/results/${experiment}/${dataset_out}/ml1m-bprmf-*.ckpt ~/git/results/${experiment}/${dataset_out}/ml1m-bprmf-pretrained.ckpt
-        ENDTIME=$(date +%s)
-        echo -e "recommend-BPRMF-${dataset_out}\t$(($ENDTIME - $STARTTIME))\t${STARTTIME}\t${ENDTIME}" >> ${overall_comp_cost}
-    fi
-
-    #TransUP
-    if no_exist "$HOME/git/results/${experiment}/${dataset_out}/ml1m-transup-*.log"
-    then
-        STARTTIME=$(date +%s)
-        echo "[kg-summ-rec] recommend: Running TransUP with ${dataset_out}"
-        CUDA_VISIBLE_DEVICES=0 nohup python run_item_recommendation.py -data_path ~/git/datasets/${experiment}/${dataset_in}/cao-format/ -log_path ~/git/results/${experiment}/${dataset_out}/ -rec_test_files valid.dat:test.dat -l2_lambda 1e-5 -negtive_samples 1 -model_type transup -nohas_visualization -dataset ml1m -batch_size ${BATCH_SIZE} -embedding_size 100 -learning_rate ${LEARNING_RATE} -topn 10 -seed 3 -eval_interval_steps ${TUP_EPOCHS[0]} -training_steps ${TUP_EPOCHS[1]} -early_stopping_steps_to_wait ${TUP_EPOCHS[2]} -optimizer_type Adagrad -L1_flag -num_preferences 3 -nouse_st_gumbel -load_ckpt_file "$HOME/git/results/${experiment}/${dataset_out}/ml1m-bprmf-pretrained.ckpt" & # ml-sun num_preferences = 3
-        wait $!
-        mv ~/git/results/${experiment}/${dataset_out}/ml1m-transup-*.ckpt ~/git/results/${experiment}/${dataset_out}/ml1m-transup-pretrained.ckpt
-        ENDTIME=$(date +%s)
-        echo -e "recommend-TRANSUP-${dataset_out}\t$(($ENDTIME - $STARTTIME))\t${STARTTIME}\t${ENDTIME}" >> ${overall_comp_cost}
-    fi
-
-
-    #CFKG (TransE) - Yongfeng Zhang, Qingyao Ai, Xu Chen, and Pengfei Wang. 2018. Learning over Knowledge-Base Embeddings for Recommendation. In SIGIR.
-#    if no_exist "$HOME/git/results/${experiment}/${dataset_out}/ml1m-cfkg-*.log"
-#    then
-#        STARTTIME=$(date +%s)
-#        echo "[kg-summ-rec] recommend: Running CFKG with ${dataset_out}"
-#        CUDA_VISIBLE_DEVICES=0 nohup python run_knowledgable_recommendation.py -data_path ~/git/datasets/${experiment}/${dataset_in}/cao-format/ -log_path ~/git/results/${experiment}/${dataset_out}/ -rec_test_files valid.dat:test.dat  -kg_test_files valid.dat:test.dat -l2_lambda 0 -model_type cfkg -nohas_visualization -dataset ml1m -batch_size ${BATCH_SIZE} -embedding_size 100 -learning_rate ${LEARNING_RATE} -topn 10 -seed 3 -eval_interval_steps ${KNOWLEDGABLE_RECOMMENDATION_EPOCHS[0]} -training_steps ${KNOWLEDGABLE_RECOMMENDATION_EPOCHS[1]} -early_stopping_steps_to_wait ${KNOWLEDGABLE_RECOMMENDATION_EPOCHS[2]} -optimizer_type Adam -joint_ratio 0.5 -share_embeddings -L1_flag -norm_lambda 1 -kg_lambda 1 -use_st_gumbel -load_ckpt_file "$HOME/git/results/${experiment}/${dataset_out}/ml1m-bprmf-pretrained.ckpt:$HOME/git/results/${experiment}/${dataset_out}/ml1m-transe-pretrained.ckpt" &
-#        wait $!
-#        ENDTIME=$(date +%s)
-#        echo -e "recommend-CFKG-${dataset_out}\t$(($ENDTIME - $STARTTIME))\t${STARTTIME}\t${ENDTIME}" >> ${overall_comp_cost}
-#    fi
-    #CKE (TransR) - Fuzheng Zhang, Nicholas Jing Yuan, Defu Lian, Xing Xie, and Wei-Ying Ma. 2016. Collaborative Knowledge Base Embedding for Recommender Systems. In SIGKDD.
-#    if no_exist "$HOME/git/results/${experiment}/${dataset_out}/ml1m-cke-*.log"
-#    then
-#        STARTTIME=$(date +%s)
-#        echo "[kg-summ-rec] recommend: Running CKE with ${dataset_out}"
-#        CUDA_VISIBLE_DEVICES=0 nohup python run_knowledgable_recommendation.py -data_path ~/git/datasets/${experiment}/${dataset_in}/cao-format/ -log_path ~/git/results/${experiment}/${dataset_out}/ -rec_test_files valid.dat:test.dat -kg_test_files valid.dat:test.dat -l2_lambda 0 -model_type cke -nohas_visualization -dataset ml1m -batch_size ${BATCH_SIZE} -embedding_size 100 -learning_rate ${LEARNING_RATE} -topn 10 -seed 3 -eval_interval_steps ${KNOWLEDGABLE_RECOMMENDATION_EPOCHS[0]} -training_steps ${KNOWLEDGABLE_RECOMMENDATION_EPOCHS[1]} -early_stopping_steps_to_wait ${KNOWLEDGABLE_RECOMMENDATION_EPOCHS[2]} -optimizer_type Adam -joint_ratio 0.5 -noshare_embeddings -L1_flag -norm_lambda 1 -kg_lambda 1 -use_st_gumbel -load_ckpt_file "$HOME/git/results/${experiment}/${dataset_out}/ml1m-bprmf-pretrained.ckpt:$HOME/git/results/${experiment}/${dataset_out}/ml1m-transe-pretrained.ckpt" &
-#        wait $!
-#        ENDTIME=$(date +%s)
-#        echo -e "recommend-CKE-${dataset_out}\t$(($ENDTIME - $STARTTIME))\t${STARTTIME}\t${ENDTIME}" >> ${overall_comp_cost}
-#    fi
-    #CoFM (FM+TransE) - Guangyuan Piao and John G. Breslin. 2018. Transfer Learning for Item Recommendations and Knowledge Graph Completion in Item Related Domains via a Co-Factorization Model. In ESWC.
-#    if no_exist "$HOME/git/results/${experiment}/${dataset_out}/ml1m-cofm-*.log"
-#    then
-#        STARTTIME=$(date +%s)
-#        echo "[kg-summ-rec] recommend: Running CoFM with ${dataset_out}"
-#        CUDA_VISIBLE_DEVICES=0 nohup python run_knowledgable_recommendation.py -data_path ~/git/datasets/${experiment}/${dataset_in}/cao-format/ -log_path ~/git/results/${experiment}/${dataset_out}/ -rec_test_files valid.dat:test.dat -kg_test_files valid.dat:test.dat -l2_lambda 0 -model_type cofm -nohas_visualization -dataset ml1m -batch_size ${BATCH_SIZE} -embedding_size 100 -learning_rate ${LEARNING_RATE} -topn 10 -seed 3 -eval_interval_steps ${KNOWLEDGABLE_RECOMMENDATION_EPOCHS[0]} -training_steps ${KNOWLEDGABLE_RECOMMENDATION_EPOCHS[1]} -early_stopping_steps_to_wait ${KNOWLEDGABLE_RECOMMENDATION_EPOCHS[2]} -optimizer_type Adam -joint_ratio 0.5 -load_ckpt_file "$HOME/git/results/${experiment}/${dataset_out}/ml1m-bprmf-pretrained.ckpt:$HOME/git/results/${experiment}/${dataset_out}/ml1m-transe-pretrained.ckpt" -noshare_embeddings -L1_flag -norm_lambda 1 -kg_lambda 1 &
-#        wait $!
-#        ENDTIME=$(date +%s)
-#        echo -e "recommend-CoFM-${dataset_out}\t$(($ENDTIME - $STARTTIME))\t${STARTTIME}\t${ENDTIME}" >> ${overall_comp_cost}
-#    fi
-
-    #JTransUP - eval: 1 epoch; early: 5 epochs; max: 1500 epochs
-    if no_exist "$HOME/git/results/${experiment}/${dataset_out}/ml1m-jtransup-*.log"
-    then
-        STARTTIME=$(date +%s)
-        echo "[kg-summ-rec] recommend:  Running JTransUP with ${dataset_out}"
-        CUDA_VISIBLE_DEVICES=0 nohup python run_knowledgable_recommendation.py -data_path ~/git/datasets/${experiment}/${dataset_in}/cao-format/ -log_path ~/git/results/${experiment}/${dataset_out}/ -rec_test_files valid.dat:test.dat -kg_test_files valid.dat:test.dat -l2_lambda 0 -model_type jtransup -nohas_visualization -dataset ml1m -batch_size ${BATCH_SIZE} -embedding_size 100 -learning_rate ${LEARNING_RATE} -topn 10 -seed 3 -eval_interval_steps '547' -training_steps '820500' -early_stopping_steps_to_wait '2735' -optimizer_type Adam -joint_ratio 0.5 -noshare_embeddings -L1_flag -norm_lambda 1 -kg_lambda 1 -nouse_st_gumbel -load_ckpt_file "$HOME/git/results/${experiment}/${dataset_out}/ml1m-transup-pretrained.ckpt:$HOME/git/results/${experiment}/${dataset_out}/ml1m-transh-pretrained.ckpt" &
-        wait $!
-        ENDTIME=$(date +%s)
-        echo -e "recommend-KTUP-${dataset_out}\t$(($ENDTIME - $STARTTIME))\t${STARTTIME}\t${ENDTIME}" >> ${overall_comp_cost}
-    fi
-
-    #JTransUP - eval: 5 epochs; early: 25 epochs; max: 1500 epochs
+    #JTransUP - eval: 1 epochs; early: 100 epochs; max: 2000 epochs
     #if no_exist "$HOME/git/results/${experiment}/${dataset_out}/ml1m-jtransup-*.log"
     #then
     STARTTIME=$(date +%s)
     echo "[kg-summ-rec] recommend:  Running JTransUP with ${dataset_out}"
-    CUDA_VISIBLE_DEVICES=0 nohup python run_knowledgable_recommendation.py -data_path ~/git/datasets/${experiment}/${dataset_in}/cao-format/ -log_path ~/git/results/${experiment}/${dataset_out}/ -rec_test_files valid.dat:test.dat -kg_test_files valid.dat:test.dat -l2_lambda 0 -model_type jtransup -nohas_visualization -dataset ml1m -batch_size ${BATCH_SIZE} -embedding_size 100 -learning_rate ${LEARNING_RATE} -topn 10 -seed 3 -eval_interval_steps '2735' -training_steps '820500' -early_stopping_steps_to_wait '13675' -optimizer_type Adam -joint_ratio 0.5 -noshare_embeddings -L1_flag -norm_lambda 1 -kg_lambda 1 -nouse_st_gumbel -load_ckpt_file "$HOME/git/results/${experiment}/${dataset_out}/ml1m-transup-pretrained.ckpt:$HOME/git/results/${experiment}/${dataset_out}/ml1m-transh-pretrained.ckpt" &
+    CUDA_VISIBLE_DEVICES=0 nohup python run_knowledgable_recommendation.py -data_path ~/git/datasets/${experiment}/${dataset_in}/cao-format/ -log_path ~/git/results/${experiment}/${dataset_out}/ -rec_test_files valid.dat:test.dat -kg_test_files valid.dat:test.dat -l2_lambda 0 -model_type jtransup -nohas_visualization -dataset ml1m -batch_size ${BATCH_SIZE} -embedding_size 100 -learning_rate ${LEARNING_RATE} -topn 10 -seed 3 -eval_interval_steps '547' -training_steps '820500' -early_stopping_steps_to_wait '54700' -optimizer_type Adam -joint_ratio 0.5 -noshare_embeddings -L1_flag -norm_lambda 1 -kg_lambda 1 -nouse_st_gumbel -load_ckpt_file "$HOME/git/results/${experiment}/${dataset_out}/ml1m-transup-pretrained.ckpt:$HOME/git/results/${experiment}/${dataset_out}/ml1m-transh-pretrained.ckpt" &
     wait $!
     ENDTIME=$(date +%s)
     echo -e "recommend-KTUP-${dataset_out}\t$(($ENDTIME - $STARTTIME))\t${STARTTIME}\t${ENDTIME}" >> ${overall_comp_cost}
     #fi
 
-    #JTransUP - eval: 10 epochs; early: 50 epochs; max: 1500 epochs
+
+    #JTransUP - eval: 5 epochs; early: 100 epochs; max: 2000 epochs
     #if no_exist "$HOME/git/results/${experiment}/${dataset_out}/ml1m-jtransup-*.log"
     #then
     STARTTIME=$(date +%s)
     echo "[kg-summ-rec] recommend:  Running JTransUP with ${dataset_out}"
-    CUDA_VISIBLE_DEVICES=0 nohup python run_knowledgable_recommendation.py -data_path ~/git/datasets/${experiment}/${dataset_in}/cao-format/ -log_path ~/git/results/${experiment}/${dataset_out}/ -rec_test_files valid.dat:test.dat -kg_test_files valid.dat:test.dat -l2_lambda 0 -model_type jtransup -nohas_visualization -dataset ml1m -batch_size ${BATCH_SIZE} -embedding_size 100 -learning_rate ${LEARNING_RATE} -topn 10 -seed 3 -eval_interval_steps '5470' -training_steps '820500' -early_stopping_steps_to_wait '27350' -optimizer_type Adam -joint_ratio 0.5 -noshare_embeddings -L1_flag -norm_lambda 1 -kg_lambda 1 -nouse_st_gumbel -load_ckpt_file "$HOME/git/results/${experiment}/${dataset_out}/ml1m-transup-pretrained.ckpt:$HOME/git/results/${experiment}/${dataset_out}/ml1m-transh-pretrained.ckpt" &
+    CUDA_VISIBLE_DEVICES=0 nohup python run_knowledgable_recommendation.py -data_path ~/git/datasets/${experiment}/${dataset_in}/cao-format/ -log_path ~/git/results/${experiment}/${dataset_out}/ -rec_test_files valid.dat:test.dat -kg_test_files valid.dat:test.dat -l2_lambda 0 -model_type jtransup -nohas_visualization -dataset ml1m -batch_size ${BATCH_SIZE} -embedding_size 100 -learning_rate ${LEARNING_RATE} -topn 10 -seed 3 -eval_interval_steps '2735' -training_steps '820500' -early_stopping_steps_to_wait '54700' -optimizer_type Adam -joint_ratio 0.5 -noshare_embeddings -L1_flag -norm_lambda 1 -kg_lambda 1 -nouse_st_gumbel -load_ckpt_file "$HOME/git/results/${experiment}/${dataset_out}/ml1m-transup-pretrained.ckpt:$HOME/git/results/${experiment}/${dataset_out}/ml1m-transh-pretrained.ckpt" &
     wait $!
     ENDTIME=$(date +%s)
     echo -e "recommend-KTUP-${dataset_out}\t$(($ENDTIME - $STARTTIME))\t${STARTTIME}\t${ENDTIME}" >> ${overall_comp_cost}
     #fi
 
-    #JTransUP - eval: 15 epochs; early: 75 epochs; max: 1500 epochs
+    #JTransUP - eval: 5 epochs; early: 50 epochs; max: 2000 epochs
     #if no_exist "$HOME/git/results/${experiment}/${dataset_out}/ml1m-jtransup-*.log"
     #then
     STARTTIME=$(date +%s)
     echo "[kg-summ-rec] recommend:  Running JTransUP with ${dataset_out}"
-    CUDA_VISIBLE_DEVICES=0 nohup python run_knowledgable_recommendation.py -data_path ~/git/datasets/${experiment}/${dataset_in}/cao-format/ -log_path ~/git/results/${experiment}/${dataset_out}/ -rec_test_files valid.dat:test.dat -kg_test_files valid.dat:test.dat -l2_lambda 0 -model_type jtransup -nohas_visualization -dataset ml1m -batch_size ${BATCH_SIZE} -embedding_size 100 -learning_rate ${LEARNING_RATE} -topn 10 -seed 3 -eval_interval_steps '8205' -training_steps '820500' -early_stopping_steps_to_wait '41025' -optimizer_type Adam -joint_ratio 0.5 -noshare_embeddings -L1_flag -norm_lambda 1 -kg_lambda 1 -nouse_st_gumbel -load_ckpt_file "$HOME/git/results/${experiment}/${dataset_out}/ml1m-transup-pretrained.ckpt:$HOME/git/results/${experiment}/${dataset_out}/ml1m-transh-pretrained.ckpt" &
+    CUDA_VISIBLE_DEVICES=0 nohup python run_knowledgable_recommendation.py -data_path ~/git/datasets/${experiment}/${dataset_in}/cao-format/ -log_path ~/git/results/${experiment}/${dataset_out}/ -rec_test_files valid.dat:test.dat -kg_test_files valid.dat:test.dat -l2_lambda 0 -model_type jtransup -nohas_visualization -dataset ml1m -batch_size ${BATCH_SIZE} -embedding_size 100 -learning_rate ${LEARNING_RATE} -topn 10 -seed 3 -eval_interval_steps '2735' -training_steps '820500' -early_stopping_steps_to_wait '27350' -optimizer_type Adam -joint_ratio 0.5 -noshare_embeddings -L1_flag -norm_lambda 1 -kg_lambda 1 -nouse_st_gumbel -load_ckpt_file "$HOME/git/results/${experiment}/${dataset_out}/ml1m-transup-pretrained.ckpt:$HOME/git/results/${experiment}/${dataset_out}/ml1m-transh-pretrained.ckpt" &
     wait $!
     ENDTIME=$(date +%s)
     echo -e "recommend-KTUP-${dataset_out}\t$(($ENDTIME - $STARTTIME))\t${STARTTIME}\t${ENDTIME}" >> ${overall_comp_cost}
     #fi
 
-    #JTransUP - eval: 20 epochs; early: 100 epochs; max: 2000 epochs
+    #JTransUP - eval: 400 epochs; early: 400 epochs; max: 400 epochs
     #if no_exist "$HOME/git/results/${experiment}/${dataset_out}/ml1m-jtransup-*.log"
     #then
     STARTTIME=$(date +%s)
     echo "[kg-summ-rec] recommend:  Running JTransUP with ${dataset_out}"
-    CUDA_VISIBLE_DEVICES=0 nohup python run_knowledgable_recommendation.py -data_path ~/git/datasets/${experiment}/${dataset_in}/cao-format/ -log_path ~/git/results/${experiment}/${dataset_out}/ -rec_test_files valid.dat:test.dat -kg_test_files valid.dat:test.dat -l2_lambda 0 -model_type jtransup -nohas_visualization -dataset ml1m -batch_size ${BATCH_SIZE} -embedding_size 100 -learning_rate ${LEARNING_RATE} -topn 10 -seed 3 -eval_interval_steps '10940' -training_steps '820500' -early_stopping_steps_to_wait '54700' -optimizer_type Adam -joint_ratio 0.5 -noshare_embeddings -L1_flag -norm_lambda 1 -kg_lambda 1 -nouse_st_gumbel -load_ckpt_file "$HOME/git/results/${experiment}/${dataset_out}/ml1m-transup-pretrained.ckpt:$HOME/git/results/${experiment}/${dataset_out}/ml1m-transh-pretrained.ckpt" &
+    CUDA_VISIBLE_DEVICES=0 nohup python run_knowledgable_recommendation.py -data_path ~/git/datasets/${experiment}/${dataset_in}/cao-format/ -log_path ~/git/results/${experiment}/${dataset_out}/ -rec_test_files valid.dat:test.dat -kg_test_files valid.dat:test.dat -l2_lambda 0 -model_type jtransup -nohas_visualization -dataset ml1m -batch_size ${BATCH_SIZE} -embedding_size 100 -learning_rate ${LEARNING_RATE} -topn 10 -seed 3 -eval_interval_steps '218800' -training_steps '218800' -early_stopping_steps_to_wait '218800' -optimizer_type Adam -joint_ratio 0.5 -noshare_embeddings -L1_flag -norm_lambda 1 -kg_lambda 1 -nouse_st_gumbel -load_ckpt_file "$HOME/git/results/${experiment}/${dataset_out}/ml1m-transup-pretrained.ckpt:$HOME/git/results/${experiment}/${dataset_out}/ml1m-transh-pretrained.ckpt" &
     wait $!
     ENDTIME=$(date +%s)
     echo -e "recommend-KTUP-${dataset_out}\t$(($ENDTIME - $STARTTIME))\t${STARTTIME}\t${ENDTIME}" >> ${overall_comp_cost}
