@@ -162,6 +162,13 @@ preprocess_sun_oKG() {
 ####
 recommend_sun_oKG() {
     local reruns=$1
+
+    # kg-summ-rec/evaluation
+    if [[ ! $PYTHONPATH = *git/kg-summ-rec/evaluation* ]]
+    then
+        export PYTHONPATH="${HOME}/git/kg-summ-rec/evaluation:${PYTHONPATH}"
+    fi
+
     kg_recommendation_rerun "ml-sun_ho_oKG" ${reruns}
 }
 
@@ -415,6 +422,6 @@ run_experiment() {
     preprocess_sun_oKG
 
     # Recommendation
-    recommend_sun_oKG '3'
+    recommend_sun_oKG '1'
 }
 run_experiment $1
