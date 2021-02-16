@@ -7,6 +7,7 @@ import math
 import numpy as np
 import pandas as pd
 import requests
+import os
 
 from ampligraph.datasets import load_from_ntriples
 from ampligraph.latent_features import ComplEx

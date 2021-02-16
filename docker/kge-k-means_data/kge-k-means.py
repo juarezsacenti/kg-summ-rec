@@ -7,10 +7,12 @@ import math
 import numpy as np
 import pandas as pd
 import requests
+import os
 
 from ampligraph.datasets import load_from_ntriples
 from ampligraph.latent_features import ComplEx
 from ampligraph.latent_features import HolE
+from ampligraph.latent_features import TransE
 from ampligraph.evaluation import evaluate_performance
 from ampligraph.evaluation import mr_score, mrr_score, hits_at_n_score
 from ampligraph.evaluation import train_test_split_no_unseen
@@ -172,24 +174,21 @@ def multiview(triples, items, kge_name, epochs, batch_size, learning_rate, rates
         plot_2d_genres(model, rate_df, ratio=rate, kg_map_file=kg_map_file)
 
 
-def kge(triples, kge_name, epochs, batch_size, learning_rate, verbose):
-    kge_name = parsed_args.kge
-    # Train test split
-    t_size = math.ceil(len(triples)*0.2)
-    X_train, X_test = train_test_split_no_unseen(triples, test_size=t_size)
-
+def select_kge(kge_name,batch_size,epochs,verbose):
+    model=''
     # Select kge_name
     if kge_name == 'complex':
         # ComplEx model
         model = ComplEx(batches_count=batch_size,
                         epochs=epochs,
-                        k=100,
+                        k=150,
                         eta=20,
                         optimizer='adam',
-                        optimizer_params={'lr':learning_rate},
+                        optimizer_params={'margin':5}, #,'lr':learning_rate}, # default lr:0.1
                         loss='multiclass_nll',
+                        loss_params={},
                         regularizer='LP',
-                        regularizer_params={'p':3, 'lambda':1e-5},
+                        regularizer_params={'p':2, 'lambda':1e-4},
                         seed=0,
                         verbose=verbose)
     elif kge_name == 'hole':
@@ -205,39 +204,74 @@ def kge(triples, kge_name, epochs, batch_size, learning_rate, verbose):
                         regularizer_params={'p':3, 'lambda':1e-5},
                         seed=0,
                         verbose=verbose)
+    elif kge_name == 'transe':
+        # TransE model
+        model = TransE(batches_count=batch_size,
+                        epochs=epochs,
+                        k=350,
+                        eta=20,
+                        optimizer='adam',
+                        optimizer_params={'margin':5},#,'lr':learning_rate}, # default lr:0.1
+                        loss='multiclass_nll', #loss='pairwise',
+                        loss_params={}, #loss_params={'margin:5'},
+                        regularizer='LP',
+                        regularizer_params={'p':2, 'lambda':1e-4},
+                        seed=0,
+                        verbose=verbose)
     else:
         sys.exit('Given kge_name is not valid.')
 
-    model.fit(X_train)
+    return model
 
-    #Embedding evaluation
-    if verbose:
-        filter_triples = np.concatenate((X_train, X_test))
-        ranks = evaluate_performance(X_test,
-                                     model=model,
-                                     filter_triples=filter_triples,
-                                     use_default_protocol=True,
-                                     verbose=True)
 
-        mrr = mrr_score(ranks)
-        print("MRR: %.2f" % (mrr))
-        mr = mr_score(ranks)
-        print("MR: %.2f" % (mr))
-        hits_10 = hits_at_n_score(ranks, n=10)
-        print("Hits@10: %.2f" % (hits_10))
-        hits_3 = hits_at_n_score(ranks, n=3)
-        print("Hits@3: %.2f" % (hits_3))
-        hits_1 = hits_at_n_score(ranks, n=1)
-        print("Hits@1: %.2f" % (hits_1))
+def kge(triples, kge_name, epochs, batch_size, learning_rate, verbose):
+    kge_name = parsed_args.kge
+    kge_model_savepath = f'./temp/{kge_name}.model'
 
-        print('''
-        - Ampligraph example -
-        MRR: 0.25
-        MR: 4927.33
-        Hits@10: 0.35
-        Hits@3: 0.28
-        Hits@1: 0.19
-        ''')
+    if not os.path.isfile(kge_model_savepath):
+        #Embedding evaluation
+        if verbose:
+            # Train test split
+            t_size = math.ceil(len(triples)*0.2)
+            X_train, X_test = train_test_split_no_unseen(triples, test_size=t_size)
+
+            eval_model = select_kge(kge_name, batch_size, epochs, verbose)
+
+            eval_model.fit(X_train)
+            filter_triples = np.concatenate((X_train, X_test))
+            ranks = evaluate_performance(X_test,
+                                         model=model,
+                                         filter_triples=filter_triples,
+                                         use_default_protocol=True,
+                                         verbose=True)
+
+            mrr = mrr_score(ranks)
+            print("MRR: %.2f" % (mrr))
+            mr = mr_score(ranks)
+            print("MR: %.2f" % (mr))
+            hits_10 = hits_at_n_score(ranks, n=10)
+            print("Hits@10: %.2f" % (hits_10))
+            hits_3 = hits_at_n_score(ranks, n=3)
+            print("Hits@3: %.2f" % (hits_3))
+            hits_1 = hits_at_n_score(ranks, n=1)
+            print("Hits@1: %.2f" % (hits_1))
+
+            print('''
+            - Ampligraph example -
+            MRR: 0.25
+            MR: 4927.33
+            Hits@10: 0.35
+            Hits@3: 0.28
+            Hits@1: 0.19
+            ''')
+
+        model = select_kge(kge_name, batch_size, epochs, verbose)
+
+        print('Training...')
+        model.fit(np.array(triples))
+        save_model(model, model_name_path=kge_model_savepath)
+    else:
+        model = restore_model(model_name_path=kge_model_savepath)
 
     return model
 
@@ -315,17 +349,17 @@ def simplification_top(ranked_triples_df, top, verbose):
 
 
 # Clustering
-def clustering(entities, model, rate, verbose):
+def clustering(entities, model, ratio, verbose):
     # Cluster embeddings (on the original space)
     n_entities = len(entities)
     if verbose:
         print('Considering ' + str(n_entities) + ' entities from triple file...')
 
-    n_clusters = math.ceil(n_entities*rate/100)
+    n_clusters = math.ceil(n_entities*ratio/100)
     if verbose:
         print('Clustering with n_clusters = '+str(n_clusters))
 
-    clustering_algorithm = KMeans(n_clusters=n_clusters, n_init=10, max_iter=300, random_state=0)
+    clustering_algorithm = KMeans(n_clusters=n_clusters, n_init=50, max_iter=500, random_state=0)
     clusters = find_clusters(entities, model, clustering_algorithm, mode='entity')
     return clusters
 
