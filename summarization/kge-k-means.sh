@@ -138,6 +138,7 @@ sv_kge-k-means() {
 
         mv "$HOME/git/kg-summ-rec/docker/kge-k-means_data/temp/cluster${ratio}.tsv" "$HOME/git/datasets/${experiment}/${dataset_out}-${kge}-${ratio}/cluster${ratio}.tsv"
         mv "$HOME/git/kg-summ-rec/docker/kge-k-means_data/temp/cluster${ratio}.png" "$HOME/git/datasets/${experiment}/${dataset_out}-${kge}-${ratio}/cluster${ratio}.png"
+        mv "$HOME/git/kg-summ-rec/docker/kge-k-means_data/temp/*.model" "$HOME/git/datasets/${experiment}/${dataset_out}-${kge}-${ratio}/*.model"
         cd $HOME/git/kg-summ-rec
     fi
 
@@ -215,6 +216,7 @@ mv_kge-k-means() {
 
         mv "$HOME/git/kg-summ-rec/docker/kge-k-means_data/temp/cluster${ratio}.tsv" "$HOME/git/datasets/${experiment}/${dataset_out}-${kge}-${ratio}/cluster${ratio}.tsv"
         mv "$HOME/git/kg-summ-rec/docker/kge-k-means_data/temp/cluster${ratio}.png" "$HOME/git/datasets/${experiment}/${dataset_out}-${kge}-${ratio}/cluster${ratio}.png"
+        mv "$HOME/git/kg-summ-rec/docker/kge-k-means_data/temp/*.model" "$HOME/git/datasets/${experiment}/${dataset_out}-${kge}-${ratio}/*.model"
         cd $HOME/git/kg-summ-rec
     fi
 
