@@ -240,7 +240,7 @@ def kge(triples, kge_name, epochs, batch_size, learning_rate, verbose):
             eval_model.fit(X_train)
             filter_triples = np.concatenate((X_train, X_test))
             ranks = evaluate_performance(X_test,
-                                         model=model,
+                                         model=eval_model,
                                          filter_triples=filter_triples,
                                          use_default_protocol=True,
                                          verbose=True)
