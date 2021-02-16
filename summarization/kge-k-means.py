@@ -16,6 +16,8 @@ from ampligraph.latent_features import TransE
 from ampligraph.evaluation import evaluate_performance
 from ampligraph.evaluation import mr_score, mrr_score, hits_at_n_score
 from ampligraph.evaluation import train_test_split_no_unseen
+from ampligraph.utils import save_model, restore_model
+from ampligraph.discovery import find_clusters
 
 from sklearn.decomposition import PCA
 from sklearn.cluster import KMeans
@@ -24,7 +26,6 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from adjustText import adjust_text
 from incf.countryutils import transformations
-from ampligraph.discovery import find_clusters
 from math import ceil
 
 # Plot figures
