@@ -8,6 +8,7 @@ import numpy as np
 import pandas as pd
 import requests
 import os
+import pickle
 
 from ampligraph.datasets import load_from_ntriples
 from ampligraph.latent_features import ComplEx
@@ -39,6 +40,11 @@ mpl.rc('ytick', labelsize=12)
 def kge_k_means(data_home, folder, triples_file, items_file, mode, kge_name, epochs, batch_size, learning_rate, rates, view, relations, kg_map_file, verbose):
     # Load triples:
     triples = load_from_ntriples(folder, triples_file, data_home)
+    # Saving triples with pickle
+    triplesfile = './temp/movielens_triples.dump'
+    with open(triplesfile, "wb") as fp:   #Pickling
+        pickle.dump(triples, fp)
+
     # Load items:
     items = np.array([f'<{x}>' for x in pd.read_csv(items_file, sep='\t', header=None, names=["id", "name", "url"]).url.unique().tolist()])
 
