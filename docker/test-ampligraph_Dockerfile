@@ -1,4 +1,5 @@
 ### BUILD:  docker build -t gmpligraph:1.0 .
+### RUN:    docker run --rm -it --gpus all -v "$PWD"/ampligraph-data:/data -w /data ampligraph:1.0 /bin/bash -c "python ampligraph-kge_n_cluster.py"
 ### RUN:    docker run -p 8888:8888 --rm -it --gpus all ampligraph:1.0 $CMD
 
 FROM tensorflow/tensorflow:1.15.2-gpu-py3
