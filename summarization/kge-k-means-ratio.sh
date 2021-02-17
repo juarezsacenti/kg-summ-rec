@@ -56,7 +56,7 @@ kge-k-means() {
     local low_frequence=${10}
     #local ratio=${11}
     echo "HERE   >>>>   ${11}"
-    IFS=' ' read -r -a ratios <<< "${11}"
+    IFS=',' read -r -a ratios <<< "${11}"
     echo "HERE   >>>>   $ratios"
     if [ ${summarization_mode} = 'sv' ]
     then

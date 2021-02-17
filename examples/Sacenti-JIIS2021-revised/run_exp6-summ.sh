@@ -182,7 +182,7 @@ summarize() {
     local batch_size='10'
     #local learning_rate='0.005'
     local kg_filename="kg-${kg_type}.nt"
-    #local ratios='5 25 50 75'
+    #local ratios='5,25,50,75'
     local ratios='5'
     echo "${ratios}"
     local summarization_mode='sv'
