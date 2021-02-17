@@ -66,7 +66,7 @@ source $HOME/git/kg-summ-rec/preprocess/cao-format_ml-sun.sh
 # FUNCTIONS:
 #   kge-k-means 'experiment' 'dataset_in' 'dataset_out' 'kg_type' 'summarization_mode' 'kge' 'epochs' 'batch_size' learning_rate' 'low_frequence'
 #######################################
-source $HOME/git/kg-summ-rec/summarization/kge-k-means.sh
+source $HOME/git/kg-summ-rec/summarization/kge-k-means-ratio.sh
 
 #######################################
 # Import ../summarization/cao-format_summ.sh
@@ -182,6 +182,8 @@ summarize() {
     local batch_size='10'
     #local learning_rate='0.005'
     local kg_filename="kg-${kg_type}.nt"
+    #local ratios='5 25 50 75'
+    local ratios='5'
 
     local summarization_mode='sv'
 
@@ -189,7 +191,7 @@ summarize() {
     # TODO IF no exist
     clean_kge-k-means
     kge-k-means ${experiment} ${dataset_in} "${dataset_out}_${kg_type}-${summarization_mode}" ${kg_filename} ${summarization_mode} \
-    ${kge} ${epochs} ${batch_size} ${learning_rate} ${low_frequence}
+    ${kge} ${epochs} ${batch_size} ${learning_rate} ${low_frequence} ${ratios}
     local ENDTIME=$(date +%s)
     echo -e "summarize-${dataset_out}_${kg_type}-${summarization_mode}\t$(($ENDTIME - $STARTTIME))\t${STARTTIME}\t${ENDTIME}" >> ${overall_comp_cost}
 
@@ -199,7 +201,7 @@ summarize() {
     # TODO IF no exist
     clean_kge-k-means
     kge-k-means ${experiment} ${dataset_in} "${dataset_out}_${kg_type}-${summarization_mode}" ${kg_filename} ${summarization_mode} \
-    ${kge} ${epochs} ${batch_size} ${learning_rate} ${low_frequence}
+    ${kge} ${epochs} ${batch_size} ${learning_rate} ${low_frequence} ${ratios}
     ENDTIME=$(date +%s)
     echo -e "summarize-${dataset_out}_${kg_type}-${summarization_mode}\t$(($ENDTIME - $STARTTIME))\t${STARTTIME}\t${ENDTIME}" >> ${overall_comp_cost}
 
@@ -210,7 +212,7 @@ summarize() {
     # TODO IF no exist
     clean_kge-k-means
     kge-k-means ${experiment} ${dataset_in} "${dataset_out}_${kg_type}-${summarization_mode}" ${kg_filename} ${summarization_mode} \
-    ${kge} ${epochs} ${batch_size} ${learning_rate} ${low_frequence}
+    ${kge} ${epochs} ${batch_size} ${learning_rate} ${low_frequence} ${ratios}
     local ENDTIME=$(date +%s)
     echo -e "summarize-${dataset_out}_${kg_type}-${summarization_mode}\t$(($ENDTIME - $STARTTIME))\t${STARTTIME}\t${ENDTIME}" >> ${overall_comp_cost}
 
@@ -220,10 +222,9 @@ summarize() {
     # TODO IF no exist
     clean_kge-k-means
     kge-k-means ${experiment} ${dataset_in} "${dataset_out}_${kg_type}-${summarization_mode}" ${kg_filename} ${summarization_mode} \
-    ${kge} ${epochs} ${batch_size} ${learning_rate} ${low_frequence}
+    ${kge} ${epochs} ${batch_size} ${learning_rate} ${low_frequence} ${ratios}
     ENDTIME=$(date +%s)
     echo -e "summarize-${dataset_out}_${kg_type}-${summarization_mode}\t$(($ENDTIME - $STARTTIME))\t${STARTTIME}\t${ENDTIME}" >> ${overall_comp_cost}
-
 }
 
 preprocess_summ() {
@@ -236,7 +237,8 @@ preprocess_summ() {
 
     summ_modes=(sv mv)
     summ_algos=(complex transe)
-    summ_rates=(5 25 50 75)
+    #summ_rates=(5 25 50 75)
+    summ_rates=(5)
     local STARTTIME=0
     local ENDTIME=0
     for m in "${summ_modes[@]}"
@@ -268,7 +270,8 @@ measure_summ_impact() {
 
     summ_modes=(sv mv)
     summ_algos=(complex transe)
-    summ_rates=(5 25 50 75)
+    #summ_rates=(5 25 50 75)
+    summ_rates=(5)
     local STARTTIME=0
     local ENDTIME=0
     for m in "${summ_modes[@]}"
@@ -295,6 +298,136 @@ measure_summ_impact() {
     cd $HOME/git/kg-summ-rec
 }
 
+recommend_sun_sKG() {
+    # kg-summ-rec/evaluation
+    if [[ ! $PYTHONPATH = *git/kg-summ-rec/evaluation* ]]
+    then
+        export PYTHONPATH="${HOME}/git/kg-summ-rec/evaluation:${PYTHONPATH}"
+    fi
+
+    kg_recommendation "ml-sun_ho_oKG" "ml-sun_ho_sKG"
+}
+
+kg_recommendation() {
+    local dataset_in=$1
+    local dataset_out=$2
+
+    summ_types=(ig)
+    summ_modes=(sv mv)
+    summ_algos=(transe complex)
+    #summ_rates=(5 25 50 75)
+    summ_rates=(5)
+    for t in "${summ_types[@]}"
+    do
+        for m in "${summ_modes[@]}"
+        do
+            for a in "${summ_algos[@]}"
+            do
+                for r in "${summ_rates[@]}"
+                do
+                    local dirName="${dataset_out}_${t}-${m}-${a}-${r}"
+                    echo "[kg-summ-rec] kg_recommendation: Creating ~/git/results/${experiment}/${dirName}/*.log"
+                    recommend "${dirName}" '4873,487300,24363' '2663,266300,13317' '266,26630,1331' '10392,1039200,51960' 256 0.005
+                done
+            done
+        done
+    done
+
+
+    echo "[kg-summ-rec] kg_recommendation: Creating ~/git/results/${experiment}/${dataset_in}/*.log"
+    recommend "${dataset_in}" '4873,487300,24363' '2663,266300,13317' '266,26630,1331' '10392,1039200,51960' 256 0.005
+
+    cd $HOME/git/kg-summ-rec
+}
+
+recommend() {
+    local DATASET=$1
+    # EPOCHS
+    IFS=', ' read -r -a KNOWLEDGE_REPRESENTATION_EPOCHS <<< "$2"
+    IFS=', ' read -r -a TUP_EPOCHS <<< "$3"
+    IFS=', ' read -r -a ITEM_RECOMMENDATION_EPOCHS <<< "$4"
+    IFS=', ' read -r -a KNOWLEDGABLE_RECOMMENDATION_EPOCHS <<< "$5"
+    # BATCH SIZE
+    local BATCH_SIZE=$6
+    # LEARNING RATE
+    local LEARNING_RATE=$7
+
+    cd ~/git/joint-kg-recommender
+
+    #[activate jointrec]
+    conda deactivate
+    conda activate jointrec
+
+    local STARTTIME=0
+    local ENDTIME=0
+    #[TRANSE]
+    if no_exist "$HOME/git/results/$experiment/$DATASET/ml1m-transe-*.log"
+    then
+        STARTTIME=$(date +%s)
+        echo "[kg-summ-rec] recommend: Running TransE with $DATASET"
+        CUDA_VISIBLE_DEVICES=0 nohup python run_knowledge_representation.py -data_path ~/git/datasets/$experiment/$DATASET/cao-format/ -log_path ~/git/results/$experiment/$DATASET/ -kg_test_files valid.dat:test.dat -l2_lambda 0 -model_type transe -nohas_visualization -dataset ml1m -batch_size ${BATCH_SIZE} -embedding_size 100 -learning_rate 0.001 -topn 10 -seed 3 -eval_interval_steps ${KNOWLEDGE_REPRESENTATION_EPOCHS[0]} -training_steps ${KNOWLEDGE_REPRESENTATION_EPOCHS[1]} -early_stopping_steps_to_wait ${KNOWLEDGE_REPRESENTATION_EPOCHS[2]} -optimizer_type Adam -L1_flag -norm_lambda 1 -kg_lambda 1 &
+        wait $!
+        mv ~/git/results/$experiment/$DATASET/ml1m-transe-*.ckpt_final ~/git/results/$experiment/$DATASET/ml1m-transe-pretrained.ckpt
+        ENDTIME=$(date +%s)
+        echo -e "recommend-TRANSE-${DATASET}\t$(($ENDTIME - $STARTTIME))\t${STARTTIME}\t${ENDTIME}" >> ${overall_comp_cost}
+    fi
+
+    #[TRANSH]
+    if no_exist "$HOME/git/results/$experiment/$DATASET/ml1m-transh-*.log"
+    then
+        STARTTIME=$(date +%s)
+        echo "[kg-summ-rec] recommend: Running TransH with $DATASET"
+        CUDA_VISIBLE_DEVICES=0 nohup python run_knowledge_representation.py -data_path ~/git/datasets/$experiment/$DATASET/cao-format/ -log_path ~/git/results/$experiment/$DATASET/ -kg_test_files valid.dat:test.dat -l2_lambda 0 -model_type transh -nohas_visualization -dataset ml1m -batch_size ${BATCH_SIZE} -embedding_size 100 -learning_rate 0.001 -topn 10 -seed 3 -eval_interval_steps ${KNOWLEDGE_REPRESENTATION_EPOCHS[0]} -training_steps ${KNOWLEDGE_REPRESENTATION_EPOCHS[1]} -early_stopping_steps_to_wait ${KNOWLEDGE_REPRESENTATION_EPOCHS[2]} -optimizer_type Adam -L1_flag -norm_lambda 1 -kg_lambda 1 -load_ckpt_file "$HOME/git/results/$experiment/$DATASET/ml1m-transe-pretrained.ckpt" &
+        wait $!
+        mv ~/git/results/$experiment/$DATASET/ml1m-transh-*.ckpt_final ~/git/results/$experiment/$DATASET/ml1m-transh-pretrained.ckpt
+        ENDTIME=$(date +%s)
+        echo -e "recommend-TRANSH-${DATASET}\t$(($ENDTIME - $STARTTIME))\t${STARTTIME}\t${ENDTIME}" >> ${overall_comp_cost}
+    fi
+
+    #BPRMF - Steffen Rendle, Christoph Freudenthaler, Zeno Gantner, and Lars Schmidt-Thieme. 2009. BPR: Bayesian personalized ranking from implicit feedback. In UAI.
+    if no_exist "$HOME/git/results/$experiment/$DATASET/ml1m-bprmf-*.log"
+    then
+        STARTTIME=$(date +%s)
+        echo "[kg-summ-rec] recommend: Running BPRMF with $DATASET"
+        CUDA_VISIBLE_DEVICES=0 nohup python run_item_recommendation.py -data_path ~/git/datasets/$experiment/$DATASET/cao-format/ -log_path ~/git/results/$experiment/$DATASET/ -rec_test_files valid.dat:test.dat -l2_lambda 1e-5 -negtive_samples 1 -model_type bprmf -nohas_visualization -dataset ml1m -batch_size ${BATCH_SIZE} -embedding_size 100 -learning_rate ${LEARNING_RATE} -topn 10 -seed 3 -eval_interval_steps ${ITEM_RECOMMENDATION_EPOCHS[0]} -training_steps ${ITEM_RECOMMENDATION_EPOCHS[1]} -early_stopping_steps_to_wait ${ITEM_RECOMMENDATION_EPOCHS[2]} -optimizer_type Adagrad &
+        wait $!
+        mv ~/git/results/$experiment/$DATASET/ml1m-bprmf-*.ckpt ~/git/results/$experiment/$DATASET/ml1m-bprmf-pretrained.ckpt
+        ENDTIME=$(date +%s)
+        echo -e "recommend-BPRMF-${DATASET}\t$(($ENDTIME - $STARTTIME))\t${STARTTIME}\t${ENDTIME}" >> ${overall_comp_cost}
+    fi
+
+    #TransUP
+    if no_exist "$HOME/git/results/$experiment/$DATASET/ml1m-transup-*.log"
+    then
+        STARTTIME=$(date +%s)
+        echo "[kg-summ-rec] recommend: Running TransUP with $DATASET"
+        CUDA_VISIBLE_DEVICES=0 nohup python run_item_recommendation.py -data_path ~/git/datasets/$experiment/$DATASET/cao-format/ -log_path ~/git/results/$experiment/$DATASET/ -rec_test_files valid.dat:test.dat -l2_lambda 1e-5 -negtive_samples 1 -model_type transup -nohas_visualization -dataset ml1m -batch_size ${BATCH_SIZE} -embedding_size 100 -learning_rate ${LEARNING_RATE} -topn 10 -seed 3 -eval_interval_steps ${TUP_EPOCHS[0]} -training_steps ${TUP_EPOCHS[1]} -early_stopping_steps_to_wait ${TUP_EPOCHS[2]} -optimizer_type Adagrad -L1_flag -num_preferences 3 -nouse_st_gumbel -load_ckpt_file "$HOME/git/results/$experiment/$DATASET/ml1m-bprmf-pretrained.ckpt" & # ml-sun num_preferences = 3
+        wait $!
+        mv ~/git/results/$experiment/$DATASET/ml1m-transup-*.ckpt ~/git/results/$experiment/$DATASET/ml1m-transup-pretrained.ckpt
+        ENDTIME=$(date +%s)
+        echo -e "recommend-TRANSUP-${DATASET}\t$(($ENDTIME - $STARTTIME))\t${STARTTIME}\t${ENDTIME}" >> ${overall_comp_cost}
+    fi
+    #JTransUP
+    if no_exist "$HOME/git/results/$experiment/$DATASET/ml1m-jtransup-*.log"
+    then
+        STARTTIME=$(date +%s)
+        echo "[kg-summ-rec] recommend:  Running JTransUP with $DATASET"
+        CUDA_VISIBLE_DEVICES=0 nohup python run_knowledgable_recommendation.py -data_path ~/git/datasets/$experiment/$DATASET/cao-format/ -log_path ~/git/results/$experiment/$DATASET/ -rec_test_files valid.dat:test.dat -kg_test_files valid.dat:test.dat -l2_lambda 0 -model_type jtransup -nohas_visualization -dataset ml1m -batch_size ${BATCH_SIZE} -embedding_size 100 -learning_rate ${LEARNING_RATE} -topn 10 -seed 3 -eval_interval_steps ${KNOWLEDGABLE_RECOMMENDATION_EPOCHS[0]} -training_steps ${KNOWLEDGABLE_RECOMMENDATION_EPOCHS[1]} -early_stopping_steps_to_wait ${KNOWLEDGABLE_RECOMMENDATION_EPOCHS[2]} -optimizer_type Adam -joint_ratio 0.5 -noshare_embeddings -L1_flag -norm_lambda 1 -kg_lambda 1 -nouse_st_gumbel -load_ckpt_file "$HOME/git/results/$experiment/$DATASET/ml1m-transup-pretrained.ckpt:$HOME/git/results/$experiment/$DATASET/ml1m-transh-pretrained.ckpt" &
+        wait $!
+        ENDTIME=$(date +%s)
+        echo -e "recommend-KTUP-${DATASET}\t$(($ENDTIME - $STARTTIME))\t${STARTTIME}\t${ENDTIME}" >> ${overall_comp_cost}
+    fi
+
+    ####
+    # Collect computational cost of $DATASET
+    ####
+    cd ~/git/kg-summ-rec
+    if no_exist "$HOME/git/results/${experiment}/${DATASET}/comp_cost.tsv"
+    then
+        comp_cost "${experiment}" "${DATASET}" > "$HOME/git/results/${experiment}/${DATASET}/comp_cost.tsv"
+    fi
+}
+
 run_experiment() {
     experiment=$1
     overall_comp_cost="$HOME/git/results/${experiment}/overall_comp_cost.tsv"
@@ -312,5 +445,9 @@ run_experiment() {
 
     # Summarization
     summarize_sun_sKG
+
+    # Recomendation
+    recomend_sun_sKG
+
 }
 run_experiment $1

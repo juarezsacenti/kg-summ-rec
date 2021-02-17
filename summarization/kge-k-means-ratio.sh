@@ -54,16 +54,23 @@ kge-k-means() {
     local batch_size=$8
     local learning_rate=$9
     local low_frequence=${10}
-    local ratio=${11}
+    #local ratio=${11}
+    IFS=' ' read -r -a ratios <<< "${11}"
 
     if [ ${summarization_mode} = 'sv' ]
     then
-        sv_kge-k-means "${experiment}" "${dataset_in}" "${dataset_out}" "${kg_filename}" \
-        "${kge}" "${epochs}" "${batch_size}" "${learning_rate}" "${low_frequence}" "${ratio}"
+        for ratio in "${ratios[@]}"
+        do
+            sv_kge-k-means "${experiment}" "${dataset_in}" "${dataset_out}" "${kg_filename}" \
+            "${kge}" "${epochs}" "${batch_size}" "${learning_rate}" "${low_frequence}" "${ratio}"
+        done
     elif [ ${summarization_mode} = 'mv' ]
     then
-        mv_kge-k-means "${experiment}" "${dataset_in}" "${dataset_out}" "${kg_filename}" \
-        "${kge}" "${epochs}" "${batch_size}" "${learning_rate}" "${low_frequence}" "${ratio}"
+        for ratio in "${ratios[@]}"
+        do
+            mv_kge-k-means "${experiment}" "${dataset_in}" "${dataset_out}" "${kg_filename}" \
+            "${kge}" "${epochs}" "${batch_size}" "${learning_rate}" "${low_frequence}" "${ratio}"
+        done
     else
         echo "[kg-summ-rec] kge-k-means: Parameter error: summarization mode ${summarization_mode} should be sv or mv."
     fi
@@ -131,6 +138,8 @@ sv_kge-k-means() {
 
         mv "$HOME/git/kg-summ-rec/docker/kge-k-means_data/temp/cluster${ratio}.tsv" "$HOME/git/datasets/${experiment}/${dataset_out}-${kge}-${ratio}/cluster${ratio}.tsv"
         mv "$HOME/git/kg-summ-rec/docker/kge-k-means_data/temp/cluster${ratio}.png" "$HOME/git/datasets/${experiment}/${dataset_out}-${kge}-${ratio}/cluster${ratio}.png"
+        mv "$HOME/git/kg-summ-rec/docker/kge-k-means_data/temp/*.model" "$HOME/git/datasets/${experiment}/${dataset_out}-${kge}-${ratio}/ampligraph.model"
+        mv "$HOME/git/kg-summ-rec/docker/kge-k-means_data/temp/*.dump" "$HOME/git/datasets/${experiment}/${dataset_out}-${kge}-${ratio}/pickle.dump"
         cd $HOME/git/kg-summ-rec
     fi
 
@@ -208,6 +217,8 @@ mv_kge-k-means() {
 
         mv "$HOME/git/kg-summ-rec/docker/kge-k-means_data/temp/cluster${ratio}.tsv" "$HOME/git/datasets/${experiment}/${dataset_out}-${kge}-${ratio}/cluster${ratio}.tsv"
         mv "$HOME/git/kg-summ-rec/docker/kge-k-means_data/temp/cluster${ratio}.png" "$HOME/git/datasets/${experiment}/${dataset_out}-${kge}-${ratio}/cluster${ratio}.png"
+        mv "$HOME/git/kg-summ-rec/docker/kge-k-means_data/temp/ampligraph.model" "$HOME/git/datasets/${experiment}/${dataset_out}-${kge}-${ratio}/ampligraph.model"
+        mv "$HOME/git/kg-summ-rec/docker/kge-k-means_data/temp/pickle.dump" "$HOME/git/datasets/${experiment}/${dataset_out}-${kge}-${ratio}/pickle.dump"
         cd $HOME/git/kg-summ-rec
     fi
 
