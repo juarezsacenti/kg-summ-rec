@@ -189,7 +189,6 @@ summarize() {
     local STARTTIME=$(date +%s)
     # TODO IF no exist
     clean_kge-k-means
-    echo "kge-k-means ${experiment} ${dataset_in} "${dataset_out}_${kg_type}-${summarization_mode}" ${kg_filename} ${summarization_mode} ${kge} ${epochs} ${batch_size} ${learning_rate} ${low_frequence} ${ratios}"
     kge-k-means ${experiment} ${dataset_in} "${dataset_out}_${kg_type}-${summarization_mode}" ${kg_filename} ${summarization_mode} ${kge} ${epochs} ${batch_size} ${learning_rate} ${low_frequence} ${ratios}
     local ENDTIME=$(date +%s)
     echo -e "summarize-${dataset_out}_${kg_type}-${summarization_mode}\t$(($ENDTIME - $STARTTIME))\t${STARTTIME}\t${ENDTIME}" >> ${overall_comp_cost}
@@ -443,7 +442,7 @@ run_experiment() {
     summarize_sun_sKG
 
     # Recomendation
-    recomend_sun_sKG
+    recommend_sun_sKG
 
 }
 run_experiment $1
