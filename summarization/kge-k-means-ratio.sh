@@ -45,17 +45,27 @@ source $HOME/git/kg-summ-rec/util/util.sh
 #######################################
 kge-k-means() {
     local experiment=$1
+    echo "experiment=${experiment}"
     local dataset_in=$2
+    echo "dataset_in=${dataset_in}"
     local dataset_out=$3
+    echo "dataset_out=${dataset_out}"
     local kg_filename=$4
+    echo "kg_filename=${kg_filename}"
     local summarization_mode=$5
+    echo "summarization_mode=${summarization_mode}"
     local kge=$6
+    echo "kge=${kge}"
     local epochs=$7
+    echo "epochs=${epochs}"
     local batch_size=$8
+    echo "batch_size=${batch_size}"
     local learning_rate=$9
+    echo "learning_rate=${learning_rate}"
     local low_frequence=${10}
+    echo "low_frequence=${low_frequence}"
     local ratios_list=${11}
-    echo "HERE   >>>>   ${ratios_list}"
+    echo "ratios_list=${ratios_list}"
     IFS=',' read -r -a ratios <<< "${ratios_list}"
     echo "HERE   >>>>   ${ratios[@]}"
     if [ ${summarization_mode} = 'sv' ]
