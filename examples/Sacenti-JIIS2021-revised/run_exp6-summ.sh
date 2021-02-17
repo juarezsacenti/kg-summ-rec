@@ -62,9 +62,9 @@ source $HOME/git/kg-summ-rec/util/util.sh
 source $HOME/git/kg-summ-rec/preprocess/cao-format_ml-sun.sh
 
 #######################################
-# Import ../summarization/kge-k-means.sh
+# Import ../summarization/kge-k-means-ratio.sh
 # FUNCTIONS:
-#   kge-k-means 'experiment' 'dataset_in' 'dataset_out' 'kg_type' 'summarization_mode' 'kge' 'epochs' 'batch_size' learning_rate' 'low_frequence'
+#   kge-k-means 'experiment' 'dataset_in' 'dataset_out' 'kg_type' 'summarization_mode' 'kge' 'epochs' 'batch_size' learning_rate' 'low_frequence' 'ratios'
 #######################################
 source $HOME/git/kg-summ-rec/summarization/kge-k-means-ratio.sh
 
@@ -189,6 +189,7 @@ summarize() {
     local STARTTIME=$(date +%s)
     # TODO IF no exist
     clean_kge-k-means
+    echo "kge-k-means ${experiment} ${dataset_in} "${dataset_out}_${kg_type}-${summarization_mode}" ${kg_filename} ${summarization_mode} ${kge} ${epochs} ${batch_size} ${learning_rate} ${low_frequence} ${ratios}"
     kge-k-means ${experiment} ${dataset_in} "${dataset_out}_${kg_type}-${summarization_mode}" ${kg_filename} ${summarization_mode} ${kge} ${epochs} ${batch_size} ${learning_rate} ${low_frequence} ${ratios}
     local ENDTIME=$(date +%s)
     echo -e "summarize-${dataset_out}_${kg_type}-${summarization_mode}\t$(($ENDTIME - $STARTTIME))\t${STARTTIME}\t${ENDTIME}" >> ${overall_comp_cost}
