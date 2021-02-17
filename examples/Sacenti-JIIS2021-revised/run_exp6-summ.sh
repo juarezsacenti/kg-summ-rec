@@ -236,7 +236,7 @@ preprocess_summ() {
     cd $HOME/git/kg-summ-rec/preprocess
 
     summ_modes=(sv mv)
-    summ_algos=(complex transe)
+    summ_algos=(transe complex)
     #summ_rates=(5 25 50 75)
     summ_rates=(5)
     local STARTTIME=0
@@ -269,7 +269,7 @@ measure_summ_impact() {
     conda activate kg-summ-rec
 
     summ_modes=(sv mv)
-    summ_algos=(complex transe)
+    summ_algos=(transe complex)
     #summ_rates=(5 25 50 75)
     summ_rates=(5)
     local STARTTIME=0
