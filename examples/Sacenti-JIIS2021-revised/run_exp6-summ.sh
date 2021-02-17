@@ -180,7 +180,7 @@ summarize() {
     local kge='transe'
     local epochs='300'
     local batch_size='10'
-    #local learning_rate='0.005'
+    local learning_rate='0.0005'
     local kg_filename="kg-${kg_type}.nt"
     #local ratios='5,25,50,75'
     local ratios='5'
