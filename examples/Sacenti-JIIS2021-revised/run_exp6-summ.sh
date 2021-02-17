@@ -184,7 +184,6 @@ summarize() {
     local kg_filename="kg-${kg_type}.nt"
     #local ratios='5,25,50,75'
     local ratios='5'
-    echo "${ratios}"
     local summarization_mode='sv'
 
     local STARTTIME=$(date +%s)
