@@ -41,7 +41,7 @@ def kge_k_means(data_home, folder, triples_file, items_file, mode, kge_name, epo
     # Load triples:
     triples = load_from_ntriples(folder, triples_file, data_home)
     # Saving triples with pickle
-    triplesfile = './temp/movielens_triples.dump'
+    triplesfile = './temp/pickle.dump'
     with open(triplesfile, "wb") as fp:   #Pickling
         pickle.dump(triples, fp)
 
@@ -233,7 +233,7 @@ def select_kge(kge_name,batch_size,epochs,verbose):
 
 def kge(triples, kge_name, epochs, batch_size, learning_rate, verbose):
     kge_name = parsed_args.kge
-    kge_model_savepath = f'./temp/{kge_name}.model'
+    kge_model_savepath = f'./temp/ampligraph.model'
 
     if not os.path.isfile(kge_model_savepath):
         #Embedding evaluation
