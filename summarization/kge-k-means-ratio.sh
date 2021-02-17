@@ -54,10 +54,10 @@ kge-k-means() {
     local batch_size=$8
     local learning_rate=$9
     local low_frequence=${10}
-    #local ratio=${11}
-    echo "HERE   >>>>   ${11}"
-    IFS=',' read -r -a ratios <<< "${11}"
-    echo "HERE   >>>>   $ratios"
+    local ratios_list=${11}
+    echo "HERE   >>>>   ${ratios_list}"
+    IFS=',' read -r -a ratios <<< "${ratios_list}"
+    echo "HERE   >>>>   ${ratios[@]}"
     if [ ${summarization_mode} = 'sv' ]
     then
         for ratio in "${ratios[@]}"
