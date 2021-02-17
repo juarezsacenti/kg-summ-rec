@@ -55,13 +55,14 @@ kge-k-means() {
     local learning_rate=$9
     local low_frequence=${10}
     #local ratio=${11}
+    echo "HERE   >>>>   ${11}"
     IFS=' ' read -r -a ratios <<< "${11}"
     echo "HERE   >>>>   $ratios"
     if [ ${summarization_mode} = 'sv' ]
     then
         for ratio in "${ratios[@]}"
         do
-            echo "HERE   >>>> sv >>>>   $ratio"            
+            echo "HERE   >>>> sv >>>>   $ratio"
             sv_kge-k-means "${experiment}" "${dataset_in}" "${dataset_out}" "${kg_filename}" \
             "${kge}" "${epochs}" "${batch_size}" "${learning_rate}" "${low_frequence}" "${ratio}"
         done
