@@ -316,7 +316,7 @@ kg_recommendation() {
     summ_modes=(sv mv)
     summ_algos=(transe complex)
     #summ_rates=(5 25 50 75)
-    summ_rates=(5)
+    summ_rates=(50)
     for t in "${summ_types[@]}"
     do
         for m in "${summ_modes[@]}"
