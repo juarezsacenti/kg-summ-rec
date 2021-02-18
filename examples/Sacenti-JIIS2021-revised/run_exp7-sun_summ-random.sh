@@ -223,6 +223,7 @@ preprocess_summ() {
                     cao-format_summ "${dataset_in}" "${dirName}" "${low_frequence}"
                     ENDTIME=$(date +%s)
                     echo -e "preprocess_summ-${dirName}\t$(($ENDTIME - $STARTTIME))\t${STARTTIME}\t${ENDTIME}" >> ${overall_comp_cost}
+                done
             done
         done
     done
