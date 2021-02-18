@@ -222,7 +222,7 @@ preprocess_summ() {
             do
                 for rerun in "${summ_rerun[@]}"
                 do
-                    local dirName="${dataset_out}_${kg_type}-${m}-${a}-${r}-${rerun}"
+                    local dirName="${dataset_out}_${kg_type}-${rerun}-${m}-${a}-${r}"
                     STARTTIME=$(date +%s)
                     cao-format_summ "${dataset_in}" "${dirName}" "${low_frequence}"
                     ENDTIME=$(date +%s)
@@ -260,7 +260,7 @@ measure_summ_impact() {
             do
                 for rerun in "${summ_rerun[@]}"
                 do
-                    local dirName="${dataset_out}_${kg_type}-${m}-${a}-${r}-${rerun}"
+                    local dirName="${dataset_out}_${kg_type}-${rerun}-${m}-${a}-${r}"
                     if no_exist "$HOME/git/results/${experiment}/${dirName}/kg-ig_stats.tsv"
                     then
                         STARTTIME=$(date +%s)
