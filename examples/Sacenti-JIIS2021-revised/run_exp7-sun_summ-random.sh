@@ -187,12 +187,16 @@ summarize() {
 
     summarization_mode='mv'
 
-    STARTTIME=$(date +%s)
-    # TODO IF no exist
-    clean_kge-k-means
-    kge-k-means ${experiment} ${dataset_in} "${dataset_out}_${kg_type}-${summarization_mode}" ${kg_filename} ${summarization_mode} ${kge} ${epochs} ${batch_size} ${learning_rate} ${low_frequence} ${ratios}
-    ENDTIME=$(date +%s)
-    echo -e "summarize-${dataset_out}_${kg_type}-${summarization_mode}\t$(($ENDTIME - $STARTTIME))\t${STARTTIME}\t${ENDTIME}" >> ${overall_comp_cost}
+    summ_rerun=(0 1 2)
+    for rerun in "${summ_rerun[@]}"
+    do
+        local dirName="${dataset_out}_${kg_type}-${rerun}"
+        STARTTIME=$(date +%s)
+        clean_kge-k-means
+        kge-k-means ${experiment} ${dataset_in} ${dirName} ${kg_filename} ${summarization_mode} ${kge} ${epochs} ${batch_size} ${learning_rate} ${low_frequence} ${ratios}
+        ENDTIME=$(date +%s)
+        echo -e "summarize-${dataset_out}_${kg_type}-${summarization_mode}\t$(($ENDTIME - $STARTTIME))\t${STARTTIME}\t${ENDTIME}" >> ${overall_comp_cost}
+    done
 }
 
 preprocess_summ() {
@@ -292,7 +296,6 @@ run_experiment() {
 
     # Summarization
     summarize_sun_sKG
-
 }
 run_experiment $1
 #bash -i examples/Sacenti-JIIS2021-revised/run_exp7-sun_summ-random.sh "exp7-random" |& tee out-exp7-1.txt

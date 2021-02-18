@@ -322,6 +322,7 @@ kg_recommendation() {
                 do
                     local dirName="${dataset_out}_${t}-${m}-${a}-${r}"
                     echo "[kg-summ-rec] kg_recommendation: Creating ~/git/results/${experiment}/${dirName}/*.log"
+                    #recommend "${dirName}" '4873,487300,24363' '2663,266300,13317' '266,26630,1331' '10392,1039200,51960' 256 0.005
                     recommend "${dirName}" '520,13026,13000' '4940,123747,123500' '4940,123747,123500' '10940,274047,273500' 256 0.005
                 done
             done
@@ -330,6 +331,7 @@ kg_recommendation() {
 
 
     echo "[kg-summ-rec] kg_recommendation: Creating ~/git/results/${experiment}/${dataset_in}/*.log"
+    #recommend "${dataset_in}" '4873,487300,24363' '2663,266300,13317' '266,26630,1331' '10392,1039200,51960' 256 0.005
     recommend "${dataset_in}" '520,13026,13000' '4940,123747,123500' '4940,123747,123500' '10940,274047,273500' 256 0.005
 
     cd $HOME/git/kg-summ-rec
@@ -446,3 +448,4 @@ run_experiment() {
 
 }
 run_experiment $1
+#bash -i examples/Sacenti-JIIS2021-revised/run_exp6-sun_summ.sh "JIIS-revised-exp6-summ" |& tee out-exp6-1.txt
