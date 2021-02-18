@@ -82,6 +82,7 @@ def splitview(triples, items, kge_name, epochs, batch_size, learning_rate, rates
 
     # Train KGE model
     model = kge(triples, kge_name, epochs, batch_size, learning_rate, verbose)
+    save_embedding(nodes, model)
 
     # Simplification
     simplification(triples, model, verbose)
@@ -117,6 +118,7 @@ def singleview(triples, items, kge_name, epochs, batch_size, learning_rate, rate
 
     # Train KGE model
     model = kge(triples, kge_name, epochs, batch_size, learning_rate, verbose)
+    save_embedding(nodes, model)
 
     # Simplification
     simplification(triples, model, verbose)
@@ -138,10 +140,15 @@ def singleview(triples, items, kge_name, epochs, batch_size, learning_rate, rate
 def multiview(triples, items, kge_name, epochs, batch_size, learning_rate, rates, relations,kg_map_file, verbose):
     # Select all entities, except items
     triples_df = pd.DataFrame(triples, columns=['s', 'p', 'o'])
+    subjects = triples_df.s.unique()
+    objects = triples_df.o.unique()
+    concatenated = np.concatenate((subjects, objects))
+    nodes = np.unique(concatenated)
     relations = relations.split(',')
 
     # Train KGE model
     model = kge(triples, kge_name, epochs, batch_size, learning_rate, verbose)
+    save_embedding(nodes, model)
 
     # Simplification
     simplification(triples, model, verbose)
@@ -353,6 +360,15 @@ def simplification_top(ranked_triples_df, top, verbose):
             sp_df.sort_values(by=['rank'], ascending=False)
             rslt_df = pd.concat([rslt_df, sp_df.head(top)], ignore_index=True)
     return rslt_df
+
+
+def save_embedding(entities, model):
+    sep='\t'
+    nl='\n'
+    embeddings = dict(zip(entites, model.get_embeddings(entities, embedding_type='entity')))
+    with open('./temp/embeddings.tsv', 'wb') as fin:
+        for key, value in embeddings.items():
+            fin.write(key,sep,value,nl)
 
 
 # Clustering
