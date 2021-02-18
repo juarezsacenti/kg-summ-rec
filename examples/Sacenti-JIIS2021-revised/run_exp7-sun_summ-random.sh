@@ -177,7 +177,7 @@ summarize() {
     local low_frequence=$4
 
     # default parameters
-    local kge='transe'
+    local kge='complex'
     local epochs='300'
     local batch_size='10'
     local learning_rate='0.0005'
@@ -204,7 +204,7 @@ preprocess_summ() {
     cd $HOME/git/kg-summ-rec/preprocess
 
     summ_modes=(mv)
-    summ_algos=(transe)
+    summ_algos=(complex)
     #summ_rates=(5 25 50 75)
     summ_rates=(50)
     summ_rerun=(0 1 2)
@@ -241,7 +241,7 @@ measure_summ_impact() {
     conda activate kg-summ-rec
 
     summ_modes=(mv)
-    summ_algos=(transe)
+    summ_algos=(complex)
     #summ_rates=(5 25 50 75)
     summ_rates=(50)
     summ_rerun=(0 1 2)
