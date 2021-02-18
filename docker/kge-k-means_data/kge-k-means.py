@@ -368,7 +368,7 @@ def save_embedding(entities, model):
     embeddings = dict(zip(entities, model.get_embeddings(entities, embedding_type='entity')))
     with open('./temp/embeddings.tsv', 'wb') as fin:
         for key, value in embeddings.items():
-            fin.write(key,sep,value,nl)
+            fin.write(f'{key}{sep}{value}{nl}')
 
 
 # Clustering
