@@ -365,7 +365,7 @@ def simplification_top(ranked_triples_df, top, verbose):
 def save_embedding(entities, model):
     sep='\t'
     nl='\n'
-    embeddings = dict(zip(entites, model.get_embeddings(entities, embedding_type='entity')))
+    embeddings = dict(zip(entities, model.get_embeddings(entities, embedding_type='entity')))
     with open('./temp/embeddings.tsv', 'wb') as fin:
         for key, value in embeddings.items():
             fin.write(key,sep,value,nl)
