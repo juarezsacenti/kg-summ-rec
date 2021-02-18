@@ -190,7 +190,7 @@ summarize() {
     summ_rerun=(0 1 2)
     for rerun in "${summ_rerun[@]}"
     do
-        local dirName="${dataset_out}_${kg_type}-${rerun}"
+        local dirName="${dataset_out}_${kg_type}-${rerun}-${summarization_mode}"
         STARTTIME=$(date +%s)
         clean_kge-k-means
         kge-k-means ${experiment} ${dataset_in} ${dirName} ${kg_filename} ${summarization_mode} ${kge} ${epochs} ${batch_size} ${learning_rate} ${low_frequence} ${ratios}
