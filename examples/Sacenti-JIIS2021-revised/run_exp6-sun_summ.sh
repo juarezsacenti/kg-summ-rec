@@ -182,8 +182,8 @@ summarize() {
     local batch_size='10'
     local learning_rate='0.0005'
     local kg_filename="kg-${kg_type}.nt"
-    #local ratios='5,25,50,75'
-    local ratios='5'
+    local ratios='5,25,50,75'
+    #local ratios='5'
     local summarization_mode='sv'
 
     local STARTTIME=$(date +%s)
@@ -232,8 +232,8 @@ preprocess_summ() {
 
     summ_modes=(sv mv)
     summ_algos=(transe complex)
-    #summ_rates=(5 25 50 75)
-    summ_rates=(25 50 75)
+    summ_rates=(5 25 50 75)
+    #summ_rates=(25 50 75)
     local STARTTIME=0
     local ENDTIME=0
     for m in "${summ_modes[@]}"
@@ -265,8 +265,8 @@ measure_summ_impact() {
 
     summ_modes=(sv mv)
     summ_algos=(transe complex)
-    #summ_rates=(5 25 50 75)
-    summ_rates=(25 50 75)
+    summ_rates=(5 25 50 75)
+    #summ_rates=(25 50 75)
     local STARTTIME=0
     local ENDTIME=0
     for m in "${summ_modes[@]}"
@@ -310,8 +310,8 @@ kg_recommendation() {
     summ_types=(ig)
     summ_modes=(sv mv)
     summ_algos=(transe complex)
-    #summ_rates=(5 25 50 75)
-    summ_rates=(50)
+    summ_rates=(5 25 50 75)
+    #summ_rates=(50)
     for t in "${summ_types[@]}"
     do
         for m in "${summ_modes[@]}"
