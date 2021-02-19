@@ -66,9 +66,9 @@ kge-k-means() {
     echo ${low_frequence}
     local ratios_list=${11}
     echo ${ratios_list}
-    IFS=',' read -r -a ratios <<< "${ratios_list}"
     if [ ${summarization_mode} = 'sv' ]
     then
+        IFS=',' read -r -a ratios <<< "${ratios_list}"
         for ratio in "${ratios[@]}"
         do
             sv_kge-k-means "${experiment}" "${dataset_in}" "${dataset_out}" "${kg_filename}" \
@@ -76,6 +76,7 @@ kge-k-means() {
         done
     elif [ ${summarization_mode} = 'mv' ]
     then
+        IFS=',' read -r -a ratios <<< "${ratios_list}"
         for ratio in "${ratios[@]}"
         do
             mv_kge-k-means "${experiment}" "${dataset_in}" "${dataset_out}" "${kg_filename}" \

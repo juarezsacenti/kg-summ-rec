@@ -194,6 +194,7 @@ summarize() {
     echo -e "summarize-${dataset_out}_${kg_type}-${summarization_mode}\t$(($ENDTIME - $STARTTIME))\t${STARTTIME}\t${ENDTIME}" >> ${overall_comp_cost}
 
     summarization_mode='mv'
+    local ratios='5,25,50,75'
 
     STARTTIME=$(date +%s)
     # TODO IF no exist
@@ -204,6 +205,7 @@ summarize() {
 
     local kge='complex'
     local summarization_mode='sv'
+    local ratios='5,25,50,75'
 
     local STARTTIME=$(date +%s)
     # TODO IF no exist
@@ -213,6 +215,7 @@ summarize() {
     echo -e "summarize-${dataset_out}_${kg_type}-${summarization_mode}\t$(($ENDTIME - $STARTTIME))\t${STARTTIME}\t${ENDTIME}" >> ${overall_comp_cost}
 
     summarization_mode='mv'
+    local ratios='5,25,50,75'
 
     STARTTIME=$(date +%s)
     # TODO IF no exist
