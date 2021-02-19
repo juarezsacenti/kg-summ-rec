@@ -233,7 +233,7 @@ preprocess_summ() {
     summ_modes=(sv mv)
     summ_algos=(transe complex)
     #summ_rates=(5 25 50 75)
-    summ_rates=(5)
+    summ_rates=(25 50 75)
     local STARTTIME=0
     local ENDTIME=0
     for m in "${summ_modes[@]}"
@@ -266,7 +266,7 @@ measure_summ_impact() {
     summ_modes=(sv mv)
     summ_algos=(transe complex)
     #summ_rates=(5 25 50 75)
-    summ_rates=(5)
+    summ_rates=(25 50 75)
     local STARTTIME=0
     local ENDTIME=0
     for m in "${summ_modes[@]}"
