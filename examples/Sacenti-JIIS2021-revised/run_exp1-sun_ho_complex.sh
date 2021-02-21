@@ -245,6 +245,7 @@ summarize() {
             local dirName="${dataset_out}_${kg_type}-${summarization_mode}"
             STARTTIME=$(date +%s)
             clean_kge-k-means
+            echo "${seed}, ${verbose}"
             if [ "${verbose}" = true ]
             then
                 kge-k-means ${experiment} ${dataset_in} ${dirName} ${kg_filename} ${summarization_mode} ${kge} ${epochs} ${batch_size} ${learning_rate} ${low_frequence} ${ratio} ${seed} 'true'
