@@ -528,7 +528,7 @@ recommend() {
 run_experiment() {
     experiment=$1
     seed=$2
-    if [ "$3" = 'true' ]; verbose=true; else; verbose=false; fi
+    if [ "$3" = 'true' ]; verbose=true; else verbose=false; fi
     overall_comp_cost="$HOME/git/results/${experiment}/overall_comp_cost.tsv"
 
     if [ ! -d "$HOME/git/datasets/${experiment}" ]
@@ -552,3 +552,4 @@ run_experiment() {
     recommend_sun_sfKG
 }
 run_experiment $1 $2 $3
+#bash -i examples/Sacenti-JIIS2021-revised/run_exp1-sun_ho_complex.sh "JIIS-revised-exp1" '0' 'false' |& tee out-revised-exp1-1.txt

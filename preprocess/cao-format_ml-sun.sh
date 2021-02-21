@@ -46,7 +46,7 @@ cao-format_ml-sun() {
     local dataset=$1 # Dataset
     local low_frequence=$2 # Filtering
     seed=$3
-    if [ "$4" = 'true' ]; verbose=true; else; verbose=false; fi
+    if [ "$4" = 'true' ]; verbose=true; else verbose=false; fi
 
     if [ ! -d "$HOME/git/datasets/${experiment}/${dataset}/cao-format" ]
     then

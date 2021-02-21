@@ -47,7 +47,7 @@ cao-format_summ() {
     local dataset_in=$1 # Input dataset: ml-sun, ml-cao
     local dataset_out=$2 # Output dataset: ml-sun_ho_sv_sKG, ml-cao_ho_mv_sfKG
     local low_frequence=$3 # Low Frequence: 0, 10
-    if [ "$4" = 'true' ]; verbose=true; else; verbose=false; fi
+    if [ "$4" = 'true' ]; verbose=true; else verbose=false; fi
 
     ################################################################################
     ###                       Preprocess ${DATASET}_${KGE}-${RATE}               ###
