@@ -120,8 +120,6 @@ preprocess_sun_oKG() {
     else
         cao-format_ml-sun "ml-sun_ho_oKG" ${LOW_FREQUENCE} ${seed} 'false'
     fi
-    echo "${seed}, ${verbose}"
-
     cd $HOME/git/kg-summ-rec
 
     # Collect oKG statistics
@@ -167,7 +165,6 @@ preprocess_sun_fKG() {
     else
         cao-format_ml-sun "ml-sun_ho_oKG" ${LOW_FREQUENCE} ${seed} 'false'
     fi
-    echo "${seed}, ${verbose}"
     cd $HOME/git/kg-summ-rec
 
     # Collect oKG statistics
@@ -253,7 +250,6 @@ summarize() {
             local dirName="${dataset_out}_${kg_type}-${summarization_mode}"
             STARTTIME=$(date +%s)
             clean_kge-k-means
-            echo "summarize: ${seed}, ${verbose}"
             if [ "${verbose}" = true ]
             then
                 kge-k-means ${experiment} ${dataset_in} ${dirName} ${kg_filename} ${summarization_mode} ${kge} ${epochs} ${batch_size} ${learning_rate} ${low_frequence} ${ratio} ${seed} 'true'
