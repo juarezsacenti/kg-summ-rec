@@ -47,6 +47,7 @@ cao-format_ml-sun() {
     local low_frequence=$2 # Filtering
     seed=$3
     if [ "$4" = 'true' ]; then verbose=true; else verbose=false; fi
+    echo "${seed}, ${verbose}"
 
     if [ ! -d "$HOME/git/datasets/${experiment}/${dataset}/cao-format" ]
     then

@@ -120,6 +120,8 @@ preprocess_sun_oKG() {
     else
         cao-format_ml-sun "ml-sun_ho_oKG" ${LOW_FREQUENCE} ${seed} 'false'
     fi
+    echo "${seed}, ${verbose}"
+
     cd $HOME/git/kg-summ-rec
 
     # Collect oKG statistics
