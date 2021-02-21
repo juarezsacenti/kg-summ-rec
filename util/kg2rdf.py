@@ -277,9 +277,8 @@ def infrequent_entities(input_file, output_file, input_format="nt"):
     nl = '\n'
     with open(output_file, 'w') as fout:
         for row in entity_frequency:
-            print(f"{row[0].toPython()} {row[1].toPython()}")
+            #print(f"{row[0].toPython()} {row[1].toPython()}")
             fout.write(f"{row[0].toPython()} {row[1].toPython()}{nl}")
-
 
 
 if __name__ == '__main__':

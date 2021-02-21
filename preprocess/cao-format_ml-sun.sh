@@ -31,6 +31,8 @@
 # RETURN:
 #   0 if print succeeds, non-zero on error.
 #######################################
+seed=0
+verbose=false
 
 #######################################
 # Import ../util/util.sh
@@ -43,10 +45,12 @@ source $HOME/git/kg-summ-rec/util/util.sh
 cao-format_ml-sun() {
     local dataset=$1 # Dataset
     local low_frequence=$2 # Filtering
-    
+    seed=$3
+    if [ "$4" = 'true' ]; verbose=true; else; verbose=false; fi
+
     if [ ! -d "$HOME/git/datasets/${experiment}/${dataset}/cao-format" ]
     then
-        echo "[kg-summ-rec] Creating ~/git/datasets/${experiment}/${dataset}/cao-format/ml1m/kg"
+        if [ "$verbose" = true ]; then echo "[kg-summ-rec] Creating ~/git/datasets/${experiment}/${dataset}/cao-format/ml1m/kg"; fi
         mkdir ~/git/datasets/${experiment}/${dataset}/cao-format
         mkdir ~/git/datasets/${experiment}/${dataset}/cao-format/ml1m
         mkdir ~/git/datasets/${experiment}/${dataset}/cao-format/ml1m/kg
@@ -60,12 +64,12 @@ cao-format_ml-sun() {
     then
         if true # ml100k ratings from Sun's project
         then
-            echo "[kg-summ-rec] Creating ~/git/datasets/${experiment}/${dataset}/cao-format/ml1m/train.dat"
+            if [ "$verbose" = true ]; then echo "[kg-summ-rec] Creating ~/git/datasets/${experiment}/${dataset}/cao-format/ml1m/train.dat"; fi
             #[train.dat, valid.dat, test.dat by splitting rating-delete-missing-item.txt]
             python sun_split.py --loadfile "$HOME/git/datasets/${experiment}/${dataset}/sun-format/rating-delete-missing-itemid.txt" --column 'user_id' --frac '0.1,0.2' --savepath "$HOME/git/datasets/${experiment}/${dataset}/cao-format/ml1m/"
         else # ml1m ratings from Cao's project
             #[train.dat, valid.dat, test.dat symbolic links]
-            echo "Copying ~/git/datasets/${experiment}/${dataset}/cao-format/ml1m/train.dat"
+            if [ "$verbose" = true ]; then echo "Copying ~/git/datasets/${experiment}/${dataset}/cao-format/ml1m/train.dat"; fi
             ln -s ~/git/datasets/ml-cao/cao-format/ml1m/train.dat ~/git/datasets/${experiment}/${dataset}/cao-format/ml1m/train.dat
             ln -s ~/git/datasets/ml-cao/cao-format/ml1m/valid.dat ~/git/datasets/${experiment}/${dataset}/cao-format/ml1m/valid.dat
             ln -s ~/git/datasets/ml-cao/cao-format/ml1m/test.dat ~/git/datasets/${experiment}/${dataset}/cao-format/ml1m/test.dat
@@ -77,21 +81,26 @@ cao-format_ml-sun() {
     #[clean_auxiliary.txt]
     if no_exist "$HOME/git/datasets/${experiment}/${dataset}/cao-format/ml1m/clean_auxiliary.txt"
     then
-        echo "[kg-summ-rec] Creating ~/git/datasets/${experiment}/${dataset}/cao-format/ml1m/clean_auxiliary.txt"
+        if [ "$verbose" = true ]; then echo "[kg-summ-rec] Creating ~/git/datasets/${experiment}/${dataset}/cao-format/ml1m/clean_auxiliary.txt"; fi
         python sun2cao_step0.py --auxiliary "$HOME/git/datasets/${experiment}/${dataset}/sun-format/auxiliary.txt" --output "$HOME/git/datasets/${experiment}/${dataset}/cao-format/ml1m/clean_auxiliary.txt"
     fi
 
     #[sun2cao_step1]
     if no_exist "$HOME/git/datasets/${experiment}/${dataset}/cao-format/ml1m/kg/kg_hop0.dat"
     then
-        echo "[kg-summ-rec] Creating ~/git/datasets/${experiment}/${dataset}/cao-format/ml1m/kg/kg_hop0.dat"
-        python sun2cao_step1.py --input "$HOME/git/datasets/${experiment}/${dataset}/cao-format/ml1m/clean_auxiliary.txt"  --mapping "$HOME/git/datasets/${experiment}/${dataset}/cao-format/ml1m/"
+        if [ "$verbose" = true ]
+        then
+            echo "[kg-summ-rec] Creating ~/git/datasets/${experiment}/${dataset}/cao-format/ml1m/kg/kg_hop0.dat"
+            python sun2cao_step1.py --input "$HOME/git/datasets/${experiment}/${dataset}/cao-format/ml1m/clean_auxiliary.txt"  --mapping "$HOME/git/datasets/${experiment}/${dataset}/cao-format/ml1m/" --verbose
+        else
+            python sun2cao_step1.py --input "$HOME/git/datasets/${experiment}/${dataset}/cao-format/ml1m/clean_auxiliary.txt"  --mapping "$HOME/git/datasets/${experiment}/${dataset}/cao-format/ml1m/"
+        fi
     fi
 
     #[sun2cao_step2]
     if no_exist "$HOME/git/datasets/${experiment}/${dataset}/cao-format/ml1m/kg/e_map.dat"
     then
-        echo "[kg-summ-rec] Creating ~/git/datasets/${experiment}/${dataset}/cao-format/ml1m/kg/e_map.dat"
+        if [ "$verbose" = true ]; then echo "[kg-summ-rec] Creating ~/git/datasets/${experiment}/${dataset}/cao-format/ml1m/kg/e_map.dat"; fi
         python sun2cao_step2.py --data_path "~/git/datasets/${experiment}/${dataset}/cao-format/" --dataset 'ml1m' --lowfrequence ${low_frequence}
     fi
 

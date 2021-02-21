@@ -45,7 +45,7 @@ def summarize(df_auxiliary, fr_summarize):
         hierarchy[child] = parent.replace('\n', '')
 
     if len(df_auxiliary.columns) != 4:
-        print(df_auxiliary.columns)
+        print('df_auxiliary must have 4 columns: '+ str(df_auxiliary.columns))
 
     for index, row in df_auxiliary.iterrows():
         if pd.notnull(row['genre']):

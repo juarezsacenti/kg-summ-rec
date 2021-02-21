@@ -37,7 +37,7 @@ mpl.rc('xtick', labelsize=12)
 mpl.rc('ytick', labelsize=12)
 
 
-def kge_k_means(data_home, folder, triples_file, items_file, mode, kge_name, epochs, batch_size, learning_rate, rates, view, relations, kg_map_file, verbose):
+def kge_k_means(data_home, folder, triples_file, items_file, mode, kge_name, epochs, batch_size, learning_rate, rates, view, relations, kg_map_file, seed, verbose):
     # Load triples:
     triples = load_from_ntriples(folder, triples_file, data_home)
     # Saving triples with pickle
@@ -57,16 +57,16 @@ def kge_k_means(data_home, folder, triples_file, items_file, mode, kge_name, epo
 
     # Select mode:
     if mode == 'singleview':
-        singleview(triples, items, kge_name, epochs, batch_size, learning_rate, rates, kg_map_file, verbose)
+        singleview(triples, items, kge_name, epochs, batch_size, learning_rate, rates, kg_map_file, seed, verbose)
     elif mode == 'multiview':
-        multiview(triples, items, kge_name, epochs, batch_size, learning_rate, rates, relations, kg_map_file, verbose)
+        multiview(triples, items, kge_name, epochs, batch_size, learning_rate, rates, relations, kg_map_file, seed, verbose)
     elif mode == 'splitview':
-        splitview(triples, items, kge_name, epochs, batch_size, learning_rate, rates, view, kg_map_file, verbose)
+        splitview(triples, items, kge_name, epochs, batch_size, learning_rate, rates, view, kg_map_file, seed, verbose)
     else:
         sys.exit('Given mode is not valid.')
 
 
-def splitview(triples, items, kge_name, epochs, batch_size, learning_rate, rates, view, kg_map_file, verbose):
+def splitview(triples, items, kge_name, epochs, batch_size, learning_rate, rates, view, kg_map_file, seed, verbose):
     # Select all entities, except items
     triples_df = pd.DataFrame(triples, columns=['s', 'p', 'o'])
     subjects = triples_df.s.unique()
@@ -81,7 +81,7 @@ def splitview(triples, items, kge_name, epochs, batch_size, learning_rate, rates
         #print(entities[0:10])
 
     # Train KGE model
-    model = kge(triples, kge_name, epochs, batch_size, learning_rate, verbose)
+    model = kge(triples, kge_name, epochs, batch_size, learning_rate, seed, verbose)
     save_embedding(nodes, model)
 
     # Simplification
@@ -101,7 +101,7 @@ def splitview(triples, items, kge_name, epochs, batch_size, learning_rate, rates
         plot_2d_genres(model, rate_df, ratio=rate, kg_map_file=kg_map_file)
 
 
-def singleview(triples, items, kge_name, epochs, batch_size, learning_rate, rates, kg_map_file, verbose):
+def singleview(triples, items, kge_name, epochs, batch_size, learning_rate, rates, kg_map_file, seed, verbose):
     # Select all entities, except items
     triples_df = pd.DataFrame(triples, columns=['s', 'p', 'o'])
     subjects = triples_df.s.unique()
@@ -117,7 +117,7 @@ def singleview(triples, items, kge_name, epochs, batch_size, learning_rate, rate
         #print(entities[0:10])
 
     # Train KGE model
-    model = kge(triples, kge_name, epochs, batch_size, learning_rate, verbose)
+    model = kge(triples, kge_name, epochs, batch_size, learning_rate, seed, verbose)
     save_embedding(nodes, model)
 
     # Simplification
@@ -137,7 +137,7 @@ def singleview(triples, items, kge_name, epochs, batch_size, learning_rate, rate
         plot_2d_genres(model, cluster_df, ratio=rate, kg_map_file=kg_map_file)
 
 
-def multiview(triples, items, kge_name, epochs, batch_size, learning_rate, rates, relations,kg_map_file, verbose):
+def multiview(triples, items, kge_name, epochs, batch_size, learning_rate, rates, relations, kg_map_file, seed, verbose):
     # Select all entities, except items
     triples_df = pd.DataFrame(triples, columns=['s', 'p', 'o'])
     subjects = triples_df.s.unique()
@@ -147,7 +147,7 @@ def multiview(triples, items, kge_name, epochs, batch_size, learning_rate, rates
     relations = relations.split(',')
 
     # Train KGE model
-    model = kge(triples, kge_name, epochs, batch_size, learning_rate, verbose)
+    model = kge(triples, kge_name, epochs, batch_size, learning_rate, seed, verbose)
     save_embedding(nodes, model)
 
     # Simplification
@@ -188,7 +188,7 @@ def multiview(triples, items, kge_name, epochs, batch_size, learning_rate, rates
         plot_2d_genres(model, rate_df, ratio=rate, kg_map_file=kg_map_file)
 
 
-def select_kge(kge_name,batch_size,epochs,verbose):
+def select_kge(kge_name,batch_size,epochs,seed,verbose):
     model=''
     # Select kge_name
     if kge_name == 'complex':
@@ -203,7 +203,7 @@ def select_kge(kge_name,batch_size,epochs,verbose):
                         loss_params={},
                         regularizer='LP',
                         regularizer_params={'p':2, 'lambda':1e-4},
-                        seed=0,
+                        seed=seed,
                         verbose=verbose)
     elif kge_name == 'hole':
         # HolE model
@@ -216,7 +216,7 @@ def select_kge(kge_name,batch_size,epochs,verbose):
                         loss='multiclass_nll',
                         regularizer='LP',
                         regularizer_params={'p':3, 'lambda':1e-5},
-                        seed=0,
+                        seed=seed,
                         verbose=verbose)
     elif kge_name == 'transe':
         # TransE model
@@ -230,7 +230,7 @@ def select_kge(kge_name,batch_size,epochs,verbose):
                         loss_params={}, #loss_params={'margin:5'},
                         regularizer='LP',
                         regularizer_params={'p':2, 'lambda':1e-4},
-                        seed=0,
+                        seed=seed,
                         verbose=verbose)
     else:
         sys.exit('Given kge_name is not valid.')
@@ -238,7 +238,7 @@ def select_kge(kge_name,batch_size,epochs,verbose):
     return model
 
 
-def kge(triples, kge_name, epochs, batch_size, learning_rate, verbose):
+def kge(triples, kge_name, epochs, batch_size, learning_rate, seed, verbose):
     kge_name = parsed_args.kge
     kge_model_savepath = f'./temp/ampligraph.model'
 
@@ -249,7 +249,7 @@ def kge(triples, kge_name, epochs, batch_size, learning_rate, verbose):
             t_size = math.ceil(len(triples)*0.2)
             X_train, X_test = train_test_split_no_unseen(triples, test_size=t_size)
 
-            eval_model = select_kge(kge_name, batch_size, epochs, verbose)
+            eval_model = select_kge(kge_name, batch_size, epochs, seed, verbose)
 
             eval_model.fit(X_train)
             filter_triples = np.concatenate((X_train, X_test))
@@ -279,7 +279,7 @@ def kge(triples, kge_name, epochs, batch_size, learning_rate, verbose):
             Hits@1: 0.19
             ''')
 
-        model = select_kge(kge_name, batch_size, epochs, verbose)
+        model = select_kge(kge_name, batch_size, epochs, seed, verbose)
 
         print('Training...')
         model.fit(np.array(triples))
@@ -447,6 +447,7 @@ if __name__ == '__main__':
     parser.add_argument('--view', type=str, dest='view', default='0')
     parser.add_argument('--relations', type=str, dest='relations', default='<http://ml1m-sun/actor>,<http://ml1m-sun/director>,<http://ml1m-sun/genre>')
     parser.add_argument('--kgmap', type=str, dest='kgmap', default='/data/temp/kg_map.dat')
+    parser.add_argument('--seed', type=str, dest='seed', default='0')
     parser.add_argument('--verbose', dest='verbose', default=False, action='store_true')
 
     parsed_args = parser.parse_args()
@@ -468,6 +469,7 @@ if __name__ == '__main__':
     view = parsed_args.view
     relations = parsed_args.relations
     kg_map_file = parsed_args.kgmap
+    seed = int(parsed_args.seed)
     verbose = parsed_args.verbose
 
-    kge_k_means(data_home, folder, triples_file, items_file, mode, kge_name, epochs, batch_size, learning_rate, rates, view, relations, kg_map_file, verbose)
+    kge_k_means(data_home, folder, triples_file, items_file, mode, kge_name, epochs, batch_size, learning_rate, rates, view, relations, kg_map_file, seed, verbose)
