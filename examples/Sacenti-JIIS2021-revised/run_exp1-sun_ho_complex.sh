@@ -161,7 +161,13 @@ preprocess_sun_fKG() {
     # Preprocess fKG
     cd $HOME/git/kg-summ-rec/preprocess
     LOW_FREQUENCE=10    #Low Frequence Filtering (0, 10)
-    cao-format_ml-sun "ml-sun_ho_fKG" ${LOW_FREQUENCE}
+    if [ "$verbose" = true ]
+    then
+        cao-format_ml-sun "ml-sun_ho_oKG" ${LOW_FREQUENCE} ${seed} 'true'
+    else
+        cao-format_ml-sun "ml-sun_ho_oKG" ${LOW_FREQUENCE} ${seed} 'false'
+    fi
+    echo "${seed}, ${verbose}"
     cd $HOME/git/kg-summ-rec
 
     # Collect oKG statistics
@@ -247,7 +253,7 @@ summarize() {
             local dirName="${dataset_out}_${kg_type}-${summarization_mode}"
             STARTTIME=$(date +%s)
             clean_kge-k-means
-            echo "${seed}, ${verbose}"
+            echo "summarize: ${seed}, ${verbose}"
             if [ "${verbose}" = true ]
             then
                 kge-k-means ${experiment} ${dataset_in} ${dirName} ${kg_filename} ${summarization_mode} ${kge} ${epochs} ${batch_size} ${learning_rate} ${low_frequence} ${ratio} ${seed} 'true'
@@ -532,7 +538,6 @@ run_experiment() {
     experiment=$1
     seed=$2
     if [ "$3" = 'true' ]; then verbose=true; else verbose=false; fi
-    echo "${seed}, ${verbose}"
     overall_comp_cost="$HOME/git/results/${experiment}/overall_comp_cost.tsv"
 
     if [ ! -d "$HOME/git/datasets/${experiment}" ]
