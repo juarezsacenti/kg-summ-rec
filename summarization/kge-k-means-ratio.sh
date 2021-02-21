@@ -60,7 +60,6 @@ kge-k-means() {
     local ratios_list=${11}
     seed=${12}
     if [ "${13}" = 'true' ]; then verbose=true; else verbose=false; fi
-    echo "${seed}, ${verbose}"
 
     if [ ${summarization_mode} = 'sv' ]
     then
