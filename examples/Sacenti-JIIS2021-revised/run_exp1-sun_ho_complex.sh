@@ -528,7 +528,7 @@ recommend() {
 run_experiment() {
     experiment=$1
     seed=$2
-    if [ "$3" = 'true' ]; verbose=true; else verbose=false; fi
+    if [ "$3" = 'true' ]; then verbose=true; else verbose=false; fi
     overall_comp_cost="$HOME/git/results/${experiment}/overall_comp_cost.tsv"
 
     if [ ! -d "$HOME/git/datasets/${experiment}" ]
