@@ -59,7 +59,7 @@ kge-k-means() {
     local low_frequence=${10}
     local ratios_list=${11}
     seed=${12}
-    if [ "${13}" = 'true' ]; verbose=true; else; verbose=false; fi
+    if [ "${13}" = 'true' ]; verbose=true; else verbose=false; fi
 
     if [ ${summarization_mode} = 'sv' ]
     then
