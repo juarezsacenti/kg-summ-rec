@@ -21,11 +21,11 @@ def random_selection(ammount):
 
 def our_selection():
     runs = []
-    runs.append((0,1,2,3,4))
     runs.append((1,2,3,4,0))
     runs.append((2,3,4,0,1))
     runs.append((3,4,0,1,2))
     runs.append((4,0,1,2,3))
+    runs.append((0,1,2,3,4))
     return runs
 
 
@@ -88,10 +88,10 @@ if __name__ == '__main__':
         merge_files(valid_file, os.path.join(fold_path, 'fold'+str(r[3])+'.dat'))
         merge_files(test_file, os.path.join(fold_path, 'fold'+str(r[4])+'.dat'))
 
-        merge_files(sun_train_file,
-                    os.path.join(fold_path, 'sun_fold'+str(r[0])+'.txt'),
-                    os.path.join(fold_path, 'sun_fold'+str(r[1])+'.txt'),
-                    os.path.join(fold_path, 'sun_fold'+str(r[2])+'.txt'),
-                    os.path.join(fold_path, 'sun_fold'+str(r[3])+'.txt'))
-        merge_files(sun_test_file, os.path.join(fold_path, 'sun_fold'+str(r[4])+'.txt'))
+        # merge_files(sun_train_file,
+        #             os.path.join(fold_path, 'sun_fold'+str(r[0])+'.txt'),
+        #             os.path.join(fold_path, 'sun_fold'+str(r[1])+'.txt'),
+        #             os.path.join(fold_path, 'sun_fold'+str(r[2])+'.txt'),
+        #             os.path.join(fold_path, 'sun_fold'+str(r[3])+'.txt'))
+        # merge_files(sun_test_file, os.path.join(fold_path, 'sun_fold'+str(r[4])+'.txt'))
         save_runs(runs_file, runs)

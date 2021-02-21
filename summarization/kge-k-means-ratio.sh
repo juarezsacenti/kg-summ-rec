@@ -28,7 +28,7 @@ source $HOME/git/kg-summ-rec/util/util.sh
 #######################################
 # Summarize using KGE-K-Means
 # GLOBALS:
-#   HOME, PWD
+#   HOME, PWD, seed, verbose
 # ARGUMENTS:
 #   dataset_in: Input dataset, e.g., ml-sun_ho_originalKG, ml-cao_ho_fKG
 #   dataset_out: Output dataset name, e.g., ml-sun_ho_sv_sKG, ml-cao_ho_mv_sfKG
@@ -43,29 +43,24 @@ source $HOME/git/kg-summ-rec/util/util.sh
 # RETURN:
 #   0 if print succeeds, non-zero on error.
 #######################################
+seed=0
+verbose=false
+
 kge-k-means() {
     local experiment=$1
-    echo ${experiment}
     local dataset_in=$2
-    echo ${dataset_in}
     local dataset_out=$3
-    echo ${dataset_out}
     local kg_filename=$4
-    echo ${kg_filename}
     local summarization_mode=$5
-    echo ${summarization_mode}
     local kge=$6
-    echo ${kge}
     local epochs=$7
-    echo ${epochs}
     local batch_size=$8
-    echo ${batch_size}
     local learning_rate=$9
-    echo ${learning_rate}
     local low_frequence=${10}
-    echo ${low_frequence}
     local ratios_list=${11}
-    echo ${ratios_list}
+    seed=${12}
+    if [ "${13}" = 'true' ]; verbose=true; else; verbose=false; fi
+
     if [ ${summarization_mode} = 'sv' ]
     then
         IFS=',' read -r -a ratios <<< "${ratios_list}"
@@ -104,7 +99,7 @@ sv_kge-k-means() {
     ############################################################################
     if [ ! -d "$HOME/git/datasets/${experiment}/${dataset_out}-${kge}-${ratio}" ]
     then
-        echo "[kg-summ-rec] Creating ~/git/datasets/${experiment}/${dataset_out}-${kge}-${ratio}"
+        if [ "$verbose" = true ]; then echo "[kg-summ-rec] Creating ~/git/datasets/${experiment}/${dataset_out}-${kge}-${ratio}"; fi
         mkdir ~/git/datasets/${experiment}/${dataset_out}-${kge}-${ratio}/
         mkdir ~/git/datasets/${experiment}/${dataset_out}-${kge}-${ratio}/cao-format
         mkdir ~/git/datasets/${experiment}/${dataset_out}-${kge}-${ratio}/cao-format/ml1m
@@ -120,30 +115,39 @@ sv_kge-k-means() {
 
     if no_exist "$HOME/git/kg-summ-rec/docker/kge-k-means_data/temp/${kg_filename}"
     then
-        echo "[kg-summ-rec] Creating ~/git/kg-summ-rec/docker/kge-k-means_data/temp/${kg_filename}"
+        if [ "$verbose" = true ]; then echo "[kg-summ-rec] Creating ~/git/kg-summ-rec/docker/kge-k-means_data/temp/${kg_filename}"; fi
         yes | cp -L ~/git/datasets/${experiment}/${dataset_in}/${kg_filename} ~/git/kg-summ-rec/docker/kge-k-means_data/temp/
     fi
     if no_exist "$HOME/git/kg-summ-rec/docker/kge-k-means_data/temp/i2kg_map.tsv"
     then
-        echo '[kg-summ-rec] Creating ~/git/kg-summ-rec/docker/kge-k-means_data/temp/i2kg_map.tsv'
+        if [ "$verbose" = true ]; then echo '[kg-summ-rec] Creating ~/git/kg-summ-rec/docker/kge-k-means_data/temp/i2kg_map.tsv'; fi
         yes | cp -L ~/git/datasets/${experiment}/${dataset_in}/cao-format/ml1m/i2kg_map.tsv  ~/git/kg-summ-rec/docker/kge-k-means_data/temp/
     fi
     if no_exist "$HOME/git/kg-summ-rec/docker/kge-k-means_data/temp/kg_map.dat"
     then
-        echo '[kg-summ-rec] Creating ~/git/kg-summ-rec/docker/kge-k-means_data/temp/kg_map.dat'
+        if [ "$verbose" = true ]; then echo '[kg-summ-rec] Creating ~/git/kg-summ-rec/docker/kge-k-means_data/temp/kg_map.dat'; fi
         yes | cp -L ~/git/datasets/${experiment}/${dataset_in}/cao-format/ml1m/kg_map.dat  ~/git/kg-summ-rec/docker/kge-k-means_data/temp/
     fi
     if no_exist "$HOME/git/datasets/${experiment}/${dataset_out}-${kge}-${ratio}/cluster${ratio}.tsv"
     then
-        echo "[kg-summ-rec] Creating ~/git/datasets/${experiment}/${dataset_out}-${kge}-${ratio}/cluster${ratio}.tsv"
+        if [ "$verbose" = true ]; then echo "[kg-summ-rec] Creating ~/git/datasets/${experiment}/${dataset_out}-${kge}-${ratio}/cluster${ratio}.tsv"; fi
         cd $HOME/git/kg-summ-rec/docker
         cp kge-k-means_Dockerfile Dockerfile
         docker build -t kge-k-means:1.0 .
 
-        docker run --rm -it --gpus all -v "$PWD"/kge-k-means_data:/data -w /data \
-        kge-k-means:1.0 /bin/bash -c "python kge-k-means.py --triples ${kg_filename} \
-        --mode singleview --kge ${kge} --epochs ${epochs} --batch_size ${batch_size} \
-        --learning_rate ${learning_rate} --rates ${ratio} --verbose"
+
+        if [ "$verbose" = true ]
+        then
+            docker run --rm -it --gpus all -v "$PWD"/kge-k-means_data:/data -w /data \
+            kge-k-means:1.0 /bin/bash -c "python kge-k-means.py --triples ${kg_filename} \
+            --mode singleview --kge ${kge} --epochs ${epochs} --batch_size ${batch_size} \
+            --learning_rate ${learning_rate} --rates ${ratio} --seed ${seed} --verbose"
+        else
+            docker run --rm -it --gpus all -v "$PWD"/kge-k-means_data:/data -w /data \
+            kge-k-means:1.0 /bin/bash -c "python kge-k-means.py --triples ${kg_filename} \
+            --mode singleview --kge ${kge} --epochs ${epochs} --batch_size ${batch_size} \
+            --learning_rate ${learning_rate} --rates ${ratio} --seed ${seed}"
+        fi
 
         #docker run --rm -it --gpus all -v "$PWD"/kge-k-means_data:/data -w /data kge-k-means:1.0 /bin/bash -c "python kge-k-means.py --triples 'kg-ig.nt' --mode 'singleview' --kge 'complex' --epochs '150' --batch_size '100' --learning_rate '0.005' --rates '75' --verbose"
 
@@ -164,7 +168,7 @@ sv_kge-k-means() {
 
     if no_exist "$HOME/git/datasets/${experiment}/${dataset_out}-${kge}-${ratio}/kg-ig.nt"
     then
-        echo "[kg-summ-rec] Creating ~/git/datasets/${experiment}/${dataset_out}-${kge}-${ratio}/kg-ig.nt"
+        if [ "$verbose" = true ]; then echo "[kg-summ-rec] Creating ~/git/datasets/${experiment}/${dataset_out}-${kge}-${ratio}/kg-ig.nt"; fi
         cd $HOME/git/kg-summ-rec/util
         python kg2rdf.py --mode 'cluster' --input2 "$HOME/git/datasets/${experiment}/${dataset_out}-${kge}-${ratio}/cluster${ratio}.tsv" \
         --input "$HOME/git/datasets/${experiment}/${dataset_in}/kg-ig.nt" --output "$HOME/git/datasets/${experiment}/${dataset_out}-${kge}-${ratio}/kg-ig.nt"
@@ -189,7 +193,7 @@ mv_kge-k-means() {
     ############################################################################
     if [ ! -d "$HOME/git/datasets/${experiment}/${dataset_out}-${kge}-${ratio}" ]
     then
-        echo "[kg-summ-rec] Creating ~/git/datasets/${experiment}/${dataset_out}-${kge}-${ratio}"
+        if [ "$verbose" = true ]; then echo "[kg-summ-rec] Creating ~/git/datasets/${experiment}/${dataset_out}-${kge}-${ratio}"; fi
         mkdir ~/git/datasets/${experiment}/${dataset_out}-${kge}-${ratio}/
         mkdir ~/git/datasets/${experiment}/${dataset_out}-${kge}-${ratio}/cao-format
         mkdir ~/git/datasets/${experiment}/${dataset_out}-${kge}-${ratio}/cao-format/ml1m
@@ -201,31 +205,40 @@ mv_kge-k-means() {
     ############################################################################
     if no_exist "$HOME/git/kg-summ-rec/docker/kge-k-means_data/temp/${kg_filename}"
     then
-        echo "[kg-summ-rec] Creating ~/git/kg-summ-rec/docker/kge-k-means_data/temp/${kg_filename}"
+        if [ "$verbose" = true ]; then echo "[kg-summ-rec] Creating ~/git/kg-summ-rec/docker/kge-k-means_data/temp/${kg_filename}"; fi
         yes | cp -L ~/git/datasets/${experiment}/${dataset_in}/${kg_filename} ~/git/kg-summ-rec/docker/kge-k-means_data/temp/
     fi
     if no_exist "$HOME/git/kg-summ-rec/docker/kge-k-means_data/temp/i2kg_map.tsv"
     then
-        echo '[kg-summ-rec] Creating ~/git/kg-summ-rec/docker/kge-k-means_data/temp/i2kg_map.tsv'
+        if [ "$verbose" = true ]; then echo '[kg-summ-rec] Creating ~/git/kg-summ-rec/docker/kge-k-means_data/temp/i2kg_map.tsv'; fi
         yes | cp -L ~/git/datasets/${experiment}/${dataset_in}/cao-format/ml1m/i2kg_map.tsv  ~/git/kg-summ-rec/docker/kge-k-means_data/temp/
     fi
     if no_exist "$HOME/git/kg-summ-rec/docker/kge-k-means_data/temp/kg_map.dat"
     then
-        echo '[kg-summ-rec] Creating ~/git/kg-summ-rec/docker/kge-k-means_data/temp/kg_map.dat'
+        if [ "$verbose" = true ]; then echo '[kg-summ-rec] Creating ~/git/kg-summ-rec/docker/kge-k-means_data/temp/kg_map.dat'; fi
         yes | cp -L ~/git/datasets/${experiment}/${dataset_in}/cao-format/ml1m/kg_map.dat  ~/git/kg-summ-rec/docker/kge-k-means_data/temp/
     fi
     if no_exist "$HOME/git/datasets/${experiment}/${dataset_out}-${kge}-${ratio}/cluster${ratio}.tsv"
     then
-        echo "[kg-summ-rec] Creating ~/git/datasets/${experiment}/${dataset_out}-${kge}-${ratio}/cluster${ratio}.tsv"
+        if [ "$verbose" = true ]; then echo "[kg-summ-rec] Creating ~/git/datasets/${experiment}/${dataset_out}-${kge}-${ratio}/cluster${ratio}.tsv"; fi
         cd $HOME/git/kg-summ-rec/docker
         cp kge-k-means_Dockerfile Dockerfile
         docker build -t kge-k-means:1.0 .
 
-        docker run --rm -it --gpus all -v "$PWD"/kge-k-means_data:/data -w /data \
-        kge-k-means:1.0 /bin/bash -c "python kge-k-means.py --triples ${kg_filename} \
-        --mode multiview --relations '<http://ml1m-sun/actor>,<http://ml1m-sun/director>,<http://ml1m-sun/genre>' \
-        --kge ${kge} --epochs ${epochs} --batch_size ${batch_size} \
-        --learning_rate ${learning_rate} --rates ${ratio} --verbose"
+        if [ "$verbose" = true ]
+        then
+            docker run --rm -it --gpus all -v "$PWD"/kge-k-means_data:/data -w /data \
+            kge-k-means:1.0 /bin/bash -c "python kge-k-means.py --triples ${kg_filename} \
+            --mode multiview --relations '<http://ml1m-sun/actor>,<http://ml1m-sun/director>,<http://ml1m-sun/genre>' \
+            --kge ${kge} --epochs ${epochs} --batch_size ${batch_size} \
+            --learning_rate ${learning_rate} --rates ${ratio} --seed ${seed} --verbose"
+        else
+            docker run --rm -it --gpus all -v "$PWD"/kge-k-means_data:/data -w /data \
+            kge-k-means:1.0 /bin/bash -c "python kge-k-means.py --triples ${kg_filename} \
+            --mode multiview --relations '<http://ml1m-sun/actor>,<http://ml1m-sun/director>,<http://ml1m-sun/genre>' \
+            --kge ${kge} --epochs ${epochs} --batch_size ${batch_size} \
+            --learning_rate ${learning_rate} --rates ${ratio} --seed ${seed}"
+        fi
 
         mv "$HOME/git/kg-summ-rec/docker/kge-k-means_data/temp/cluster${ratio}.tsv" "$HOME/git/datasets/${experiment}/${dataset_out}-${kge}-${ratio}/cluster${ratio}.tsv"
         mv "$HOME/git/kg-summ-rec/docker/kge-k-means_data/temp/cluster${ratio}.png" "$HOME/git/datasets/${experiment}/${dataset_out}-${kge}-${ratio}/cluster${ratio}.png"
@@ -244,7 +257,7 @@ mv_kge-k-means() {
 
     if no_exist "$HOME/git/datasets/${experiment}/${dataset_out}-${kge}-${ratio}/kg-ig.nt"
     then
-        echo "[kg-summ-rec] Creating ~/git/datasets/${experiment}/${dataset_out}-${kge}-${ratio}/kg-ig.nt"
+        if [ "$verbose" = true ]; then echo "[kg-summ-rec] Creating ~/git/datasets/${experiment}/${dataset_out}-${kge}-${ratio}/kg-ig.nt"; fi
         cd $HOME/git/kg-summ-rec/util
         python kg2rdf.py --mode 'mv_cluster' --input2 "$HOME/git/datasets/${experiment}/${dataset_out}-${kge}-${ratio}/cluster${ratio}.tsv" \
         --input "$HOME/git/datasets/${experiment}/${dataset_in}/kg-ig.nt" --output "$HOME/git/datasets/${experiment}/${dataset_out}-${kge}-${ratio}/kg-ig.nt"

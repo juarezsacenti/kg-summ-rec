@@ -37,7 +37,7 @@ def id_map(df, u_map_file, i_map_file):
     return df
 
 
-def sun2cao_split(df, column='user_id', frac=[0.1,0.2]):
+def sun2cao_split(df, column='user_id', frac=[0.1,0.2], seed=0):
     df_remain = df.copy()
     size = len(df_remain)
     g_size = len(df_remain[column].unique())
@@ -52,7 +52,7 @@ def sun2cao_split(df, column='user_id', frac=[0.1,0.2]):
     all_groups = df_remain[column].unique()
     for g in all_groups:
         g_df = df_remain[df_remain[column] == g]
-        samples = g_df.sample(n=len(frac))
+        samples = g_df.sample(n=len(frac), random_state=seed)
         for i in range(num_sets):
             idx = samples.index[i]
             sample = samples[i:i+1]
@@ -65,7 +65,7 @@ def sun2cao_split(df, column='user_id', frac=[0.1,0.2]):
     # sample remain by frac
     for i in range(num_sets):
         n = (np.ceil((frac[i]*size) - g_size)).astype(int)
-        samples = df_remain.sample(n)
+        samples = df_remain.sample(n, random_state=seed)
         sets[i] = pd.concat([sets[i], samples], ignore_index=False)
         df_remain = df_remain.drop(samples.index)
 
@@ -117,20 +117,22 @@ if __name__ == '__main__':
     parser.add_argument('--column', type=str, dest='column', default='user_id')
     parser.add_argument('--frac', type=str, dest='frac', default='0.2,0.2,0.2,0.2')
     parser.add_argument('--savepath', type=str, dest='save_path', default='~/git/datasets/ml-sun/cao-format/ml1m/')
+    parser.add_argument('--seed', type=str, dest='seed', default='0')
 
     parsed_args = parser.parse_args()
 
     load_file = os.path.expanduser(parsed_args.load_file)
     column = parsed_args.column
     frac = np.fromstring(parsed_args.frac, dtype=float, sep=',')
-    print(frac)
+    #print(frac)
     save_path = os.path.expanduser(parsed_args.save_path)
+    seed = int(os.path.expanduser(parsed_args.seed))
     u_map_file = os.path.join(save_path, 'u_map.dat')
     i_map_file = os.path.join(save_path, 'i_map.dat')
 
     df = load_ml1m_sun_data(load_file)
     df = id_map(df, u_map_file, i_map_file)
-    df_remain, sets = sun2cao_split(df, column, frac)
+    df_remain, sets = sun2cao_split(df, column, frac, seed)
 
     cao_remain, cao_sets = cao_format(df_remain, sets)
 

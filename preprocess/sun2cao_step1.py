@@ -39,7 +39,7 @@ def df2nt(df_auxiliary, output_file, i2kg_map_file=''):
                 i2kg_map[int(id)] = uri.replace('\n', '')
 
     if len(df_auxiliary.columns) != 4:
-        print(df_auxiliary.columns)
+        print('df_auxiliary must have 4 columns: '+ str(df_auxiliary.columns))
 
     with open(output_file, 'w') as fout:
         for index, row in df_auxiliary.iterrows():
@@ -117,7 +117,7 @@ def mapping(df_auxiliary, mapping_path, i2kg_map_file=''):
                 i2kg_map[int(id)] = uri.replace('\n', '')
 
     if len(df_auxiliary.columns) != 4:
-        print(df_auxiliary.columns)
+        print('df_auxiliary must have 4 columns: '+ str(df_auxiliary.columns))
 
     kg_path = os.path.join(mapping_path, 'kg')
     input_entity_file = os.path.join(kg_path, "kg_hop0.dat")
@@ -281,7 +281,7 @@ def mapping_from_nt(nt_file, mapping_path):
         subj_set.add(str(subj))
     for obj in g.objects():
         obj_set.add(str(obj))
-        
+
 
     entity_file = os.path.join(kg_path, 'entity_vocab.dat')
     with open(entity_file, 'w') as fout:
@@ -302,7 +302,7 @@ def mapping_from_nt(nt_file, mapping_path):
     genre_count = [ row['count'].toPython() for row in g.query('SELECT (count (distinct ?o) as ?count) WHERE { ?s <http://ml1m-sun/genre> ?o . }') ][0]
     director_count = [ row['count'].toPython() for row in g.query('SELECT (count (distinct ?o) as ?count) WHERE { ?s <http://ml1m-sun/director> ?o . }') ][0]
     actor_count = [ row['count'].toPython() for row in g.query('SELECT (count (distinct ?o) as ?count) WHERE { ?s <http://ml1m-sun/actor> ?o . }') ][0]
-    
+
     return genre_count, director_count, actor_count
 
 
@@ -325,6 +325,7 @@ if __name__ == '__main__':
     parser.add_argument('--input', type=str, dest='input_file', default='../../datasets/ml1m-sun/ml1m/auxiliary.txt')
     parser.add_argument('--i2kg_map', type=str, dest='i2kg_map_file', default='')
     parser.add_argument('--mapping', type=str, dest='mapping_path', default='../../datasets/ml1m-sun2cao/ml1m/')
+    parser.add_argument('--verbose', dest='verbose', default=False, action='store_true')
 
     parsed_args = parser.parse_args()
 
@@ -332,6 +333,7 @@ if __name__ == '__main__':
     input_file = os.path.expanduser(parsed_args.input_file)
     i2kg_map_file = os.path.expanduser(parsed_args.i2kg_map_file)
     mapping_path = os.path.expanduser(parsed_args.mapping_path)
+    verbose = parsed_args.verbose
 
     genre_count = director_count = actor_count = -1
     if mode == 'auxiliary':
@@ -342,5 +344,5 @@ if __name__ == '__main__':
     elif mode == 'nt':
         genre_count, director_count, actor_count = mapping_from_nt(input_file, mapping_path)
 
-    print_statistic_info(genre_count, director_count, actor_count)
-
+    if verbose:
+        print_statistic_info(genre_count, director_count, actor_count)
