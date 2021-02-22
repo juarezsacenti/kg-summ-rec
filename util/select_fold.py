@@ -3,13 +3,14 @@ import os
 import random
 
 
-def random_selection(ammount):
+def random_selection(ammount, seed):
+    random.seed(seed)
     runs = []
     while len(runs) < ammount:
         t = tuple(range(ammount))
         # (0, 1, 2, 3, 4)
         tr = tuple(random.sample(t, len(t)))
-        print(tr)
+        #print(tr)
         # (4, 3, 1, 0, 2)
 
         if tr[ammount-1] not in [r[ammount-1] for r in runs] :
@@ -55,15 +56,17 @@ def merge_files(out_file, *in_files):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=''' Selecting folds' roles (train, valid, test)''')
 
-    parser.add_argument('--foldpath', type=str, dest='fold_path', default='../../datasets/ml1m-sun2cao/ml1m/')
+    parser.add_argument('--foldpath', type=str, dest='fold_path', default='../../datasets/JIIS-revised-exp2/ml-sun_cv_oKG/folds/')
     parser.add_argument('--ammount', type=str, dest='ammount', default='5')
-    parser.add_argument('--savepath', type=str, dest='save_path', default='../../datasets/ml1m-sun2cao/ml1m/')
+    parser.add_argument('--savepath', type=str, dest='save_path', default='../../datasets/JIIS-revised-exp2/ml-sun_cv_oKG/fold0/')
+    parser.add_argument('--seed', type=str, dest='seed', default='0')
 
     parsed_args = parser.parse_args()
 
     fold_path = parsed_args.fold_path
     #ammount = int(parsed_args.ammount)
     save_path = parsed_args.save_path
+    seed = int(parsed_args.seed)
 
     runs_file = os.path.join(fold_path, 'runs.csv')
     train_file = os.path.join(save_path, 'train.dat')
@@ -75,6 +78,7 @@ if __name__ == '__main__':
     if os.path.isfile(runs_file):
         runs = load_runs(runs_file)
     else:
+        #runs = random_selection(ammount, seed)
         runs = our_selection()
 
     if len(runs) == 0:
@@ -88,10 +92,4 @@ if __name__ == '__main__':
         merge_files(valid_file, os.path.join(fold_path, 'fold'+str(r[3])+'.dat'))
         merge_files(test_file, os.path.join(fold_path, 'fold'+str(r[4])+'.dat'))
 
-        # merge_files(sun_train_file,
-        #             os.path.join(fold_path, 'sun_fold'+str(r[0])+'.txt'),
-        #             os.path.join(fold_path, 'sun_fold'+str(r[1])+'.txt'),
-        #             os.path.join(fold_path, 'sun_fold'+str(r[2])+'.txt'),
-        #             os.path.join(fold_path, 'sun_fold'+str(r[3])+'.txt'))
-        # merge_files(sun_test_file, os.path.join(fold_path, 'sun_fold'+str(r[4])+'.txt'))
         save_runs(runs_file, runs)

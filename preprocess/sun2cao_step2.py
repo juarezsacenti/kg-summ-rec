@@ -2,6 +2,7 @@ import argparse
 import logging
 import os
 import sys
+import random
 sys.path.append(os.path.abspath('../../joint-kg-recommender'))
 
 from jTransUP.data.preprocessRatings import preprocess as preprocessRating
@@ -17,6 +18,7 @@ if __name__ == '__main__':
     parser.add_argument('--dataset', type=str, dest='dataset', default='ml1m')
     parser.add_argument('--filterunseen', type=bool, dest='filter_unseen', default=True)
     parser.add_argument('--lowfrequence', type=int, dest='low_frequence', default=10)
+    parser.add_argument('--seed', type=int, dest='seed', default=0)
 
     parsed_args = parser.parse_args()
 
@@ -24,6 +26,7 @@ if __name__ == '__main__':
     dataset = parsed_args.dataset
     filter_unseen = parsed_args.filter_unseen
     low_frequence = parsed_args.low_frequence
+    seed = parsed_args.seed
 
     dataset_path = os.path.join(data_path, dataset)
     kg_path = os.path.join(dataset_path, 'kg')
@@ -51,4 +54,5 @@ if __name__ == '__main__':
     logger.addHandler(stream_handler)
 
     #print(kg_path)
+    random.seed(seed)
     preprocessKG([triple_file], kg_path, entity_file=i2kg_file, relation_file=relation_file, train_ratio=0.7, test_ratio=0.2, shuffle_data_split=True, filter_unseen_samples=filter_unseen, low_frequence=low_frequence, logger=logger)
