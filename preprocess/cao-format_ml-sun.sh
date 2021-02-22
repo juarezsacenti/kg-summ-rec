@@ -53,6 +53,7 @@ cao-format_ml-sun() {
     then
         cv_cao-format_ml-sun "${dataset}" "${low_frequence}"
     elif [ "$split_type" = 'ho' ]
+    then
         ho_cao-format_ml-sun "${dataset}" "${low_frequence}"
     else
         echo "ERROR: split_type param of cao-format_ml-sun() must be 'ho' or 'cv'."
