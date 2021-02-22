@@ -127,18 +127,6 @@ preprocess_sun_oKG() {
         folds=(0 1 2 3 4)
         for fold_number in "${folds[@]}"
         do
-            # Create folder results/${experiment}/fold*
-            if no_exist "$HOME/git/results/${experiment}/fold${fold_number}"
-            then
-                if [ "$verbose" = true ]; then echo "[kg-summ-rec] preprocess_sun_oKG: Creating ~/git/results/${experiment}/fold${fold_number}"; fi
-                mkdir ~/git/results/${experiment}/fold${fold_number}
-            fi
-            # Create folder results/${experiment}/fold*/ml-sun_cv_oKG
-            if no_exist "$HOME/git/results/${experiment}/fold${fold_number}/ml-sun_cv_oKG"
-            then
-                if [ "$verbose" = true ]; then echo "[kg-summ-rec] preprocess_sun_oKG: Creating ~/git/results/${experiment}/fold${fold_number}/ml-sun_cv_oKG"; fi
-                mkdir ~/git/results/${experiment}/fold${fold_number}/ml-sun_cv_oKG
-            fi
             # Collect ml-sun_cv_oKG statistics
             if no_exist "$HOME/git/results/${experiment}/fold${fold_number}/ml-sun_cv_oKG/kg-ig_stats.tsv"
             then
@@ -186,18 +174,6 @@ preprocess_sun_fKG() {
         folds=(0 1 2 3 4)
         for fold_number in "${folds[@]}"
         do
-            # Create folder results/${experiment}/fold*
-            if no_exist "$HOME/git/results/${experiment}/fold${fold_number}"
-            then
-                if [ "$verbose" = true ]; then echo "[kg-summ-rec] preprocess_sun_fKG: Creating ~/git/results/${experiment}/fold${fold_number}"; fi
-                mkdir ~/git/results/${experiment}/fold${fold_number}
-            fi
-            # Create folder results/${experiment}/fold*/ml-sun_cv_fKG
-            if no_exist "$HOME/git/results/${experiment}/fold${fold_number}/ml-sun_cv_fKG"
-            then
-                if [ "$verbose" = true ]; then echo "[kg-summ-rec] preprocess_sun_fKG: Creating ~/git/results/${experiment}/fold${fold_number}/ml-sun_cv_fKG"; fi
-                mkdir ~/git/results/${experiment}/fold${fold_number}/ml-sun_cv_fKG
-            fi
             # Collect ml-sun_cv_oKG statistics
             if no_exist "$HOME/git/results/${experiment}/fold${fold_number}/ml-sun_cv_fKG/kg-ig_stats.tsv"
             then
@@ -432,7 +408,7 @@ kg_recommendation() {
     #summ_rates=(25 50 75)
     summ_rates=(50)
     folds=(0 1 2 3 4)
-    for f in "${folds[@]}"
+    for fold_number in "${folds[@]}"
     do
         for t in "${summ_types[@]}"
         do
@@ -445,7 +421,8 @@ kg_recommendation() {
                         local dirName="fold${fold_number}/${dataset_out}_${t}-${m}-${a}-${r}"
                         if [ "$verbose" = true ]; then echo "[kg-summ-rec] kg_recommendation: Creating ~/git/results/${experiment}/${dirName}/*.log"; fi
                         #recommend "${dirName}" '4873,487300,24363' '2663,266300,13317' '266,26630,1331' '10392,1039200,51960' 256 0.005
-                        recommend "${dirName}" '520,13026,13000' '4940,123747,123500' '4940,123747,123500' '10940,274047,273500' 256 0.005
+                        recommend "${dirName}" '520,13026,13000' '4940,123747,123500' '4940,123747,123500' '10940,274047,273500' 256 0.005 # One epoch has , , , steps.
+                        recommend "${dirName}" '540,13527,13500' '4940,123747,123500' '4940,123747,123500' '10940,274047,273500' 256 0.005 # One epoch has 27, , , steps. Proportion 30-501-500.
                     done
                 done
             done
