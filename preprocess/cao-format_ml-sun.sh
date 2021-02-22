@@ -171,7 +171,8 @@ cv_cao-format_ml-sun() {
             if no_exist "$HOME/git/datasets/${experiment}/fold${f}/${dataset}/cao-format/ml1m/train.dat"
             then
                 if [ "$verbose" = true ]; then echo "[kg-summ-rec] Creating ~/git/datasets/${experiment}/fold${f}/${dataset}/cao-format/ml1m/train.dat"; fi
-                python select_fold.py --foldpath "$HOME/git/datasets/${experiment}/folds/${dataset}/" --ammount '5' --savepath "$HOME/git/datasets/${experiment}/fold${f}/${dataset}/cao-format/ml1m/" --seed "${seed}"
+                echo ${f}
+                python select_fold.py --foldpath "$HOME/git/datasets/${experiment}/folds/" --ammount '5' --savepath "$HOME/git/datasets/${experiment}/fold${f}/${dataset}/cao-format/ml1m/" --seed "${seed}"
             fi
 
             #[clean_auxiliary.txt]
