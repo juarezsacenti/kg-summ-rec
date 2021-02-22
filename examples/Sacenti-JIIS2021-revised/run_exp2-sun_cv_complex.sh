@@ -101,114 +101,120 @@ source $HOME/git/kg-summ-rec/util/comp_cost.sh
 # - Filtering: infrequent entities filtering at 0 (oKG) and at 10 (fKG)
 ####
 preprocess_sun_oKG() {
-    local STARTTIME=$(date +%s)
-    # Create folders for Sun's original KG (oKG)
-    if no_exist "$HOME/git/datasets/${experiment}/ml-sun"
+    if [ ! -d "$HOME/git/datasets/${experiment}/folds" ]
     then
-        if [ "$verbose" = true ]; then echo "[kg-summ-rec] preprocess_sun_oKG: Creating ~/git/datasets/${experiment}/ml-sun"; fi
-        cd $HOME/git/kg-summ-rec/util
-        copy_ml_sun "$HOME/git/datasets/ml-sun" "$HOME/git/datasets/${experiment}/ml-sun"
-        cd $HOME/git/kg-summ-rec
-    fi
-
-    # Preprocess oKG
-    cd $HOME/git/kg-summ-rec/preprocess
-    LOW_FREQUENCE=0    #Low Frequence Filtering (0, 10)
-    if [ "$verbose" = true ]
-    then
-        cao-format_ml-sun "ml-sun_cv_oKG" ${LOW_FREQUENCE} 'cv' ${seed} 'true'
-    else
-        cao-format_ml-sun "ml-sun_cv_oKG" ${LOW_FREQUENCE} 'cv' ${seed} 'false'
-    fi
-    cd $HOME/git/kg-summ-rec
-
-    folds=(0 1 2 3 4)
-    for fold_number in "${folds[@]}"
-    do
-        # Create folder results/${experiment}/fold*
-        if no_exist "$HOME/git/results/${experiment}/fold${fold_number}"
+        local STARTTIME=$(date +%s)
+        # Create folders for Sun's original KG (oKG)
+        if no_exist "$HOME/git/datasets/${experiment}/ml-sun"
         then
-            if [ "$verbose" = true ]; then echo "[kg-summ-rec] preprocess_sun_oKG: Creating ~/git/results/${experiment}/fold${fold_number}"; fi
-            mkdir ~/git/results/${experiment}/fold${fold_number}
-        fi
-        # Create folder results/${experiment}/fold*/ml-sun_cv_oKG
-        if no_exist "$HOME/git/results/${experiment}/fold${fold_number}/ml-sun_cv_oKG"
-        then
-            if [ "$verbose" = true ]; then echo "[kg-summ-rec] preprocess_sun_oKG: Creating ~/git/results/${experiment}/fold${fold_number}/ml-sun_cv_oKG"; fi
-            mkdir ~/git/results/${experiment}/fold${fold_number}/ml-sun_cv_oKG
-        fi
-        # Collect ml-sun_cv_oKG statistics
-        if no_exist "$HOME/git/results/${experiment}/fold${fold_number}/ml-sun_cv_oKG/kg-ig_stats.tsv"
-        then
-            if [ "$verbose" = true ]; then echo "[kg-summ-rec] preprocess_sun_oKG: Creating ~/git/results/${experiment}/fold${fold_number}/ml-sun_cv_oKG/kg-ig_stats.tsv"; fi
+            if [ "$verbose" = true ]; then echo "[kg-summ-rec] preprocess_sun_oKG: Creating ~/git/datasets/${experiment}/ml-sun"; fi
             cd $HOME/git/kg-summ-rec/util
-            conda deactivate
-            conda activate kg-summ-rec
-            python kg2rdf.py --mode 'statistics' --kgpath "~/git/datasets/${experiment}/fold${fold_number}/ml-sun_cv_oKG" \
-            --input "~/git/datasets/${experiment}/fold${fold_number}/ml-sun_cv_oKG/kg-ig.nt" \
-            --output "~/git/results/${experiment}/fold${fold_number}/ml-sun_cv_oKG/kg-ig_stats.tsv"
+            copy_ml_sun "$HOME/git/datasets/ml-sun" "$HOME/git/datasets/${experiment}/ml-sun"
             cd $HOME/git/kg-summ-rec
         fi
-    done
 
-    local ENDTIME=$(date +%s)
-    echo -e "preprocess_sun_oKG\t$(($ENDTIME - $STARTTIME))\t${STARTTIME}\t${ENDTIME}" >> ${overall_comp_cost}
+        # Preprocess oKG
+        cd $HOME/git/kg-summ-rec/preprocess
+        LOW_FREQUENCE=0    #Low Frequence Filtering (0, 10)
+        if [ "$verbose" = true ]
+        then
+            cao-format_ml-sun "ml-sun_cv_oKG" ${LOW_FREQUENCE} 'cv' ${seed} 'true'
+        else
+            cao-format_ml-sun "ml-sun_cv_oKG" ${LOW_FREQUENCE} 'cv' ${seed} 'false'
+        fi
+        cd $HOME/git/kg-summ-rec
+
+        folds=(0 1 2 3 4)
+        for fold_number in "${folds[@]}"
+        do
+            # Create folder results/${experiment}/fold*
+            if no_exist "$HOME/git/results/${experiment}/fold${fold_number}"
+            then
+                if [ "$verbose" = true ]; then echo "[kg-summ-rec] preprocess_sun_oKG: Creating ~/git/results/${experiment}/fold${fold_number}"; fi
+                mkdir ~/git/results/${experiment}/fold${fold_number}
+            fi
+            # Create folder results/${experiment}/fold*/ml-sun_cv_oKG
+            if no_exist "$HOME/git/results/${experiment}/fold${fold_number}/ml-sun_cv_oKG"
+            then
+                if [ "$verbose" = true ]; then echo "[kg-summ-rec] preprocess_sun_oKG: Creating ~/git/results/${experiment}/fold${fold_number}/ml-sun_cv_oKG"; fi
+                mkdir ~/git/results/${experiment}/fold${fold_number}/ml-sun_cv_oKG
+            fi
+            # Collect ml-sun_cv_oKG statistics
+            if no_exist "$HOME/git/results/${experiment}/fold${fold_number}/ml-sun_cv_oKG/kg-ig_stats.tsv"
+            then
+                if [ "$verbose" = true ]; then echo "[kg-summ-rec] preprocess_sun_oKG: Creating ~/git/results/${experiment}/fold${fold_number}/ml-sun_cv_oKG/kg-ig_stats.tsv"; fi
+                cd $HOME/git/kg-summ-rec/util
+                conda deactivate
+                conda activate kg-summ-rec
+                python kg2rdf.py --mode 'statistics' --kgpath "~/git/datasets/${experiment}/fold${fold_number}/ml-sun_cv_oKG" \
+                --input "~/git/datasets/${experiment}/fold${fold_number}/ml-sun_cv_oKG/kg-ig.nt" \
+                --output "~/git/results/${experiment}/fold${fold_number}/ml-sun_cv_oKG/kg-ig_stats.tsv"
+                cd $HOME/git/kg-summ-rec
+            fi
+        done
+
+        local ENDTIME=$(date +%s)
+        echo -e "preprocess_sun_oKG\t$(($ENDTIME - $STARTTIME))\t${STARTTIME}\t${ENDTIME}" >> ${overall_comp_cost}
+    fi
 }
 
 preprocess_sun_fKG() {
-    local STARTTIME=$(date +%s)
-
-    # Create folders for Sun's filtered KG (fKG)
-    if no_exist "$HOME/git/datasets/${experiment}/ml-sun"
+    if [ ! -d "$HOME/git/datasets/${experiment}/folds" ]
     then
-        if [ "$verbose" = true ]; then echo "[kg-summ-rec] preprocess_sun_fKG: Creating ~/git/datasets/${experiment}/ml-sun"; fi
-        cd $HOME/git/kg-summ-rec/util
-        copy_ml_sun "$HOME/git/datasets/ml-sun" "$HOME/git/datasets/${experiment}/ml-sun"
-        cd $HOME/git/kg-summ-rec
-    fi
+        local STARTTIME=$(date +%s)
 
-    # Preprocess fKG
-    cd $HOME/git/kg-summ-rec/preprocess
-    LOW_FREQUENCE=10    #Low Frequence Filtering (0, 10)
-    if [ "$verbose" = true ]
-    then
-        cao-format_ml-sun "ml-sun_cv_fKG" ${LOW_FREQUENCE} 'cv' ${seed} 'true'
-    else
-        cao-format_ml-sun "ml-sun_cv_fKG" ${LOW_FREQUENCE} 'cv' ${seed} 'false'
-    fi
-    cd $HOME/git/kg-summ-rec
-
-    folds=(0 1 2 3 4)
-    for fold_number in "${folds[@]}"
-    do
-        # Create folder results/${experiment}/fold*
-        if no_exist "$HOME/git/results/${experiment}/fold${fold_number}"
+        # Create folders for Sun's filtered KG (fKG)
+        if no_exist "$HOME/git/datasets/${experiment}/ml-sun"
         then
-            if [ "$verbose" = true ]; then echo "[kg-summ-rec] preprocess_sun_fKG: Creating ~/git/results/${experiment}/fold${fold_number}"; fi
-            mkdir ~/git/results/${experiment}/fold${fold_number}
-        fi
-        # Create folder results/${experiment}/fold*/ml-sun_cv_fKG
-        if no_exist "$HOME/git/results/${experiment}/fold${fold_number}/ml-sun_cv_fKG"
-        then
-            if [ "$verbose" = true ]; then echo "[kg-summ-rec] preprocess_sun_fKG: Creating ~/git/results/${experiment}/fold${fold_number}/ml-sun_cv_fKG"; fi
-            mkdir ~/git/results/${experiment}/fold${fold_number}/ml-sun_cv_fKG
-        fi
-        # Collect ml-sun_cv_oKG statistics
-        if no_exist "$HOME/git/results/${experiment}/fold${fold_number}/ml-sun_cv_fKG/kg-ig_stats.tsv"
-        then
-            if [ "$verbose" = true ]; then echo "[kg-summ-rec] preprocess_sun_fKG: Creating ~/git/results/${experiment}/fold${fold_number}/ml-sun_cv_fKG/kg-ig_stats.tsv"; fi
+            if [ "$verbose" = true ]; then echo "[kg-summ-rec] preprocess_sun_fKG: Creating ~/git/datasets/${experiment}/ml-sun"; fi
             cd $HOME/git/kg-summ-rec/util
-            conda deactivate
-            conda activate kg-summ-rec
-            python kg2rdf.py --mode 'statistics' --kgpath "~/git/datasets/${experiment}/fold${fold_number}/ml-sun_cv_fKG" \
-            --input "~/git/datasets/${experiment}/fold${fold_number}/ml-sun_cv_fKG/kg-ig.nt" \
-            --output "~/git/results/${experiment}/fold${fold_number}/ml-sun_cv_fKG/kg-ig_stats.tsv"
+            copy_ml_sun "$HOME/git/datasets/ml-sun" "$HOME/git/datasets/${experiment}/ml-sun"
             cd $HOME/git/kg-summ-rec
         fi
-    done
 
-    local ENDTIME=$(date +%s)
-    echo -e "preprocess_sun_fKG\t$(($ENDTIME - $STARTTIME))\t${STARTTIME}\t${ENDTIME}" >> ${overall_comp_cost}
+        # Preprocess fKG
+        cd $HOME/git/kg-summ-rec/preprocess
+        LOW_FREQUENCE=10    #Low Frequence Filtering (0, 10)
+        if [ "$verbose" = true ]
+        then
+            cao-format_ml-sun "ml-sun_cv_fKG" ${LOW_FREQUENCE} 'cv' ${seed} 'true'
+        else
+            cao-format_ml-sun "ml-sun_cv_fKG" ${LOW_FREQUENCE} 'cv' ${seed} 'false'
+        fi
+        cd $HOME/git/kg-summ-rec
+
+        folds=(0 1 2 3 4)
+        for fold_number in "${folds[@]}"
+        do
+            # Create folder results/${experiment}/fold*
+            if no_exist "$HOME/git/results/${experiment}/fold${fold_number}"
+            then
+                if [ "$verbose" = true ]; then echo "[kg-summ-rec] preprocess_sun_fKG: Creating ~/git/results/${experiment}/fold${fold_number}"; fi
+                mkdir ~/git/results/${experiment}/fold${fold_number}
+            fi
+            # Create folder results/${experiment}/fold*/ml-sun_cv_fKG
+            if no_exist "$HOME/git/results/${experiment}/fold${fold_number}/ml-sun_cv_fKG"
+            then
+                if [ "$verbose" = true ]; then echo "[kg-summ-rec] preprocess_sun_fKG: Creating ~/git/results/${experiment}/fold${fold_number}/ml-sun_cv_fKG"; fi
+                mkdir ~/git/results/${experiment}/fold${fold_number}/ml-sun_cv_fKG
+            fi
+            # Collect ml-sun_cv_oKG statistics
+            if no_exist "$HOME/git/results/${experiment}/fold${fold_number}/ml-sun_cv_fKG/kg-ig_stats.tsv"
+            then
+                if [ "$verbose" = true ]; then echo "[kg-summ-rec] preprocess_sun_fKG: Creating ~/git/results/${experiment}/fold${fold_number}/ml-sun_cv_fKG/kg-ig_stats.tsv"; fi
+                cd $HOME/git/kg-summ-rec/util
+                conda deactivate
+                conda activate kg-summ-rec
+                python kg2rdf.py --mode 'statistics' --kgpath "~/git/datasets/${experiment}/fold${fold_number}/ml-sun_cv_fKG" \
+                --input "~/git/datasets/${experiment}/fold${fold_number}/ml-sun_cv_fKG/kg-ig.nt" \
+                --output "~/git/results/${experiment}/fold${fold_number}/ml-sun_cv_fKG/kg-ig_stats.tsv"
+                cd $HOME/git/kg-summ-rec
+            fi
+        done
+
+        local ENDTIME=$(date +%s)
+        echo -e "preprocess_sun_fKG\t$(($ENDTIME - $STARTTIME))\t${STARTTIME}\t${ENDTIME}" >> ${overall_comp_cost}
+    fi
 }
 
 ####
@@ -273,16 +279,19 @@ summarize() {
             for ratio in "${summ_ratios[@]}"
             do
                 local dirName="fold${fold_number}/${dataset_out}_${kg_type}-${summarization_mode}"
-                STARTTIME=$(date +%s)
-                clean_kge-k-means
-                if [ "${verbose}" = true ]
+                if [ ! -d "$HOME/git/datasets/${experiment}/${dirName}" ]
                 then
-                    kge-k-means ${experiment} "fold${fold_number}/${dataset_in}" ${dirName} ${kg_filename} ${summarization_mode} ${kge} ${epochs} ${batch_size} ${learning_rate} ${low_frequence} ${ratio} ${seed} 'true'
-                else
-                    kge-k-means ${experiment} "fold${fold_number}/${dataset_in}" ${dirName} ${kg_filename} ${summarization_mode} ${kge} ${epochs} ${batch_size} ${learning_rate} ${low_frequence} ${ratio} ${seed} 'false'
+                    STARTTIME=$(date +%s)
+                    clean_kge-k-means
+                    if [ "${verbose}" = true ]
+                    then
+                        kge-k-means ${experiment} "fold${fold_number}/${dataset_in}" ${dirName} ${kg_filename} ${summarization_mode} ${kge} ${epochs} ${batch_size} ${learning_rate} ${low_frequence} ${ratio} ${seed} 'true'
+                    else
+                        kge-k-means ${experiment} "fold${fold_number}/${dataset_in}" ${dirName} ${kg_filename} ${summarization_mode} ${kge} ${epochs} ${batch_size} ${learning_rate} ${low_frequence} ${ratio} ${seed} 'false'
+                    fi
+                    ENDTIME=$(date +%s)
+                    echo -e "summarize-fold${fold_number}/${dataset_out}_${kg_type}-${summarization_mode}-${kge}-${ratio}\t$(($ENDTIME - $STARTTIME))\t${STARTTIME}\t${ENDTIME}" >> ${overall_comp_cost}
                 fi
-                ENDTIME=$(date +%s)
-                echo -e "summarize-fold${fold_number}/${dataset_out}_${kg_type}-${summarization_mode}-${kge}-${ratio}\t$(($ENDTIME - $STARTTIME))\t${STARTTIME}\t${ENDTIME}" >> ${overall_comp_cost}
             done
         done
     done
@@ -312,15 +321,18 @@ preprocess_summ() {
                 for r in "${summ_rates[@]}"
                 do
                     local dirName="fold${fold_number}/${dataset_out}_${kg_type}-${m}-${a}-${r}"
-                    STARTTIME=$(date +%s)
-                    if [ "$verbose" = true ]
+                    if no_exist "$HOME/git/datasets/${experiment}/${dirName}/cao-format/ml1m/kg/kg_hop0.dat"
                     then
-                        cao-format_summ "fold${fold_number}/${dataset_in}" "${dirName}" "${low_frequence}" "${seed}" 'true'
-                    else
-                        cao-format_summ "fold${fold_number}/${dataset_in}" "${dirName}" "${low_frequence}" "${seed}" 'false'
+                        STARTTIME=$(date +%s)
+                        if [ "$verbose" = true ]
+                        then
+                            cao-format_summ "fold${fold_number}/${dataset_in}" "${dirName}" "${low_frequence}" "${seed}" 'true'
+                        else
+                            cao-format_summ "fold${fold_number}/${dataset_in}" "${dirName}" "${low_frequence}" "${seed}" 'false'
+                        fi
+                        ENDTIME=$(date +%s)
+                        echo -e "preprocess_summ-${dirName}\t$(($ENDTIME - $STARTTIME))\t${STARTTIME}\t${ENDTIME}" >> ${overall_comp_cost}
                     fi
-                    ENDTIME=$(date +%s)
-                    echo -e "preprocess_summ-${dirName}\t$(($ENDTIME - $STARTTIME))\t${STARTTIME}\t${ENDTIME}" >> ${overall_comp_cost}
                 done
             done
         done
@@ -447,7 +459,7 @@ kg_recommendation() {
         then
             if [ "$verbose" = true ]; then echo "[kg-summ-rec] kg_recommendation: Creating ~/git/results/${experiment}/fold${fold_number}/${dataset_in}/*.log"; fi
             #recommend "fold${fold_number}/${dataset_in}" '4873,487300,24363' '2663,266300,13317' '266,26630,1331' '10392,1039200,51960' 256 0.005
-            recommend "fold${fold_number}/${dataset_in}" '520,13026,13000' '4940,123747,123500' '4940,123747,123500' '10940,274047,273500' 256 0.005
+            recommend "fold${fold_number}/${dataset_in}" '520,13026,13000' '4940,123747,123500' '4940,123747,123500' '10940,274047,273500' 256 0.005 # One epoch has , , , steps.
         fi
     done
     cd $HOME/git/kg-summ-rec
