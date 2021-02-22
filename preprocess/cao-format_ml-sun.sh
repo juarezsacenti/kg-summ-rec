@@ -154,8 +154,6 @@ cv_cao-format_ml-sun() {
         if [ "$verbose" = true ]; then echo "[kg-summ-rec] Creating ~/git/datasets/${experiment}/folds"; fi
         python sun_split.py --loadfile "$HOME/git/datasets/${experiment}/ml-sun/sun-format/rating-delete-missing-itemid.txt" --column 'user_id' --frac '0.2,0.2,0.2,0.2' --savepath "$HOME/git/datasets/${experiment}/folds/" --seed "${seed}"
 
-        cd "$HOME/git/kg-summ-rec/util"
-
         folds=(0 1 2 3 4)
         for fold_number in "${folds[@]}"
         do
@@ -172,7 +170,9 @@ cv_cao-format_ml-sun() {
             then
                 if [ "$verbose" = true ]; then echo "[kg-summ-rec] Creating ~/git/datasets/${experiment}/fold${fold_number}/${dataset}/cao-format/ml1m/train.dat"; fi
                 echo ${fold_number}
+                cd "$HOME/git/kg-summ-rec/util"
                 python select_fold.py --foldpath "$HOME/git/datasets/${experiment}/folds/" --ammount '5' --savepath "$HOME/git/datasets/${experiment}/fold${fold_number}/${dataset}/cao-format/ml1m/" --seed "${seed}"
+                cd "$HOME/git/kg-summ-rec/preprocess"
             fi
 
             #[clean_auxiliary.txt]
