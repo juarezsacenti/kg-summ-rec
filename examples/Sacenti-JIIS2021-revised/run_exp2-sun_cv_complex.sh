@@ -172,9 +172,9 @@ preprocess_sun_fKG() {
     LOW_FREQUENCE=10    #Low Frequence Filtering (0, 10)
     if [ "$verbose" = true ]
     then
-        cao-format_ml-sun "ml-sun_ho_fKG" ${LOW_FREQUENCE} 'cv' ${seed} 'true'
+        cao-format_ml-sun "ml-sun_cv_fKG" ${LOW_FREQUENCE} 'cv' ${seed} 'true'
     else
-        cao-format_ml-sun "ml-sun_ho_fKG" ${LOW_FREQUENCE} 'cv' ${seed} 'false'
+        cao-format_ml-sun "ml-sun_cv_fKG" ${LOW_FREQUENCE} 'cv' ${seed} 'false'
     fi
     cd $HOME/git/kg-summ-rec
 
@@ -376,10 +376,10 @@ measure_summ_impact() {
 ####
 # recommend_sun_sKG
 #
-# - ml-sun_ho_oKG
+# - ml-sun_cv_oKG
 #
-# - ml-sun_ho_sKG_complex-ig-sv-75, ml-sun_ho_sKG_complex-ig-sv-50, ml-sun_ho_sKG_complex-ig-sv-25
-# - ml-sun_ho_sKG_complex-ig-mv-75, ml-sun_ho_sKG_complex-ig-mv-50, ml-sun_ho_sKG_complex-ig-mv-25
+# - ml-sun_cv_sKG_complex-ig-sv-75, ml-sun_cv_sKG_complex-ig-sv-50, ml-sun_cv_sKG_complex-ig-sv-25
+# - ml-sun_cv_sKG_complex-ig-mv-75, ml-sun_cv_sKG_complex-ig-mv-50, ml-sun_cv_sKG_complex-ig-mv-25
 ####
 recommend_sun_sKG() {
     # kg-summ-rec/evaluation
@@ -388,16 +388,16 @@ recommend_sun_sKG() {
         export PYTHONPATH="${HOME}/git/kg-summ-rec/evaluation:${PYTHONPATH}"
     fi
 
-    kg_recommendation "ml-sun_ho_oKG" "ml-sun_ho_sKG"
+    kg_recommendation "ml-sun_cv_oKG" "ml-sun_cv_sKG"
 }
 
 ####
 # recommend_sun_sfKG
 #
-# - ml-sun_ho_fKG
+# - ml-sun_cv_fKG
 #
-# - ml-sun_ho_sfKG_complex-ig-sv-75, ml-sun_ho_sfKG_complex-ig-sv-50, ml-sun_ho_sfKG_complex-ig-sv-25
-# - ml-sun_ho_sfKG_complex-ig-mv-75, ml-sun_ho_sfKG_complex-ig-mv-50, ml-sun_ho_sfKG_complex-ig-mv-25
+# - ml-sun_cv_sfKG_complex-ig-sv-75, ml-sun_cv_sfKG_complex-ig-sv-50, ml-sun_cv_sfKG_complex-ig-sv-25
+# - ml-sun_cv_sfKG_complex-ig-mv-75, ml-sun_cv_sfKG_complex-ig-mv-50, ml-sun_cv_sfKG_complex-ig-mv-25
 ####
 recommend_sun_sfKG() {
     # kg-summ-rec/evaluation
@@ -406,7 +406,7 @@ recommend_sun_sfKG() {
         export PYTHONPATH="${HOME}/git/kg-summ-rec/evaluation:${PYTHONPATH}"
     fi
 
-    kg_recommendation "ml-sun_ho_oKG" "ml-sun_ho_sfKG"
+    kg_recommendation "ml-sun_cv_oKG" "ml-sun_cv_sfKG"
 }
 
 kg_recommendation() {
