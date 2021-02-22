@@ -67,7 +67,6 @@ if __name__ == '__main__':
     #ammount = int(parsed_args.ammount)
     save_path = parsed_args.save_path
     seed = int(parsed_args.seed)
-    print(fold_path, ' ', save_path, ' ', seed)
 
     runs_file = os.path.join(fold_path, 'runs.csv')
     train_file = os.path.join(save_path, 'train.dat')
@@ -86,7 +85,6 @@ if __name__ == '__main__':
         print('Empty runs list. Delete runs.csv to redo fold selection.')
     else:
         r = runs.pop(0)
-        print(train_file, ' ', fold_path, ' ', str(r))
         merge_files(train_file,
                     os.path.join(fold_path, 'fold'+str(r[0])+'.dat'),
                     os.path.join(fold_path, 'fold'+str(r[1])+'.dat'),
