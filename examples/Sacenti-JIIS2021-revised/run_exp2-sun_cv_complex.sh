@@ -435,7 +435,7 @@ kg_recommendation() {
         then
             if [ "$verbose" = true ]; then echo "[kg-summ-rec] kg_recommendation: Creating ~/git/results/${experiment}/fold${fold_number}/${dataset_in}/*.log"; fi
             #recommend "fold${fold_number}/${dataset_in}" '4873,487300,24363' '2663,266300,13317' '266,26630,1331' '10392,1039200,51960' 256 0.005
-            recommend "${dirName}" '540,13500,13527' '4700,117500,117735' '4700,117500,117735' '9380,234500,234969' 256 0.005 # One epoch has 27, 235, 235, 469 steps. Proportion 30-501-500.
+            recommend "fold${fold_number}/${dataset_in}" '540,13500,13527' '4700,117500,117735' '4700,117500,117735' '9380,234500,234969' 256 0.005 # One epoch has 27, 235, 235, 469 steps. Proportion 30-501-500.
         fi
     done
     cd $HOME/git/kg-summ-rec

@@ -408,7 +408,7 @@ kg_recommendation() {
                     local dirName="${dataset_out}_${t}-${m}-${a}-${r}"
                     if [ "$verbose" = true ]; then echo "[kg-summ-rec] kg_recommendation: Creating ~/git/results/${experiment}/${dirName}/*.log"; fi
                     #recommend "${dirName}" '4873,487300,24363' '2663,266300,13317' '266,26630,1331' '10392,1039200,51960' 256 0.005
-                    recommend "${dirName}" '520,13026,13000' '4940,123747,123500' '4940,123747,123500' '10940,274047,273500' 256 0.005
+                    recommend "${dirName}" '520,13000,13026' '4940,123500,123747' '4940,123500,123747' '10940,273500,274047' 256 0.005
                 done
             done
         done
@@ -418,7 +418,7 @@ kg_recommendation() {
     then
         if [ "$verbose" = true ]; then echo "[kg-summ-rec] kg_recommendation: Creating ~/git/results/${experiment}/${dataset_in}/*.log"; fi
         #recommend "${dataset_in}" '4873,487300,24363' '2663,266300,13317' '266,26630,1331' '10392,1039200,51960' 256 0.005
-        recommend "${dataset_in}" '520,13026,13000' '4940,123747,123500' '4940,123747,123500' '10940,274047,273500' 256 0.005
+        recommend "${dataset_in}" '520,13000,13026' '4940,123500,123747' '4940,123500,123747' '10940,273500,274047' 256 0.005
     fi
 
     cd $HOME/git/kg-summ-rec
