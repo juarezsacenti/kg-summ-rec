@@ -45,8 +45,25 @@ source $HOME/git/kg-summ-rec/util/util.sh
 cao-format_ml-sun() {
     local dataset=$1 # Dataset
     local low_frequence=$2 # Filtering
-    seed=$3
-    if [ "$4" = 'true' ]; then verbose=true; else verbose=false; fi
+    local split_type=$3
+    seed=$4
+    if [ "$5" = 'true' ]; then verbose=true; else verbose=false; fi
+
+    if [ "$split_type" = 'cv' ]
+    then
+        cv_cao-format_ml-sun "${dataset}" "${low_frequence}"
+    elif [ "$split_type" = 'ho' ]
+        ho_cao-format_ml-sun "${dataset}" "${low_frequence}"
+    else
+        echo "ERROR: split_type param of cao-format_ml-sun() must be 'ho' or 'cv'."
+    fi
+}
+
+
+# Converts ml-sun to cao_format in hold-out
+ho_cao-format_ml-sun() {
+    local dataset=$1 # Dataset
+    local low_frequence=$2 # Filtering
 
     if [ ! -d "$HOME/git/datasets/${experiment}/${dataset}/cao-format" ]
     then
@@ -66,7 +83,7 @@ cao-format_ml-sun() {
         then
             if [ "$verbose" = true ]; then echo "[kg-summ-rec] Creating ~/git/datasets/${experiment}/${dataset}/cao-format/ml1m/train.dat"; fi
             #[train.dat, valid.dat, test.dat by splitting rating-delete-missing-item.txt]
-            python sun_split.py --loadfile "$HOME/git/datasets/${experiment}/${dataset}/sun-format/rating-delete-missing-itemid.txt" --column 'user_id' --frac '0.1,0.2' --savepath "$HOME/git/datasets/${experiment}/${dataset}/cao-format/ml1m/"
+            python sun_split.py --loadfile "$HOME/git/datasets/${experiment}/${dataset}/sun-format/rating-delete-missing-itemid.txt" --column 'user_id' --frac '0.1,0.2' --savepath "$HOME/git/datasets/${experiment}/${dataset}/cao-format/ml1m/" --seed "${seed}"
         else # ml1m ratings from Cao's project
             #[train.dat, valid.dat, test.dat symbolic links]
             if [ "$verbose" = true ]; then echo "Copying ~/git/datasets/${experiment}/${dataset}/cao-format/ml1m/train.dat"; fi
@@ -104,6 +121,85 @@ cao-format_ml-sun() {
         python sun2cao_step2.py --data_path "~/git/datasets/${experiment}/${dataset}/cao-format/" --dataset 'ml1m' --lowfrequence ${low_frequence}
     fi
 
+    #return to starting folder
+    cd "$HOME/git/kg-summ-rec/preprocess"
+}
+
+
+# Converts ml-sun to cao_format in cross-validation 5-fold
+cv_cao-format_ml-sun() {
+    local dataset=$1 # Dataset
+    local low_frequence=$2 # Filtering
+
+    # Create folds, fold0, ..., folders
+    if [ ! -d "$HOME/git/datasets/${experiment}/folds" ]
+    then
+        if [ "$verbose" = true ]; then echo "[kg-summ-rec] Creating ~/git/datasets/${experiment}/folds"; fi
+        mkdir ~/git/datasets/${experiment}/folds
+        mkdir ~/git/datasets/${experiment}/fold0
+        mkdir ~/git/datasets/${experiment}/fold1
+        mkdir ~/git/datasets/${experiment}/fold2
+        mkdir ~/git/datasets/${experiment}/fold3
+        mkdir ~/git/datasets/${experiment}/fold4
+    fi
+
+    #[activate kg-summ-rec]
+    conda deactivate
+    conda activate kg-summ-rec
+
+    # Create files in folds, fold0, ..., folders
+    if no_exist "$HOME/git/datasets/${experiment}/folds/fold0.dat"
+    then
+        if [ "$verbose" = true ]; then echo "[kg-summ-rec] Creating ~/git/datasets/${experiment}/folds"; fi
+        python sun_split.py --loadfile "$HOME/git/datasets/${experiment}/ml-sun/sun-format/rating-delete-missing-itemid.txt" --column 'user_id' --frac '0.2,0.2,0.2,0.2' --savepath "$HOME/git/datasets/${experiment}/folds/" --seed "${seed}"
+
+        cd "$HOME/git/kg-summ-rec/util"
+
+        folds=(0 1 2 3 4)
+        for f in "${folds[@]}"
+        do
+            if [ ! -d "$HOME/git/datasets/${experiment}/fold${f}/${dataset}" ]
+            then
+                if [ "$verbose" = true ]; then echo "[kg-summ-rec] Creating ~/git/datasets/${experiment}/fold${f}/${dataset}/cao-format/ml1m/kg"; fi
+                mkdir ~/git/datasets/${experiment}/fold${f}/${dataset}
+                mkdir ~/git/datasets/${experiment}/fold${f}/${dataset}/cao-format
+                mkdir ~/git/datasets/${experiment}/fold${f}/${dataset}/cao-format/ml1m
+                mkdir ~/git/datasets/${experiment}/fold${f}/${dataset}/cao-format/ml1m/kg
+            fi
+
+            if no_exist "$HOME/git/datasets/${experiment}/fold${f}/${dataset}/cao-format/ml1m/train.dat"
+            then
+                if [ "$verbose" = true ]; then echo "[kg-summ-rec] Creating ~/git/datasets/${experiment}/fold${f}/${dataset}/cao-format/ml1m/train.dat"; fi
+                python select_fold.py --foldpath "$HOME/git/datasets/${experiment}/folds/${dataset}/" --ammount '5' --savepath "$HOME/git/datasets/${experiment}/fold${f}/${dataset}/cao-format/ml1m/" --seed "${seed}"
+            fi
+
+            #[clean_auxiliary.txt]
+            if no_exist "$HOME/git/datasets/${experiment}/fold${f}/${dataset}/cao-format/ml1m/clean_auxiliary.txt"
+            then
+                if [ "$verbose" = true ]; then echo "[kg-summ-rec] Creating ~/git/datasets/${experiment}/fold${f}/${dataset}/cao-format/ml1m/clean_auxiliary.txt"; fi
+                python sun2cao_step0.py --auxiliary "$HOME/git/datasets/${experiment}/ml-sun/sun-format/auxiliary.txt" --output "$HOME/git/datasets/${experiment}/fold${f}/${dataset}/cao-format/ml1m/clean_auxiliary.txt"
+            fi
+
+            #[sun2cao_step1]
+            if no_exist "$HOME/git/datasets/${experiment}/fold${f}/${dataset}/cao-format/ml1m/kg/kg_hop0.dat"
+            then
+                if [ "$verbose" = true ]
+                then
+                    echo "[kg-summ-rec] Creating ~/git/datasets/${experiment}/fold${f}/${dataset}/cao-format/ml1m/kg/kg_hop0.dat"
+                    python sun2cao_step1.py --input "$HOME/git/datasets/${experiment}/fold${f}/${dataset}/cao-format/ml1m/clean_auxiliary.txt"  --mapping "$HOME/git/datasets/${experiment}/fold${f}/${dataset}/cao-format/ml1m/" --verbose
+                else
+                    python sun2cao_step1.py --input "$HOME/git/datasets/${experiment}/fold${f}/${dataset}/cao-format/ml1m/clean_auxiliary.txt"  --mapping "$HOME/git/datasets/${experiment}/fold${f}/${dataset}/cao-format/ml1m/"
+                fi
+            fi
+
+            #[sun2cao_step2]
+            if no_exist "$HOME/git/datasets/${experiment}/fold${f}/${dataset}/cao-format/ml1m/kg/e_map.dat"
+            then
+                if [ "$verbose" = true ]; then echo "[kg-summ-rec] Creating ~/git/datasets/${experiment}/fold${f}/${dataset}/cao-format/ml1m/kg/e_map.dat"; fi
+                python sun2cao_step2.py --data_path "~/git/datasets/${experiment}/fold${f}/${dataset}/cao-format/" --dataset 'ml1m' --lowfrequence ${low_frequence} --seed "${seed}"
+            fi
+        done
+    fi
     #return to starting folder
     cd "$HOME/git/kg-summ-rec/preprocess"
 }

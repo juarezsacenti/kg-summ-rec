@@ -17,7 +17,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #######################################
-# Cao format sumamrization
+# Cao format summarization
 # - KG type: item graph (ig) and user-item graph (uig)
 # GLOBALS:
 #   HOME
@@ -33,6 +33,7 @@
 # RETURN:
 #   0 if print succeeds, non-zero on error.
 #######################################
+seed=0
 verbose=false
 
 #######################################
@@ -47,7 +48,8 @@ cao-format_summ() {
     local dataset_in=$1 # Input dataset: ml-sun, ml-cao
     local dataset_out=$2 # Output dataset: ml-sun_ho_sv_sKG, ml-cao_ho_mv_sfKG
     local low_frequence=$3 # Low Frequence: 0, 10
-    if [ "$4" = 'true' ]; then verbose=true; else verbose=false; fi
+    seed=$4
+    if [ "$5" = 'true' ]; then verbose=true; else verbose=false; fi
 
     ################################################################################
     ###                       Preprocess ${DATASET}_${KGE}-${RATE}               ###
@@ -80,7 +82,7 @@ cao-format_summ() {
     if no_exist "$HOME/git/datasets/${experiment}/${dataset_out}/cao-format/ml1m/kg/e_map.dat"
     then
         if [ "$verbose" = true ]; then echo "[kg-summ-rec] Creating ~/git/datasets/${experiment}/${dataset_out}/cao-format/ml1m/kg/e_map.dat"; fi
-        python sun2cao_step2.py --data_path "~/git/datasets/${experiment}/${dataset_out}/cao-format/" --dataset 'ml1m' --lowfrequence ${low_frequence}
+        python sun2cao_step2.py --data_path "~/git/datasets/${experiment}/${dataset_out}/cao-format/" --dataset 'ml1m' --lowfrequence ${low_frequence} --seed "${seed}"
     fi
 
     cd "$HOME/git/kg-summ-rec/preprocess"
