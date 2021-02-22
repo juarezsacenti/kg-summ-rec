@@ -103,7 +103,7 @@ source $HOME/git/kg-summ-rec/util/comp_cost.sh
 preprocess_sun_oKG() {
     local STARTTIME=$(date +%s)
     # Create folders for Sun's original KG (oKG)
-    if no_exist "$HOME/git/datasets/${experiment}/ml-sun_cv_oKG"
+    if no_exist "$HOME/git/datasets/${experiment}/ml-sun"
     then
         if [ "$verbose" = true ]; then echo "[kg-summ-rec] preprocess_sun_oKG: Creating ~/git/datasets/${experiment}/ml-sun"; fi
         cd $HOME/git/kg-summ-rec/util
@@ -159,9 +159,9 @@ preprocess_sun_fKG() {
     local STARTTIME=$(date +%s)
 
     # Create folders for Sun's filtered KG (fKG)
-    if no_exist "$HOME/git/datasets/${experiment}/ml-sun_cv_fKG"
+    if no_exist "$HOME/git/datasets/${experiment}/ml-sun"
     then
-        if [ "$verbose" = true ]; then echo "[kg-summ-rec] preprocess_sun_fKG: Creating ~/git/datasets/${experiment}/ml-sun_cv_fKG"; fi
+        if [ "$verbose" = true ]; then echo "[kg-summ-rec] preprocess_sun_fKG: Creating ~/git/datasets/${experiment}/ml-sun"; fi
         cd $HOME/git/kg-summ-rec/util
         copy_ml_sun "$HOME/git/datasets/ml-sun" "$HOME/git/datasets/${experiment}/ml-sun"
         cd $HOME/git/kg-summ-rec

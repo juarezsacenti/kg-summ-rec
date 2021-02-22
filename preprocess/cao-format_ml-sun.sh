@@ -153,7 +153,10 @@ cv_cao-format_ml-sun() {
     then
         if [ "$verbose" = true ]; then echo "[kg-summ-rec] Creating ~/git/datasets/${experiment}/folds"; fi
         python sun_split.py --loadfile "$HOME/git/datasets/${experiment}/ml-sun/sun-format/rating-delete-missing-itemid.txt" --column 'user_id' --frac '0.2,0.2,0.2,0.2' --savepath "$HOME/git/datasets/${experiment}/folds/" --seed "${seed}"
+    fi
 
+    if [ ! -d "$HOME/git/datasets/${experiment}/fold0/${dataset}" ]
+    then
         folds=(0 1 2 3 4)
         for fold_number in "${folds[@]}"
         do
