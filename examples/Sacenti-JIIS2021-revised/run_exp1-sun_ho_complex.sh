@@ -101,7 +101,7 @@ source $HOME/git/kg-summ-rec/util/comp_cost.sh
 # - Filtering: infrequent entities filtering at 0 (oKG) and at 10 (fKG)
 ####
 preprocess_sun_oKG() {
-    if [ ! -d "$HOME/git/datasets/${experiment}/folds" ]
+    if [ ! -d "$HOME/git/datasets/${experiment}/fold0/ml-sun_ho_oKG" ]
     then
         local STARTTIME=$(date +%s)
         # Create folders for Sun's original KG (oKG)
@@ -148,7 +148,7 @@ preprocess_sun_oKG() {
 }
 
 preprocess_sun_fKG() {
-    if [ ! -d "$HOME/git/datasets/${experiment}/folds" ]
+    if [ ! -d "$HOME/git/datasets/${experiment}/fold0/ml-sun_ho_fKG" ]
     then
         local STARTTIME=$(date +%s)
 
@@ -268,8 +268,8 @@ summarize() {
                 ENDTIME=$(date +%s)
                 echo -e "summarize-${dataset_out}_${kg_type}-${summarization_mode}-${kge}-${ratio}\t$(($ENDTIME - $STARTTIME))\t${STARTTIME}\t${ENDTIME}" >> ${overall_comp_cost}
             fi
-            rm "$HOME/git/kg-summ-rec/docker/kge-k-means_data/temp/cluster${ratio}.tsv"
-            rm "$HOME/git/kg-summ-rec/docker/kge-k-means_data/temp/cluster${ratio}.png"
+            yes | rm "$HOME/git/kg-summ-rec/docker/kge-k-means_data/temp/cluster${ratio}.tsv"
+            yes | rm "$HOME/git/kg-summ-rec/docker/kge-k-means_data/temp/cluster${ratio}.png"
         done
     done
 }
