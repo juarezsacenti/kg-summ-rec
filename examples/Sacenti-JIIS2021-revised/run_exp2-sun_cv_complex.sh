@@ -406,22 +406,30 @@ kg_recommendation() {
     summ_modes=(sv mv)
     summ_algos=(complex)
     #summ_rates=(25 50 75)
-    summ_rates=(50)
+    summ_ratios=(50)
     folds=(0 1 2 3 4)
     for fold_number in "${folds[@]}"
     do
-        for t in "${summ_types[@]}"
+        # original KG
+        if no_exist "$HOME/git/results/${experiment}/fold${fold_number}/${dataset_in}/*.log"
+        then
+            if [ "$verbose" = true ]; then echo "[kg-summ-rec] kg_recommendation: Creating ~/git/results/${experiment}/fold${fold_number}/${dataset_in}/*.log"; fi
+            #recommend "fold${fold_number}/${dataset_in}" '4873,487300,24363' '2663,266300,13317' '266,26630,1331' '10392,1039200,51960' 256 0.005 # Early stopping parameters
+            recommend "fold${fold_number}/${dataset_in}" '540,13500,13527' '4700,117500,117735' '4700,117500,117735' '9380,234500,234969' 256 0.005 # 500-epochs parameters. One epoch has 27, 235, 235, 469 steps. Proportion 30-501-500.
+        fi
+
+        for a in "${summ_algos[@]}"
         do
-            for m in "${summ_modes[@]}"
+            for t in "${summ_types[@]}"
             do
-                for a in "${summ_algos[@]}"
+                for r in "${summ_ratios[@]}"
                 do
-                    for r in "${summ_rates[@]}"
+                    for m in "${summ_modes[@]}"
                     do
                         local dirName="fold${fold_number}/${dataset_out}_${t}-${m}-${a}-${r}"
                         if [ "$verbose" = true ]; then echo "[kg-summ-rec] kg_recommendation: Creating ~/git/results/${experiment}/${dirName}/*.log"; fi
-                        #recommend "${dirName}" '4873,487300,24363' '2663,266300,13317' '266,26630,1331' '10392,1039200,51960' 256 0.005
-                        recommend "${dirName}" '540,13500,13527' '4700,117500,117735' '4700,117500,117735' '9380,234500,234969' 256 0.005 # One epoch has 27, 235, 235, 469 steps. Proportion 30-501-500.
+                        #recommend "${dirName}" '4873,487300,24363' '2663,266300,13317' '266,26630,1331' '10392,1039200,51960' 256 0.005 # Early stopping parameters
+                        recommend "${dirName}" '540,13500,13527' '4700,117500,117735' '4700,117500,117735' '9380,234500,234969' 256 0.005 # 500-epochs parameters. One epoch has 27, 235, 235, 469 steps. Proportion 30-501-500.
                     done
                 done
             done
@@ -431,12 +439,7 @@ kg_recommendation() {
     folds=(0 1 2 3 4)
     for fold_number in "${folds[@]}"
     do
-        if no_exist "$HOME/git/results/${experiment}/fold${fold_number}/${dataset_in}/*.log"
-        then
-            if [ "$verbose" = true ]; then echo "[kg-summ-rec] kg_recommendation: Creating ~/git/results/${experiment}/fold${fold_number}/${dataset_in}/*.log"; fi
-            #recommend "fold${fold_number}/${dataset_in}" '4873,487300,24363' '2663,266300,13317' '266,26630,1331' '10392,1039200,51960' 256 0.005
-            recommend "fold${fold_number}/${dataset_in}" '540,13500,13527' '4700,117500,117735' '4700,117500,117735' '9380,234500,234969' 256 0.005 # One epoch has 27, 235, 235, 469 steps. Proportion 30-501-500.
-        fi
+
     done
     cd $HOME/git/kg-summ-rec
 }

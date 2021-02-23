@@ -391,19 +391,27 @@ kg_recommendation() {
     local dataset_in=$1
     local dataset_out=$2
 
+    # original KG
+    if no_exist "$HOME/git/results/${experiment}/${dataset_in}/*.log"
+    then
+        if [ "$verbose" = true ]; then echo "[kg-summ-rec] kg_recommendation: Creating ~/git/results/${experiment}/${dataset_in}/*.log"; fi
+        #recommend "${dataset_in}" '4873,487300,24363' '2663,266300,13317' '266,26630,1331' '10392,1039200,51960' 256 0.005
+        recommend "${dataset_in}" '520,13000,13026' '4940,123500,123747' '4940,123500,123747' '10940,273500,274047' 256 0.005
+    fi
+
+    summ_algos=(complex)
     #summ_types=(ig uig euig)
     summ_types=(ig)
+    #summ_ratios=(25 50 75)
+    summ_ratios=(50)
     summ_modes=(sv mv)
-    summ_algos=(complex)
-    #summ_rates=(25 50 75)
-    summ_rates=(50)
-    for t in "${summ_types[@]}"
+    for a in "${summ_algos[@]}"
     do
-        for m in "${summ_modes[@]}"
+        for t in "${summ_types[@]}"
         do
-            for a in "${summ_algos[@]}"
+            for r in "${summ_ratios[@]}"
             do
-                for r in "${summ_rates[@]}"
+                for m in "${summ_modes[@]}"
                 do
                     local dirName="${dataset_out}_${t}-${m}-${a}-${r}"
                     if [ "$verbose" = true ]; then echo "[kg-summ-rec] kg_recommendation: Creating ~/git/results/${experiment}/${dirName}/*.log"; fi
@@ -413,13 +421,6 @@ kg_recommendation() {
             done
         done
     done
-
-    if no_exist "$HOME/git/results/${experiment}/${dataset_in}/*.log"
-    then
-        if [ "$verbose" = true ]; then echo "[kg-summ-rec] kg_recommendation: Creating ~/git/results/${experiment}/${dataset_in}/*.log"; fi
-        #recommend "${dataset_in}" '4873,487300,24363' '2663,266300,13317' '266,26630,1331' '10392,1039200,51960' 256 0.005
-        recommend "${dataset_in}" '520,13000,13026' '4940,123500,123747' '4940,123500,123747' '10940,273500,274047' 256 0.005
-    fi
 
     cd $HOME/git/kg-summ-rec
 }
