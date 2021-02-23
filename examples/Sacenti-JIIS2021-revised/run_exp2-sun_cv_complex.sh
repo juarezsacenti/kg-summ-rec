@@ -127,6 +127,16 @@ preprocess_sun_oKG() {
         folds=(0 1 2 3 4)
         for fold_number in "${folds[@]}"
         do
+            if no_exist "$HOME/git/results/${experiment}/fold${fold_number}"
+            then
+                if [ "$verbose" = true ]; then echo "[kg-summ-rec] preprocess_sun_oKG: Creating ~/git/results/${experiment}/fold${fold_number}"; fi
+                mkdir ~/git/results/${experiment}/fold${fold_number}
+            fi
+            if no_exist "$HOME/git/results/${experiment}/fold${fold_number}/ml-sun_cv_oKG"
+            then
+                if [ "$verbose" = true ]; then echo "[kg-summ-rec] preprocess_sun_oKG: Creating ~/git/results/${experiment}/fold${fold_number}/ml-sun_cv_oKG"; fi
+                mkdir ~/git/results/${experiment}/fold${fold_number}/ml-sun_cv_oKG
+            fi
             # Collect ml-sun_cv_oKG statistics
             if no_exist "$HOME/git/results/${experiment}/fold${fold_number}/ml-sun_cv_oKG/kg-ig_stats.tsv"
             then
@@ -174,6 +184,16 @@ preprocess_sun_fKG() {
         folds=(0 1 2 3 4)
         for fold_number in "${folds[@]}"
         do
+            if no_exist "$HOME/git/results/${experiment}/fold${fold_number}"
+            then
+                if [ "$verbose" = true ]; then echo "[kg-summ-rec] preprocess_sun_fKG: Creating ~/git/results/${experiment}/fold${fold_number}"; fi
+                mkdir ~/git/results/${experiment}/fold${fold_number}
+            fi
+            if no_exist "$HOME/git/results/${experiment}/fold${fold_number}/ml-sun_cv_fKG"
+            then
+                if [ "$verbose" = true ]; then echo "[kg-summ-rec] preprocess_sun_fKG: Creating ~/git/results/${experiment}/fold${fold_number}/ml-sun_cv_fKG"; fi
+                mkdir ~/git/results/${experiment}/fold${fold_number}/ml-sun_cv_fKG
+            fi
             # Collect ml-sun_cv_oKG statistics
             if no_exist "$HOME/git/results/${experiment}/fold${fold_number}/ml-sun_cv_fKG/kg-ig_stats.tsv"
             then
