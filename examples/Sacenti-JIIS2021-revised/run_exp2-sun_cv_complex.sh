@@ -436,11 +436,6 @@ kg_recommendation() {
         done
     done
 
-    folds=(0 1 2 3 4)
-    for fold_number in "${folds[@]}"
-    do
-
-    done
     cd $HOME/git/kg-summ-rec
 }
 
@@ -592,4 +587,4 @@ run_experiment() {
     recommend_sun_sfKG
 }
 run_experiment $1 $2 $3
-#bash -i examples/Sacenti-JIIS2021-revised/run_exp2-sun_cv_complex.sh "JIIS-revised-exp2" 0 'false' |& tee out-revised-exp2-1.txt
+#bash -i examples/Sacenti-JIIS2021-revised/run_exp2-sun_cv_complex.sh "JIIS-revised-exp2" 0 'false' |& tee out-revised-exp2-5.txt
