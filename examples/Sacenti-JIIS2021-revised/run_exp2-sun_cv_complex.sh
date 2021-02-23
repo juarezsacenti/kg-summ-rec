@@ -101,7 +101,7 @@ source $HOME/git/kg-summ-rec/util/comp_cost.sh
 # - Filtering: infrequent entities filtering at 0 (oKG) and at 10 (fKG)
 ####
 preprocess_sun_oKG() {
-    if [ ! -d "$HOME/git/datasets/${experiment}/folds" ]
+    if [ ! -d "$HOME/git/datasets/${experiment}/fold0/ml-sun_cv_oKG" ]
     then
         local STARTTIME=$(date +%s)
         # Create folders for Sun's original KG (oKG)
@@ -157,7 +157,7 @@ preprocess_sun_oKG() {
 }
 
 preprocess_sun_fKG() {
-    if [ ! -d "$HOME/git/datasets/${experiment}/folds" ]
+    if [ ! -d "$HOME/git/datasets/${experiment}/fold0/ml-sun_cv_fKG" ]
     then
         local STARTTIME=$(date +%s)
 
@@ -267,8 +267,7 @@ summarize() {
     #clean_kge-k-means
 
     summ_modes=(sv mv)
-    #summ_ratios=(25 50 75)
-    summ_ratios=(50)
+    summ_ratios=(25 50 75)
     for summarization_mode in "${summ_modes[@]}"
     do
         for ratio in "${summ_ratios[@]}"
@@ -305,8 +304,8 @@ summarize() {
                     echo -e "summarize-fold${fold_number}/${dataset_out}_${kg_type}-${summarization_mode}-${kge}-${ratio}\t$(($ENDTIME - $STARTTIME))\t${STARTTIME}\t${ENDTIME}" >> ${overall_comp_cost}
                 fi
             done
-            rm "$HOME/git/kg-summ-rec/docker/kge-k-means_data/temp/cluster${ratio}.tsv"
-            rm "$HOME/git/kg-summ-rec/docker/kge-k-means_data/temp/cluster${ratio}.png"
+            yes | rm "$HOME/git/kg-summ-rec/docker/kge-k-means_data/temp/cluster${ratio}.tsv"
+            yes | rm "$HOME/git/kg-summ-rec/docker/kge-k-means_data/temp/cluster${ratio}.png"
         done
     done
 }
@@ -321,8 +320,7 @@ preprocess_summ() {
 
     summ_modes=(sv mv)
     summ_algos=(complex)
-    #summ_rates=(25 50 75)
-    summ_rates=(50)
+    summ_ratios=(25 50 75)
     local STARTTIME=0
     local ENDTIME=0
     folds=(0 1 2 3 4)
@@ -332,7 +330,7 @@ preprocess_summ() {
         do
             for a in "${summ_algos[@]}"
             do
-                for r in "${summ_rates[@]}"
+                for r in "${summ_ratios[@]}"
                 do
                     local dirName="fold${fold_number}/${dataset_out}_${kg_type}-${m}-${a}-${r}"
                     if no_exist "$HOME/git/datasets/${experiment}/${dirName}/cao-format/ml1m/kg/kg_hop0.dat"
@@ -367,8 +365,7 @@ measure_summ_impact() {
 
     summ_modes=(sv mv)
     summ_algos=(complex)
-    #summ_rates=(25 50 75)
-    summ_rates=(50)
+    summ_ratios=(25 50 75)
     local STARTTIME=0
     local ENDTIME=0
     folds=(0 1 2 3 4)
@@ -378,7 +375,7 @@ measure_summ_impact() {
         do
             for a in "${summ_algos[@]}"
             do
-                for r in "${summ_rates[@]}"
+                for r in "${summ_ratios[@]}"
                 do
                     local dirName="fold${fold_number}/${dataset_out}_${kg_type}-${m}-${a}-${r}"
                     if no_exist "$HOME/git/results/${experiment}/${dirName}/kg-ig_stats.tsv"
@@ -443,8 +440,7 @@ kg_recommendation() {
     summ_types=(ig)
     summ_modes=(sv mv)
     summ_algos=(complex)
-    #summ_rates=(25 50 75)
-    summ_ratios=(50)
+    summ_ratios=(25 50 75)
     folds=(0 1 2 3 4)
     for fold_number in "${folds[@]}"
     do
