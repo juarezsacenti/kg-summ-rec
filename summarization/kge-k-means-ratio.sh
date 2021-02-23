@@ -130,32 +130,33 @@ sv_kge-k-means() {
     fi
     if no_exist "$HOME/git/datasets/${experiment}/${dataset_out}-${kge}-${ratio}/cluster${ratio}.tsv"
     then
-        if [ "$verbose" = true ]; then echo "[kg-summ-rec] Creating ~/git/datasets/${experiment}/${dataset_out}-${kge}-${ratio}/cluster${ratio}.tsv"; fi
-        cd $HOME/git/kg-summ-rec/docker
-        cp kge-k-means_Dockerfile Dockerfile
-        docker build -t kge-k-means:1.0 .
-
-
-        if [ "$verbose" = true ]
+        if no_exist "$HOME/git/kg-summ-rec/docker/kge-k-means_data/temp/cluster${ratio}.tsv"
         then
-            docker run --rm -it --gpus all -v "$PWD"/kge-k-means_data:/data -w /data \
-            kge-k-means:1.0 /bin/bash -c "python kge-k-means.py --triples ${kg_filename} \
-            --mode singleview --kge ${kge} --epochs ${epochs} --batch_size ${batch_size} \
-            --learning_rate ${learning_rate} --rates ${ratio} --seed ${seed} --verbose"
-        else
-            docker run --rm -it --gpus all -v "$PWD"/kge-k-means_data:/data -w /data \
-            kge-k-means:1.0 /bin/bash -c "python kge-k-means.py --triples ${kg_filename} \
-            --mode singleview --kge ${kge} --epochs ${epochs} --batch_size ${batch_size} \
-            --learning_rate ${learning_rate} --rates ${ratio} --seed ${seed}"
+            if [ "$verbose" = true ]; then echo "[kg-summ-rec] Creating ~/git/datasets/${experiment}/${dataset_out}-${kge}-${ratio}/cluster${ratio}.tsv"; fi
+            cd $HOME/git/kg-summ-rec/docker
+            cp kge-k-means_Dockerfile Dockerfile
+            docker build -t kge-k-means:1.0 .
+
+
+            if [ "$verbose" = true ]
+            then
+                docker run --rm -it --gpus all -v "$PWD"/kge-k-means_data:/data -w /data \
+                kge-k-means:1.0 /bin/bash -c "python kge-k-means.py --triples ${kg_filename} \
+                --mode singleview --kge ${kge} --epochs ${epochs} --batch_size ${batch_size} \
+                --learning_rate ${learning_rate} --rates ${ratio} --seed ${seed} --verbose"
+            else
+                docker run --rm -it --gpus all -v "$PWD"/kge-k-means_data:/data -w /data \
+                kge-k-means:1.0 /bin/bash -c "python kge-k-means.py --triples ${kg_filename} \
+                --mode singleview --kge ${kge} --epochs ${epochs} --batch_size ${batch_size} \
+                --learning_rate ${learning_rate} --rates ${ratio} --seed ${seed}"
+            fi
         fi
 
-        #docker run --rm -it --gpus all -v "$PWD"/kge-k-means_data:/data -w /data kge-k-means:1.0 /bin/bash -c "python kge-k-means.py --triples 'kg-ig.nt' --mode 'singleview' --kge 'complex' --epochs '150' --batch_size '100' --learning_rate '0.005' --rates '75' --verbose"
-
-        mv "$HOME/git/kg-summ-rec/docker/kge-k-means_data/temp/cluster${ratio}.tsv" "$HOME/git/datasets/${experiment}/${dataset_out}-${kge}-${ratio}/cluster${ratio}.tsv"
-        mv "$HOME/git/kg-summ-rec/docker/kge-k-means_data/temp/cluster${ratio}.png" "$HOME/git/datasets/${experiment}/${dataset_out}-${kge}-${ratio}/cluster${ratio}.png"
-        mv "$HOME/git/kg-summ-rec/docker/kge-k-means_data/temp/ampligraph.model" "$HOME/git/datasets/${experiment}/${dataset_out}-${kge}-${ratio}/ampligraph.model"
-        mv "$HOME/git/kg-summ-rec/docker/kge-k-means_data/temp/pickle.dump" "$HOME/git/datasets/${experiment}/${dataset_out}-${kge}-${ratio}/pickle.dump"
-        mv "$HOME/git/kg-summ-rec/docker/kge-k-means_data/temp/embeddings.tsv" "$HOME/git/datasets/${experiment}/${dataset_out}-${kge}-${ratio}/embeddings.tsv"
+        #cp "$HOME/git/kg-summ-rec/docker/kge-k-means_data/temp/triples.pickle" "$HOME/git/datasets/${experiment}/${dataset_out}-${kge}-${ratio}/triples.pickle"
+        cp "$HOME/git/kg-summ-rec/docker/kge-k-means_data/temp/ampligraph.model" "$HOME/git/datasets/${experiment}/${dataset_out}-${kge}-${ratio}/ampligraph.model"
+        cp "$HOME/git/kg-summ-rec/docker/kge-k-means_data/temp/embeddings.tsv" "$HOME/git/datasets/${experiment}/${dataset_out}-${kge}-${ratio}/embeddings.tsv"
+        cp "$HOME/git/kg-summ-rec/docker/kge-k-means_data/temp/cluster${ratio}.tsv" "$HOME/git/datasets/${experiment}/${dataset_out}-${kge}-${ratio}/cluster${ratio}.tsv"
+        cp "$HOME/git/kg-summ-rec/docker/kge-k-means_data/temp/cluster${ratio}.png" "$HOME/git/datasets/${experiment}/${dataset_out}-${kge}-${ratio}/cluster${ratio}.png"
         cd $HOME/git/kg-summ-rec
     fi
 
@@ -220,31 +221,34 @@ mv_kge-k-means() {
     fi
     if no_exist "$HOME/git/datasets/${experiment}/${dataset_out}-${kge}-${ratio}/cluster${ratio}.tsv"
     then
-        if [ "$verbose" = true ]; then echo "[kg-summ-rec] Creating ~/git/datasets/${experiment}/${dataset_out}-${kge}-${ratio}/cluster${ratio}.tsv"; fi
-        cd $HOME/git/kg-summ-rec/docker
-        cp kge-k-means_Dockerfile Dockerfile
-        docker build -t kge-k-means:1.0 .
-
-        if [ "$verbose" = true ]
+        if no_exist "$HOME/git/kg-summ-rec/docker/kge-k-means_data/temp/cluster${ratio}.tsv"
         then
-            docker run --rm -it --gpus all -v "$PWD"/kge-k-means_data:/data -w /data \
-            kge-k-means:1.0 /bin/bash -c "python kge-k-means.py --triples ${kg_filename} \
-            --mode multiview --relations '<http://ml1m-sun/actor>,<http://ml1m-sun/director>,<http://ml1m-sun/genre>' \
-            --kge ${kge} --epochs ${epochs} --batch_size ${batch_size} \
-            --learning_rate ${learning_rate} --rates ${ratio} --seed ${seed} --verbose"
-        else
-            docker run --rm -it --gpus all -v "$PWD"/kge-k-means_data:/data -w /data \
-            kge-k-means:1.0 /bin/bash -c "python kge-k-means.py --triples ${kg_filename} \
-            --mode multiview --relations '<http://ml1m-sun/actor>,<http://ml1m-sun/director>,<http://ml1m-sun/genre>' \
-            --kge ${kge} --epochs ${epochs} --batch_size ${batch_size} \
-            --learning_rate ${learning_rate} --rates ${ratio} --seed ${seed}"
+            if [ "$verbose" = true ]; then echo "[kg-summ-rec] Creating ~/git/datasets/${experiment}/${dataset_out}-${kge}-${ratio}/cluster${ratio}.tsv"; fi
+            cd $HOME/git/kg-summ-rec/docker
+            cp kge-k-means_Dockerfile Dockerfile
+            docker build -t kge-k-means:1.0 .
+
+            if [ "$verbose" = true ]
+            then
+                docker run --rm -it --gpus all -v "$PWD"/kge-k-means_data:/data -w /data \
+                kge-k-means:1.0 /bin/bash -c "python kge-k-means.py --triples ${kg_filename} \
+                --mode multiview --relations '<http://ml1m-sun/actor>,<http://ml1m-sun/director>,<http://ml1m-sun/genre>' \
+                --kge ${kge} --epochs ${epochs} --batch_size ${batch_size} \
+                --learning_rate ${learning_rate} --rates ${ratio} --seed ${seed} --verbose"
+            else
+                docker run --rm -it --gpus all -v "$PWD"/kge-k-means_data:/data -w /data \
+                kge-k-means:1.0 /bin/bash -c "python kge-k-means.py --triples ${kg_filename} \
+                --mode multiview --relations '<http://ml1m-sun/actor>,<http://ml1m-sun/director>,<http://ml1m-sun/genre>' \
+                --kge ${kge} --epochs ${epochs} --batch_size ${batch_size} \
+                --learning_rate ${learning_rate} --rates ${ratio} --seed ${seed}"
+            fi
         fi
 
-        mv "$HOME/git/kg-summ-rec/docker/kge-k-means_data/temp/cluster${ratio}.tsv" "$HOME/git/datasets/${experiment}/${dataset_out}-${kge}-${ratio}/cluster${ratio}.tsv"
-        mv "$HOME/git/kg-summ-rec/docker/kge-k-means_data/temp/cluster${ratio}.png" "$HOME/git/datasets/${experiment}/${dataset_out}-${kge}-${ratio}/cluster${ratio}.png"
-        mv "$HOME/git/kg-summ-rec/docker/kge-k-means_data/temp/ampligraph.model" "$HOME/git/datasets/${experiment}/${dataset_out}-${kge}-${ratio}/ampligraph.model"
-        mv "$HOME/git/kg-summ-rec/docker/kge-k-means_data/temp/pickle.dump" "$HOME/git/datasets/${experiment}/${dataset_out}-${kge}-${ratio}/pickle.dump"
-        mv "$HOME/git/kg-summ-rec/docker/kge-k-means_data/temp/embeddings.tsv" "$HOME/git/datasets/${experiment}/${dataset_out}-${kge}-${ratio}/embeddings.tsv"
+        #cp "$HOME/git/kg-summ-rec/docker/kge-k-means_data/temp/triples.pickle" "$HOME/git/datasets/${experiment}/${dataset_out}-${kge}-${ratio}/triples.pickle"
+        cp "$HOME/git/kg-summ-rec/docker/kge-k-means_data/temp/ampligraph.model" "$HOME/git/datasets/${experiment}/${dataset_out}-${kge}-${ratio}/ampligraph.model"
+        cp "$HOME/git/kg-summ-rec/docker/kge-k-means_data/temp/embeddings.tsv" "$HOME/git/datasets/${experiment}/${dataset_out}-${kge}-${ratio}/embeddings.tsv"
+        cp "$HOME/git/kg-summ-rec/docker/kge-k-means_data/temp/cluster${ratio}.tsv" "$HOME/git/datasets/${experiment}/${dataset_out}-${kge}-${ratio}/cluster${ratio}.tsv"
+        cp "$HOME/git/kg-summ-rec/docker/kge-k-means_data/temp/cluster${ratio}.png" "$HOME/git/datasets/${experiment}/${dataset_out}-${kge}-${ratio}/cluster${ratio}.png"
         cd $HOME/git/kg-summ-rec
     fi
 
