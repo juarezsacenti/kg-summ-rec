@@ -40,10 +40,10 @@ mpl.rc('ytick', labelsize=12)
 def kge_k_means(data_home, folder, triples_file, items_file, mode, kge_name, epochs, batch_size, learning_rate, rates, view, relations, kg_map_file, seed, verbose):
     # Load triples:
     triples = load_from_ntriples(folder, triples_file, data_home)
-    # Saving triples with pickle
-    triplesfile = './temp/pickle.dump'
-    with open(triplesfile, "wb") as fp:   #Pickling
-        pickle.dump(triples, fp)
+    # Saving input triples with pickle
+    #triplesfile = './temp/triples.pickle'
+    #with open(triplesfile, "wb") as fp:   #Pickling
+    #    pickle.dump(triples, fp)
 
     # Load items:
     items = np.array([f'<{x}>' for x in pd.read_csv(items_file, sep='\t', header=None, names=["id", "name", "url"]).url.unique().tolist()])
@@ -85,11 +85,11 @@ def splitview(triples, items, kge_name, epochs, batch_size, learning_rate, rates
     save_embedding(nodes, model)
 
     # Simplification
-    simplification(triples, model, verbose)
+    #simplification(triples, model, verbose)
 
     # Group entities into n-clusters where n in rates
     for rate in rates:
-        clusters = clustering(entities, model, rate, verbose)
+        clusters = clustering(entities, model, rate, seed, verbose)
         # clusters to DF
         cluster_df = pd.DataFrame({'entities': entities,
                                 f'cluster{rate}': f'cluster{rate}' + pd.Series(clusters).astype(str)})
@@ -121,11 +121,11 @@ def singleview(triples, items, kge_name, epochs, batch_size, learning_rate, rate
     save_embedding(nodes, model)
 
     # Simplification
-    simplification(triples, model, verbose)
+    #simplification(triples, model, verbose)
 
     # Group entities into n-clusters where n in rates
     for rate in rates:
-        clusters = clustering(entities, model, rate, verbose)
+        clusters = clustering(entities, model, rate, seed, verbose)
         # clusters to DF
         cluster_df = pd.DataFrame({'entities': entities,
                                 f'cluster{rate}': f'cluster{rate}' + pd.Series(clusters).astype(str)})
@@ -151,7 +151,7 @@ def multiview(triples, items, kge_name, epochs, batch_size, learning_rate, rates
     save_embedding(nodes, model)
 
     # Simplification
-    simplification(triples, model, verbose)
+    #simplification(triples, model, verbose)
 
     # Group entities into n-clusters where n in rates
     for rate in rates:
@@ -172,7 +172,7 @@ def multiview(triples, items, kge_name, epochs, batch_size, learning_rate, rates
                 #print(entities[0:10])
 
             # Group entities into n-clusters
-            clusters = clustering(entities, model, rate, verbose)
+            clusters = clustering(entities, model, rate, seed, verbose)
             # to DF, then to File
             cluster_df = pd.DataFrame({'entities': entities,
                                     f'cluster{rate}': f'cluster{rate}' + pd.Series(clusters).astype(str)})
@@ -372,7 +372,7 @@ def save_embedding(entities, model):
 
 
 # Clustering
-def clustering(entities, model, ratio, verbose):
+def clustering(entities, model, ratio, seed, verbose):
     # Cluster embeddings (on the original space)
     n_entities = len(entities)
     if verbose:
@@ -382,8 +382,13 @@ def clustering(entities, model, ratio, verbose):
     if verbose:
         print('Clustering with n_clusters = '+str(n_clusters))
 
-    clustering_algorithm = KMeans(n_clusters=n_clusters, n_init=50, max_iter=500, random_state=0)
+    clustering_algorithm = KMeans(n_clusters=n_clusters, n_init=50, max_iter=500, random_state=seed)
     clusters = find_clusters(entities, model, clustering_algorithm, mode='entity')
+
+    #pickle_cluster = "./temp/cluster_"+ str(ratio) +".pickle"
+    #with open(pickle_cluster, "wb") as fp:   #Pickling
+    #    pickle.dump(clusters, fp)
+
     return clusters
 
 

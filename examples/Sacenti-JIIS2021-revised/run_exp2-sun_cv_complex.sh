@@ -244,21 +244,37 @@ summarize() {
     local learning_rate='0.005'
     local kg_filename="kg-${kg_type}.nt"
 
+    #clean_kge-k-means
+
     summ_modes=(sv mv)
     #summ_ratios=(25 50 75)
     summ_ratios=(50)
-    folds=(0 1 2 3 4)
-    for fold_number in "${folds[@]}"
+    for summarization_mode in "${summ_modes[@]}"
     do
-        for summarization_mode in "${summ_modes[@]}"
+        for ratio in "${summ_ratios[@]}"
         do
-            for ratio in "${summ_ratios[@]}"
+            fold_number=0
+            local dirName="fold${fold_number}/${dataset_out}_${kg_type}-${summarization_mode}"
+            if [ ! -d "$HOME/git/datasets/${experiment}/${dirName}-${kge}-${ratio}" ]
+            then
+                STARTTIME=$(date +%s)
+                if [ "${verbose}" = true ]
+                then
+                    kge-k-means ${experiment} "fold${fold_number}/${dataset_in}" ${dirName} ${kg_filename} ${summarization_mode} ${kge} ${epochs} ${batch_size} ${learning_rate} ${low_frequence} ${ratio} ${seed} 'true'
+                else
+                    kge-k-means ${experiment} "fold${fold_number}/${dataset_in}" ${dirName} ${kg_filename} ${summarization_mode} ${kge} ${epochs} ${batch_size} ${learning_rate} ${low_frequence} ${ratio} ${seed} 'false'
+                fi
+                ENDTIME=$(date +%s)
+                echo -e "summarize-fold${fold_number}/${dataset_out}_${kg_type}-${summarization_mode}-${kge}-${ratio}\t$(($ENDTIME - $STARTTIME))\t${STARTTIME}\t${ENDTIME}" >> ${overall_comp_cost}
+            fi
+
+            folds=(1 2 3 4)
+            for fold_number in "${folds[@]}"
             do
                 local dirName="fold${fold_number}/${dataset_out}_${kg_type}-${summarization_mode}"
-                if [ ! -d "$HOME/git/datasets/${experiment}/${dirName}" ]
+                if [ ! -d "$HOME/git/datasets/${experiment}/${dirName}-${kge}-${ratio}" ]
                 then
                     STARTTIME=$(date +%s)
-                    clean_kge-k-means
                     if [ "${verbose}" = true ]
                     then
                         kge-k-means ${experiment} "fold${fold_number}/${dataset_in}" ${dirName} ${kg_filename} ${summarization_mode} ${kge} ${epochs} ${batch_size} ${learning_rate} ${low_frequence} ${ratio} ${seed} 'true'
@@ -269,6 +285,8 @@ summarize() {
                     echo -e "summarize-fold${fold_number}/${dataset_out}_${kg_type}-${summarization_mode}-${kge}-${ratio}\t$(($ENDTIME - $STARTTIME))\t${STARTTIME}\t${ENDTIME}" >> ${overall_comp_cost}
                 fi
             done
+            rm "$HOME/git/kg-summ-rec/docker/kge-k-means_data/temp/cluster${ratio}.tsv"
+            rm "$HOME/git/kg-summ-rec/docker/kge-k-means_data/temp/cluster${ratio}.png"
         done
     done
 }
