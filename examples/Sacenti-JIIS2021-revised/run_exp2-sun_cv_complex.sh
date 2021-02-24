@@ -438,9 +438,11 @@ kg_recommendation() {
 
     #summ_types=(ig uig euig)
     summ_types=(ig)
-    summ_modes=(sv mv)
+    #summ_modes=(sv mv)
+    summ_modes=(sv)
     summ_algos=(complex)
-    summ_ratios=(25 50 75)
+    #summ_ratios=(25 50 75)
+    summ_ratios=(25)
     folds=(0 1 2 3 4)
     for fold_number in "${folds[@]}"
     do
@@ -449,7 +451,7 @@ kg_recommendation() {
         then
             if [ "$verbose" = true ]; then echo "[kg-summ-rec] kg_recommendation: Creating ~/git/results/${experiment}/fold${fold_number}/${dataset_in}/*.log"; fi
             #recommend "fold${fold_number}/${dataset_in}" '4873,487300,24363' '2663,266300,13317' '266,26630,1331' '10392,1039200,51960' 256 0.005 # Early stopping parameters
-            recommend "fold${fold_number}/${dataset_in}" '540,13500,13527' '4700,117500,117735' '4700,117500,117735' '9380,234500,234969' 256 0.005 # 500-epochs parameters. One epoch has 27, 235, 235, 469 steps. Proportion 30-501-500.
+            recommend "fold${fold_number}/${dataset_in}" '540,27000,27027' '2350,235000,11750' '235,23500,1175' '9380,234500,234969' 256 0.005 # KNOWLEDGE_REPRESENTATION 1000-epochs, TUP early_stop 10-1000-50, BPRMF early_stop 1-100-5, KNOWLEDGABLE_RECOMMENDATION 500-epochs. One epoch has 27, 235, 235, 469 steps. Proportion 20-501-500.
         fi
 
         for a in "${summ_algos[@]}"
@@ -461,9 +463,13 @@ kg_recommendation() {
                     for m in "${summ_modes[@]}"
                     do
                         local dirName="fold${fold_number}/${dataset_out}_${t}-${m}-${a}-${r}"
+
+                        cp ~/git/results/$experiment/fold${fold_number}/${dataset_in}/ml1m-bprmf-pretrained.ckpt ~/git/results/$experiment/${dirName}/ml1m-bprmf-pretrained.ckpt
+                        cp ~/git/results/$experiment/fold${fold_number}/${dataset_in}/ml1m-transup-pretrained.ckpt ~/git/results/$experiment/${dirName}/ml1m-transup-pretrained.ckpt
+
                         if [ "$verbose" = true ]; then echo "[kg-summ-rec] kg_recommendation: Creating ~/git/results/${experiment}/${dirName}/*.log"; fi
                         #recommend "${dirName}" '4873,487300,24363' '2663,266300,13317' '266,26630,1331' '10392,1039200,51960' 256 0.005 # Early stopping parameters
-                        recommend "${dirName}" '540,13500,13527' '4700,117500,117735' '4700,117500,117735' '9380,234500,234969' 256 0.005 # 500-epochs parameters. One epoch has 27, 235, 235, 469 steps. Proportion 30-501-500.
+                        recommend "${dirName}" '540,27000,27027' '2350,235000,11750' '235,23500,1175' '9380,234500,234969' 256 0.005 # KNOWLEDGE_REPRESENTATION 1000-epochs, TUP early_stop 10-1000-50, BPRMF early_stop 1-100-5, KNOWLEDGABLE_RECOMMENDATION 500-epochs. One epoch has 27, 235, 235, 469 steps. Proportion 20-501-500.
                     done
                 done
             done
@@ -518,7 +524,7 @@ recommend() {
     fi
 
     #BPRMF - Steffen Rendle, Christoph Freudenthaler, Zeno Gantner, and Lars Schmidt-Thieme. 2009. BPR: Bayesian personalized ranking from implicit feedback. In UAI.
-    if no_exist "$HOME/git/results/$experiment/$DATASET/ml1m-bprmf-*.log"
+    if no_exist "$HOME/git/results/$experiment/$DATASET/ml1m-bprmf-pretrained.ckpt"
     then
         STARTTIME=$(date +%s)
         if [ "$verbose" = true ]; then echo "[kg-summ-rec] recommend: Running BPRMF with $DATASET"; fi
@@ -530,7 +536,7 @@ recommend() {
     fi
 
     #TransUP
-    if no_exist "$HOME/git/results/$experiment/$DATASET/ml1m-transup-*.log"
+    if no_exist "$HOME/git/results/$experiment/$DATASET/ml1m-transup-pretrained.ckpt"
     then
         STARTTIME=$(date +%s)
         if [ "$verbose" = true ]; then echo "[kg-summ-rec] recommend: Running TransUP with $DATASET"; fi
@@ -542,38 +548,38 @@ recommend() {
     fi
 
 
-    #CFKG (TransE) - Yongfeng Zhang, Qingyao Ai, Xu Chen, and Pengfei Wang. 2018. Learning over Knowledge-Base Embeddings for Recommendation. In SIGIR.
-   if no_exist "$HOME/git/results/$experiment/$DATASET/ml1m-cfkg-*.log"
-   then
-       STARTTIME=$(date +%s)
-       if [ "$verbose" = true ]; then echo "[kg-summ-rec] recommend: Running CFKG with $DATASET"; fi
-       CUDA_VISIBLE_DEVICES=0 nohup python run_knowledgable_recommendation.py -data_path ~/git/datasets/$experiment/$DATASET/cao-format/ -log_path ~/git/results/$experiment/$DATASET/ -rec_test_files valid.dat:test.dat  -kg_test_files valid.dat:test.dat -l2_lambda 0 -model_type cfkg -nohas_visualization -dataset ml1m -batch_size ${BATCH_SIZE} -embedding_size 100 -learning_rate ${LEARNING_RATE} -topn 10 -seed ${seed} -eval_interval_steps ${KNOWLEDGABLE_RECOMMENDATION_EPOCHS[0]} -training_steps ${KNOWLEDGABLE_RECOMMENDATION_EPOCHS[1]} -early_stopping_steps_to_wait ${KNOWLEDGABLE_RECOMMENDATION_EPOCHS[2]} -optimizer_type Adam -joint_ratio 0.5 -share_embeddings -L1_flag -norm_lambda 1 -kg_lambda 1 -use_st_gumbel -load_ckpt_file "$HOME/git/results/$experiment/$DATASET/ml1m-bprmf-pretrained.ckpt:$HOME/git/results/$experiment/$DATASET/ml1m-transe-pretrained.ckpt" &
-       wait $!
-       ENDTIME=$(date +%s)
-       echo -e "recommend-CFKG-${DATASET}\t$(($ENDTIME - $STARTTIME))\t${STARTTIME}\t${ENDTIME}" >> ${overall_comp_cost}
-   fi
-    #CKE (TransR) - Fuzheng Zhang, Nicholas Jing Yuan, Defu Lian, Xing Xie, and Wei-Ying Ma. 2016. Collaborative Knowledge Base Embedding for Recommender Systems. In SIGKDD.
-   if no_exist "$HOME/git/results/$experiment/$DATASET/ml1m-cke-*.log"
-   then
-       STARTTIME=$(date +%s)
-       if [ "$verbose" = true ]; then echo "[kg-summ-rec] recommend: Running CKE with $DATASET"; fi
-       CUDA_VISIBLE_DEVICES=0 nohup python run_knowledgable_recommendation.py -data_path ~/git/datasets/$experiment/$DATASET/cao-format/ -log_path ~/git/results/$experiment/$DATASET/ -rec_test_files valid.dat:test.dat -kg_test_files valid.dat:test.dat -l2_lambda 0 -model_type cke -nohas_visualization -dataset ml1m -batch_size ${BATCH_SIZE} -embedding_size 100 -learning_rate ${LEARNING_RATE} -topn 10 -seed ${seed} -eval_interval_steps ${KNOWLEDGABLE_RECOMMENDATION_EPOCHS[0]} -training_steps ${KNOWLEDGABLE_RECOMMENDATION_EPOCHS[1]} -early_stopping_steps_to_wait ${KNOWLEDGABLE_RECOMMENDATION_EPOCHS[2]} -optimizer_type Adam -joint_ratio 0.5 -noshare_embeddings -L1_flag -norm_lambda 1 -kg_lambda 1 -use_st_gumbel -load_ckpt_file "$HOME/git/results/$experiment/$DATASET/ml1m-bprmf-pretrained.ckpt:$HOME/git/results/$experiment/$DATASET/ml1m-transe-pretrained.ckpt" &
-       wait $!
-       ENDTIME=$(date +%s)
-       echo -e "recommend-CKE-${DATASET}\t$(($ENDTIME - $STARTTIME))\t${STARTTIME}\t${ENDTIME}" >> ${overall_comp_cost}
-   fi
-    #CoFM (FM+TransE) - Guangyuan Piao and John G. Breslin. 2018. Transfer Learning for Item Recommendations and Knowledge Graph Completion in Item Related Domains via a Co-Factorization Model. In ESWC.
-   if no_exist "$HOME/git/results/$experiment/$DATASET/ml1m-cofm-*.log"
-   then
-       STARTTIME=$(date +%s)
-       if [ "$verbose" = true ]; then echo "[kg-summ-rec] recommend: Running CoFM with $DATASET"; fi
-       CUDA_VISIBLE_DEVICES=0 nohup python run_knowledgable_recommendation.py -data_path ~/git/datasets/$experiment/$DATASET/cao-format/ -log_path ~/git/results/$experiment/$DATASET/ -rec_test_files valid.dat:test.dat -kg_test_files valid.dat:test.dat -l2_lambda 0 -model_type cofm -nohas_visualization -dataset ml1m -batch_size ${BATCH_SIZE} -embedding_size 100 -learning_rate ${LEARNING_RATE} -topn 10 -seed ${seed} -eval_interval_steps ${KNOWLEDGABLE_RECOMMENDATION_EPOCHS[0]} -training_steps ${KNOWLEDGABLE_RECOMMENDATION_EPOCHS[1]} -early_stopping_steps_to_wait ${KNOWLEDGABLE_RECOMMENDATION_EPOCHS[2]} -optimizer_type Adam -joint_ratio 0.5 -load_ckpt_file "$HOME/git/results/$experiment/$DATASET/ml1m-bprmf-pretrained.ckpt:$HOME/git/results/$experiment/$DATASET/ml1m-transe-pretrained.ckpt" -noshare_embeddings -L1_flag -norm_lambda 1 -kg_lambda 1 &
-       wait $!
-       ENDTIME=$(date +%s)
-       echo -e "recommend-CoFM-${DATASET}\t$(($ENDTIME - $STARTTIME))\t${STARTTIME}\t${ENDTIME}" >> ${overall_comp_cost}
-   fi
+   #  #CFKG (TransE) - Yongfeng Zhang, Qingyao Ai, Xu Chen, and Pengfei Wang. 2018. Learning over Knowledge-Base Embeddings for Recommendation. In SIGIR.
+   # if no_exist "$HOME/git/results/$experiment/$DATASET/ml1m-cfkg-*.log"
+   # then
+   #     STARTTIME=$(date +%s)
+   #     if [ "$verbose" = true ]; then echo "[kg-summ-rec] recommend: Running CFKG with $DATASET"; fi
+   #     CUDA_VISIBLE_DEVICES=0 nohup python run_knowledgable_recommendation.py -data_path ~/git/datasets/$experiment/$DATASET/cao-format/ -log_path ~/git/results/$experiment/$DATASET/ -rec_test_files valid.dat:test.dat  -kg_test_files valid.dat:test.dat -l2_lambda 0 -model_type cfkg -nohas_visualization -dataset ml1m -batch_size ${BATCH_SIZE} -embedding_size 100 -learning_rate ${LEARNING_RATE} -topn 10 -seed ${seed} -eval_interval_steps ${KNOWLEDGABLE_RECOMMENDATION_EPOCHS[0]} -training_steps ${KNOWLEDGABLE_RECOMMENDATION_EPOCHS[1]} -early_stopping_steps_to_wait ${KNOWLEDGABLE_RECOMMENDATION_EPOCHS[2]} -optimizer_type Adam -joint_ratio 0.5 -share_embeddings -L1_flag -norm_lambda 1 -kg_lambda 1 -use_st_gumbel -load_ckpt_file "$HOME/git/results/$experiment/$DATASET/ml1m-bprmf-pretrained.ckpt:$HOME/git/results/$experiment/$DATASET/ml1m-transe-pretrained.ckpt" &
+   #     wait $!
+   #     ENDTIME=$(date +%s)
+   #     echo -e "recommend-CFKG-${DATASET}\t$(($ENDTIME - $STARTTIME))\t${STARTTIME}\t${ENDTIME}" >> ${overall_comp_cost}
+   # fi
+   #  #CKE (TransR) - Fuzheng Zhang, Nicholas Jing Yuan, Defu Lian, Xing Xie, and Wei-Ying Ma. 2016. Collaborative Knowledge Base Embedding for Recommender Systems. In SIGKDD.
+   # if no_exist "$HOME/git/results/$experiment/$DATASET/ml1m-cke-*.log"
+   # then
+   #     STARTTIME=$(date +%s)
+   #     if [ "$verbose" = true ]; then echo "[kg-summ-rec] recommend: Running CKE with $DATASET"; fi
+   #     CUDA_VISIBLE_DEVICES=0 nohup python run_knowledgable_recommendation.py -data_path ~/git/datasets/$experiment/$DATASET/cao-format/ -log_path ~/git/results/$experiment/$DATASET/ -rec_test_files valid.dat:test.dat -kg_test_files valid.dat:test.dat -l2_lambda 0 -model_type cke -nohas_visualization -dataset ml1m -batch_size ${BATCH_SIZE} -embedding_size 100 -learning_rate ${LEARNING_RATE} -topn 10 -seed ${seed} -eval_interval_steps ${KNOWLEDGABLE_RECOMMENDATION_EPOCHS[0]} -training_steps ${KNOWLEDGABLE_RECOMMENDATION_EPOCHS[1]} -early_stopping_steps_to_wait ${KNOWLEDGABLE_RECOMMENDATION_EPOCHS[2]} -optimizer_type Adam -joint_ratio 0.5 -noshare_embeddings -L1_flag -norm_lambda 1 -kg_lambda 1 -use_st_gumbel -load_ckpt_file "$HOME/git/results/$experiment/$DATASET/ml1m-bprmf-pretrained.ckpt:$HOME/git/results/$experiment/$DATASET/ml1m-transe-pretrained.ckpt" &
+   #     wait $!
+   #     ENDTIME=$(date +%s)
+   #     echo -e "recommend-CKE-${DATASET}\t$(($ENDTIME - $STARTTIME))\t${STARTTIME}\t${ENDTIME}" >> ${overall_comp_cost}
+   # fi
+   #  #CoFM (FM+TransE) - Guangyuan Piao and John G. Breslin. 2018. Transfer Learning for Item Recommendations and Knowledge Graph Completion in Item Related Domains via a Co-Factorization Model. In ESWC.
+   # if no_exist "$HOME/git/results/$experiment/$DATASET/ml1m-cofm-*.log"
+   # then
+   #     STARTTIME=$(date +%s)
+   #     if [ "$verbose" = true ]; then echo "[kg-summ-rec] recommend: Running CoFM with $DATASET"; fi
+   #     CUDA_VISIBLE_DEVICES=0 nohup python run_knowledgable_recommendation.py -data_path ~/git/datasets/$experiment/$DATASET/cao-format/ -log_path ~/git/results/$experiment/$DATASET/ -rec_test_files valid.dat:test.dat -kg_test_files valid.dat:test.dat -l2_lambda 0 -model_type cofm -nohas_visualization -dataset ml1m -batch_size ${BATCH_SIZE} -embedding_size 100 -learning_rate ${LEARNING_RATE} -topn 10 -seed ${seed} -eval_interval_steps ${KNOWLEDGABLE_RECOMMENDATION_EPOCHS[0]} -training_steps ${KNOWLEDGABLE_RECOMMENDATION_EPOCHS[1]} -early_stopping_steps_to_wait ${KNOWLEDGABLE_RECOMMENDATION_EPOCHS[2]} -optimizer_type Adam -joint_ratio 0.5 -load_ckpt_file "$HOME/git/results/$experiment/$DATASET/ml1m-bprmf-pretrained.ckpt:$HOME/git/results/$experiment/$DATASET/ml1m-transe-pretrained.ckpt" -noshare_embeddings -L1_flag -norm_lambda 1 -kg_lambda 1 &
+   #     wait $!
+   #     ENDTIME=$(date +%s)
+   #     echo -e "recommend-CoFM-${DATASET}\t$(($ENDTIME - $STARTTIME))\t${STARTTIME}\t${ENDTIME}" >> ${overall_comp_cost}
+   # fi
 
-#JTransUP
+   #JTransUP
     if no_exist "$HOME/git/results/$experiment/$DATASET/ml1m-jtransup-*.log"
     then
         STARTTIME=$(date +%s)
@@ -607,6 +613,8 @@ run_experiment() {
         mkdir "$HOME/git/results/${experiment}"
         touch ${overall_comp_cost}
     fi
+
+    clean_kge-k-means
 
     # Preprocessing
     preprocess_sun_oKG
