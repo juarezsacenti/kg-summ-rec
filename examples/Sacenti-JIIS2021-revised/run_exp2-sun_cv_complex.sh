@@ -618,15 +618,15 @@ run_experiment() {
 
     # Preprocessing
     preprocess_sun_oKG
-    preprocess_sun_fKG
+    #preprocess_sun_fKG
 
     # Summarization
     summarize_sun_sKG
-    summarize_sun_sfKG
+    #summarize_sun_sfKG
 
     # Recommendation
     recommend_sun_sKG
-    recommend_sun_sfKG
+    #recommend_sun_sfKG
 }
 run_experiment $1 $2 $3
 #bash -i examples/Sacenti-JIIS2021-revised/run_exp2-sun_cv_complex.sh "JIIS-revised-exp2" 0 'false' |& tee out-revised-exp2-5.txt
