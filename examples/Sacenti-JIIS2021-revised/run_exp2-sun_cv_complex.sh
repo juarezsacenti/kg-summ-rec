@@ -438,11 +438,9 @@ kg_recommendation() {
 
     #summ_types=(ig uig euig)
     summ_types=(ig)
-    #summ_modes=(sv mv)
-    summ_modes=(sv)
+    summ_modes=(sv mv)
     summ_algos=(complex)
-    #summ_ratios=(25 50 75)
-    summ_ratios=(25)
+    summ_ratios=(25 50 75)
     folds=(0 1 2 3 4)
     for fold_number in "${folds[@]}"
     do
