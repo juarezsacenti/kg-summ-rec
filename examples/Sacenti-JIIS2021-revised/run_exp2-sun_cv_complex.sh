@@ -445,12 +445,9 @@ kg_recommendation() {
     for fold_number in "${folds[@]}"
     do
         # original KG
-        if no_exist "$HOME/git/results/${experiment}/fold${fold_number}/${dataset_in}/*.log"
-        then
-            if [ "$verbose" = true ]; then echo "[kg-summ-rec] kg_recommendation: Creating ~/git/results/${experiment}/fold${fold_number}/${dataset_in}/*.log"; fi
-            #recommend "fold${fold_number}/${dataset_in}" '4873,487300,24363' '2663,266300,13317' '266,26630,1331' '10392,1039200,51960' 256 0.005 # Early stopping parameters
-            recommend "fold${fold_number}/${dataset_in}" '540,27000,27027' '2350,235000,11750' '235,23500,1175' '9380,234500,234969' 256 0.005 # KNOWLEDGE_REPRESENTATION 1000-epochs, TUP early_stop 10-1000-50, BPRMF early_stop 1-100-5, KNOWLEDGABLE_RECOMMENDATION 500-epochs. One epoch has 27, 235, 235, 469 steps. Proportion 20-501-500.
-        fi
+        if [ "$verbose" = true ]; then echo "[kg-summ-rec] kg_recommendation: Creating ~/git/results/${experiment}/fold${fold_number}/${dataset_in}/*.log"; fi
+        #recommend "fold${fold_number}/${dataset_in}" '4873,487300,24363' '2663,266300,13317' '266,26630,1331' '10392,1039200,51960' 256 0.005 # Early stopping parameters
+        recommend "fold${fold_number}/${dataset_in}" '540,27000,27027' '2350,235000,11750' '235,23500,1175' '9380,234500,234969' 256 0.005 # KNOWLEDGE_REPRESENTATION 1000-epochs, TUP early_stop 10-1000-50, BPRMF early_stop 1-100-5, KNOWLEDGABLE_RECOMMENDATION 500-epochs. One epoch has 27, 235, 235, 469 steps. Proportion 20-501-500.
 
         for a in "${summ_algos[@]}"
         do
