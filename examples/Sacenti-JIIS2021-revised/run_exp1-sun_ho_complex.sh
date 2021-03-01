@@ -118,9 +118,9 @@ preprocess_sun_oKG() {
         LOW_FREQUENCE=0    #Low Frequence Filtering (0, 10)
         if [ "$verbose" = true ]
         then
-            cao-format_ml-sun "ml-sun_ho_oKG" ${LOW_FREQUENCE} ${seed} 'true'
+            cao-format_ml-sun "ml-sun_ho_oKG" ${LOW_FREQUENCE} 'ho' ${seed} 'true'
         else
-            cao-format_ml-sun "ml-sun_ho_oKG" ${LOW_FREQUENCE} ${seed} 'false'
+            cao-format_ml-sun "ml-sun_ho_oKG" ${LOW_FREQUENCE} 'ho' ${seed} 'false'
         fi
         cd $HOME/git/kg-summ-rec
 
@@ -166,9 +166,9 @@ preprocess_sun_fKG() {
         LOW_FREQUENCE=10    #Low Frequence Filtering (0, 10)
         if [ "$verbose" = true ]
         then
-            cao-format_ml-sun "ml-sun_ho_fKG" ${LOW_FREQUENCE} ${seed} 'true'
+            cao-format_ml-sun "ml-sun_ho_fKG" ${LOW_FREQUENCE} 'ho' ${seed} 'true'
         else
-            cao-format_ml-sun "ml-sun_ho_fKG" ${LOW_FREQUENCE} ${seed} 'false'
+            cao-format_ml-sun "ml-sun_ho_fKG" ${LOW_FREQUENCE} 'ho' ${seed} 'false'
         fi
         cd $HOME/git/kg-summ-rec
 
