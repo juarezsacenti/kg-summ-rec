@@ -18,7 +18,7 @@
 
 #######################################
 # Run experiment kg_type for Sacenti 2021 - JOURNAL.
-# - Datasets: ml-sun, ml-cao
+# - Datasets: ml-sun
 # - Split: hold-out (ho)
 # - Filtering: infrequent entities filtering at 0 (sKG) and at 10 (sfKG)
 # - KG Summarization:
@@ -96,7 +96,7 @@ source $HOME/git/kg-summ-rec/util/comp_cost.sh
 ####
 # KG preprocessing
 #
-# - Datasets: ml-sun, ml-cao
+# - Datasets: ml-sun
 # - Split: hold-out (ho)
 # - Filtering: infrequent entities filtering at 0 (oKG) and at 10 (fKG)
 ####
@@ -198,7 +198,7 @@ preprocess_sun_fKG() {
 ####
 # KG summarization
 #
-# - Datasets: ml-sun, ml-cao
+# - Datasets: ml-sun
 # - Split: hold-out (ho)
 # - Filtering: infrequent entities filtering at 0 (sKG) and at 10 (sfKG)
 ####
@@ -213,7 +213,7 @@ summarize_sun_sfKG() {
 }
 
 kg_summarization() {
-    local dataset=$1 # Input dataset: ml-sun, ml-cao
+    local dataset=$1 # Input dataset: ml-sun
     local split_mode=$2 # Split mode: hold-out (ho)
     local filtering=$3 # Filtering: infrequent entities filtering at 0 (sKG) and at 10 (sfKG)
 
@@ -246,11 +246,8 @@ summarize() {
     local learning_rate='0.005'
     local kg_filename="kg-${kg_type}.nt"
 
-    #clean_kge-k-means
-
     summ_modes=(sv mv)
-    #summ_ratios=(25 50 75)
-    summ_ratios=(50)
+    summ_ratios=(25 50 75)
     for summarization_mode in "${summ_modes[@]}"
     do
         for ratio in "${summ_ratios[@]}"
@@ -268,9 +265,9 @@ summarize() {
                 ENDTIME=$(date +%s)
                 echo -e "summarize-${dataset_out}_${kg_type}-${summarization_mode}-${kge}-${ratio}\t$(($ENDTIME - $STARTTIME))\t${STARTTIME}\t${ENDTIME}" >> ${overall_comp_cost}
             fi
-            yes | rm "$HOME/git/kg-summ-rec/docker/kge-k-means_data/temp/cluster${ratio}.tsv"
-            yes | rm "$HOME/git/kg-summ-rec/docker/kge-k-means_data/temp/cluster${ratio}.png"
         done
+        yes | rm "$HOME/git/kg-summ-rec/docker/kge-k-means_data/temp/cluster${ratio}.tsv"
+        yes | rm "$HOME/git/kg-summ-rec/docker/kge-k-means_data/temp/cluster${ratio}.png"
     done
 }
 
@@ -284,8 +281,7 @@ preprocess_summ() {
 
     summ_modes=(sv mv)
     summ_algos=(complex)
-    #summ_rates=(25 50 75)
-    summ_rates=(50)
+    summ_rates=(25 50 75)
     local STARTTIME=0
     local ENDTIME=0
     for m in "${summ_modes[@]}"
@@ -326,8 +322,7 @@ measure_summ_impact() {
 
     summ_modes=(sv mv)
     summ_algos=(complex)
-    #summ_rates=(25 50 75)
-    summ_rates=(50)
+    summ_rates=(25 50 75)
     local STARTTIME=0
     local ENDTIME=0
     for m in "${summ_modes[@]}"
@@ -398,8 +393,7 @@ kg_recommendation() {
     if no_exist "$HOME/git/results/${experiment}/${dataset_in}/*.log"
     then
         if [ "$verbose" = true ]; then echo "[kg-summ-rec] kg_recommendation: Creating ~/git/results/${experiment}/${dataset_in}/*.log"; fi
-        #recommend "${dataset_in}" '4873,487300,24363' '2663,266300,13317' '266,26630,1331' '10392,1039200,51960' 256 0.005
-        recommend "${dataset_in}" '520,13000,13026' '4940,123500,123747' '4940,123500,123747' '10940,273500,274047' 256 0.005
+        recommend "${dataset_in}" '4873,487300,24363' '2663,266300,13317' '266,26630,1331' '10392,1039200,51960' 256 0.005
     fi
 
     summ_algos=(complex)
@@ -417,9 +411,12 @@ kg_recommendation() {
                 for m in "${summ_modes[@]}"
                 do
                     local dirName="${dataset_out}_${t}-${m}-${a}-${r}"
+
+                    cp ~/git/results/$experiment/${dataset_in}/ml1m-bprmf-pretrained.ckpt ~/git/results/$experiment/${dirName}/ml1m-bprmf-pretrained.ckpt
+                    cp ~/git/results/$experiment/${dataset_in}/ml1m-transup-pretrained.ckpt ~/git/results/$experiment/${dirName}/ml1m-transup-pretrained.ckpt
+
                     if [ "$verbose" = true ]; then echo "[kg-summ-rec] kg_recommendation: Creating ~/git/results/${experiment}/${dirName}/*.log"; fi
-                    #recommend "${dirName}" '4873,487300,24363' '2663,266300,13317' '266,26630,1331' '10392,1039200,51960' 256 0.005
-                    recommend "${dirName}" '520,13000,13026' '4940,123500,123747' '4940,123500,123747' '10940,273500,274047' 256 0.005
+                    recommend "${dirName}" '4873,487300,24363' '2663,266300,13317' '266,26630,1331' '10392,1039200,51960' 256 0.005
                 done
             done
         done
@@ -568,7 +565,9 @@ run_experiment() {
     preprocess_sun_fKG
 
     # Summarization
+    clean_kge-k-means
     summarize_sun_sKG
+    clean_kge-k-means
     summarize_sun_sfKG
 
     # Recommendation
