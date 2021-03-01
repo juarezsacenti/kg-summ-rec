@@ -18,7 +18,7 @@
 
 #######################################
 # Run experiment kg_type for Sacenti 2021 - JOURNAL.
-# - Datasets: ml-sun, ml-cao
+# - Datasets: ml-sun
 # - Split: cross-validation (cv)
 # - Filtering: infrequent entities filtering at 0 (sKG) and at 10 (sfKG)
 # - KG Summarization:
@@ -96,7 +96,7 @@ source $HOME/git/kg-summ-rec/util/comp_cost.sh
 ####
 # KG preprocessing
 #
-# - Datasets: ml-sun, ml-cao
+# - Datasets: ml-sun
 # - Split: cross-validation (cv)
 # - Filtering: infrequent entities filtering at 0 (oKG) and at 10 (fKG)
 ####
@@ -216,7 +216,7 @@ preprocess_sun_fKG() {
 ####
 # KG summarization
 #
-# - Datasets: ml-sun, ml-cao
+# - Datasets: ml-sun
 # - Split: cross-validation (cv)
 # - Filtering: infrequent entities filtering at 0 (sKG) and at 10 (sfKG)
 ####
@@ -231,7 +231,7 @@ summarize_sun_sfKG() {
 }
 
 kg_summarization() {
-    local dataset=$1 # Input dataset: ml-sun, ml-cao
+    local dataset=$1 # Input dataset: ml-sun
     local split_mode=$2 # Split mode: cross-validation (cv)
     local filtering=$3 # Filtering: infrequent entities filtering at 0 (sKG) and at 10 (sfKG)
 
@@ -263,8 +263,6 @@ summarize() {
     local batch_size='100'
     local learning_rate='0.005'
     local kg_filename="kg-${kg_type}.nt"
-
-    #clean_kge-k-means
 
     summ_modes=(sv mv)
     summ_ratios=(25 50 75)
@@ -304,9 +302,9 @@ summarize() {
                     echo -e "summarize-fold${fold_number}/${dataset_out}_${kg_type}-${summarization_mode}-${kge}-${ratio}\t$(($ENDTIME - $STARTTIME))\t${STARTTIME}\t${ENDTIME}" >> ${overall_comp_cost}
                 fi
             done
-            yes | rm "$HOME/git/kg-summ-rec/docker/kge-k-means_data/temp/cluster${ratio}.tsv"
-            yes | rm "$HOME/git/kg-summ-rec/docker/kge-k-means_data/temp/cluster${ratio}.png"
         done
+        yes | rm "$HOME/git/kg-summ-rec/docker/kge-k-means_data/temp/cluster${ratio}.tsv"
+        yes | rm "$HOME/git/kg-summ-rec/docker/kge-k-means_data/temp/cluster${ratio}.png"
     done
 }
 
@@ -609,14 +607,14 @@ run_experiment() {
         touch ${overall_comp_cost}
     fi
 
-    clean_kge-k-means
-
     # Preprocessing
     preprocess_sun_oKG
     #preprocess_sun_fKG
 
     # Summarization
+    clean_kge-k-means
     summarize_sun_sKG
+    clean_kge-k-means
     #summarize_sun_sfKG
 
     # Recommendation
@@ -624,4 +622,4 @@ run_experiment() {
     #recommend_sun_sfKG
 }
 run_experiment $1 $2 $3
-#bash -i examples/Sacenti-JIIS2021-revised/run_exp2-sun_cv_complex.sh "JIIS-revised-exp2" 0 'false' |& tee out-revised-exp2-5.txt
+#bash -i examples/Sacenti-JIIS2021-revised/run_exp2-sun_cv_complex.sh "JIIS-revised-exp2" 0 'false' |& tee out-revised-exp2-7.txt
