@@ -296,9 +296,9 @@ preprocess_summ() {
                     STARTTIME=$(date +%s)
                     if [ "$verbose" = true ]
                     then
-                        cao-format_summ "${dataset_in}" "${dirName}" "${low_frequence}" 'true'
+                        cao-format_summ "${dataset_in}" "${dirName}" "${low_frequence}" "${seed}" 'true'
                     else
-                        cao-format_summ "${dataset_in}" "${dirName}" "${low_frequence}" 'false'
+                        cao-format_summ "${dataset_in}" "${dirName}" "${low_frequence}" "${seed}" 'false'
                     fi
                     ENDTIME=$(date +%s)
                     echo -e "preprocess_summ-${dataset_out}_${kg_type}-${m}-${a}-${r}\t$(($ENDTIME - $STARTTIME))\t${STARTTIME}\t${ENDTIME}" >> ${overall_comp_cost}
