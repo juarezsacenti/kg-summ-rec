@@ -399,8 +399,7 @@ kg_recommendation() {
     summ_algos=(complex)
     #summ_types=(ig uig euig)
     summ_types=(ig)
-    #summ_ratios=(25 50 75)
-    summ_ratios=(50)
+    summ_ratios=(25 50 75)
     summ_modes=(sv mv)
     for a in "${summ_algos[@]}"
     do
