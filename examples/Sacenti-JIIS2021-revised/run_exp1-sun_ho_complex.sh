@@ -364,6 +364,13 @@ recommend_sun_sKG() {
         export PYTHONPATH="${HOME}/git/kg-summ-rec/evaluation:${PYTHONPATH}"
     fi
 
+    # original KG
+    if no_exist "$HOME/git/results/${experiment}/ml-sun_ho_oKG/*.log"
+    then
+        if [ "$verbose" = true ]; then echo "[kg-summ-rec] kg_recommendation: Creating ~/git/results/${experiment}/ml-sun_ho_oKG/*.log"; fi
+        recommend "ml-sun_ho_oKG" '4873,487300,24363' '2663,266300,13317' '266,26630,1331' '10392,1039200,51960' 256 0.005
+    fi
+
     kg_recommendation "ml-sun_ho_oKG" "ml-sun_ho_sKG"
 }
 
@@ -382,19 +389,19 @@ recommend_sun_sfKG() {
         export PYTHONPATH="${HOME}/git/kg-summ-rec/evaluation:${PYTHONPATH}"
     fi
 
+    # fKG
+    if no_exist "$HOME/git/results/${experiment}/ml-sun_ho_fKG/*.log"
+    then
+        if [ "$verbose" = true ]; then echo "[kg-summ-rec] kg_recommendation: Creating ~/git/results/${experiment}/ml-sun_ho_fKG/*.log"; fi
+        recommend "ml-sun_ho_fKG" '4873,487300,24363' '2663,266300,13317' '266,26630,1331' '10392,1039200,51960' 256 0.005
+    fi
+
     kg_recommendation "ml-sun_ho_oKG" "ml-sun_ho_sfKG"
 }
 
 kg_recommendation() {
     local dataset_in=$1
     local dataset_out=$2
-
-    # original KG
-    if no_exist "$HOME/git/results/${experiment}/${dataset_in}/*.log"
-    then
-        if [ "$verbose" = true ]; then echo "[kg-summ-rec] kg_recommendation: Creating ~/git/results/${experiment}/${dataset_in}/*.log"; fi
-        recommend "${dataset_in}" '4873,487300,24363' '2663,266300,13317' '266,26630,1331' '10392,1039200,51960' 256 0.005
-    fi
 
     summ_algos=(complex)
     #summ_types=(ig uig euig)
@@ -574,4 +581,4 @@ run_experiment() {
     recommend_sun_sfKG
 }
 run_experiment $1 $2 $3
-#bash -i examples/Sacenti-JIIS2021-revised/run_exp1-sun_ho_complex.sh "JIIS-revised-exp1" 0 'false' |& tee out-revised-exp1-1.txt
+#bash -i examples/Sacenti-JIIS2021-revised/run_exp1-sun_ho_complex.sh "JIIS-revised-exp1" 0 'false' |& tee out-revised-exp1-5.txt
