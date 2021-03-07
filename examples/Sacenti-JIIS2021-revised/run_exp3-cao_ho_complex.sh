@@ -249,8 +249,7 @@ summarize() {
     #clean_kge-k-means
 
     summ_modes=(sv mv)
-    #summ_ratios=(25 50 75)
-    summ_ratios=(50)
+    summ_ratios=(25 50 75)
     for summarization_mode in "${summ_modes[@]}"
     do
         for ratio in "${summ_ratios[@]}"
@@ -284,8 +283,7 @@ preprocess_summ() {
 
     summ_modes=(sv mv)
     summ_algos=(complex)
-    #summ_rates=(25 50 75)
-    summ_rates=(50)
+    summ_rates=(25 50 75)
     local STARTTIME=0
     local ENDTIME=0
     for m in "${summ_modes[@]}"
@@ -326,8 +324,7 @@ measure_summ_impact() {
 
     summ_modes=(sv mv)
     summ_algos=(complex)
-    #summ_rates=(25 50 75)
-    summ_rates=(50)
+    summ_rates=(25 50 75)
     local STARTTIME=0
     local ENDTIME=0
     for m in "${summ_modes[@]}"
@@ -391,7 +388,7 @@ recommend_cao_sfKG() {
     if no_exist "$HOME/git/results/${experiment}/ml-sun_ho_fKG/*.log"
     then
         if [ "$verbose" = true ]; then echo "[kg-summ-rec] kg_recommendation: Creating ~/git/results/${experiment}/ml-sun_ho_fKG/*.log"; fi
-        recommend "ml-cao_ho_fKG" '4873,487300,24363' '2663,266300,13317' '266,26630,1331' '10392,1039200,51960' 256 0.005
+        recommend "ml-cao_ho_fKG" '9150,915000,45750' '500,50000,2500' '5000,500000,25000' '19520,1952000,97600' 256 0.005
     fi
 
     kg_recommendation "ml-cao_ho_oKG" "ml-cao_ho_sfKG"
@@ -405,15 +402,13 @@ kg_recommendation() {
     if no_exist "$HOME/git/results/${experiment}/${dataset_in}/*.log"
     then
         if [ "$verbose" = true ]; then echo "[kg-summ-rec] kg_recommendation: Creating ~/git/results/${experiment}/${dataset_in}/*.log"; fi
-        #recommend "${dataset_in}" '4873,487300,24363' '2663,266300,13317' '266,26630,1331' '10392,1039200,51960' 256 0.005
-        recommend "${dataset_in}" '520,13000,13026' '4940,123500,123747' '4940,123500,123747' '10940,273500,274047' 256 0.005
+        recommend "${dataset_in}" '9150,915000,45750' '500,50000,2500' '5000,500000,25000' '19520,1952000,97600' 256 0.005
     fi
 
     summ_algos=(complex)
     #summ_types=(ig uig euig)
     summ_types=(ig)
-    #summ_ratios=(25 50 75)
-    summ_ratios=(50)
+    summ_ratios=(25 50 75)
     summ_modes=(sv mv)
     for a in "${summ_algos[@]}"
     do
