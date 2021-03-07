@@ -72,10 +72,10 @@ ho_cao-format_ml-cao() {
 
     if no_exist "$HOME/git/datasets/${experiment}/${dataset}/kg-ig.nt"
     then
-        cd util
+        cd ../util
         if [ "$verbose" = true ]; then echo "[kg-summ-rec] Creating ~/git/datasets/${experiment}//${dataset}/kg-ig.nt"; fi
         python kg2rdf.py --mode 'splitkg' --kgpath "$HOME/git/datasets/${experiment}/${dataset}/cao-format/ml1m/kg/" --output "$HOME/git/datasets/${experiment}/${dataset}/kg-ig.nt"
-        cd ..
+        cd ../preprocess
     fi
 
     #return to starting folder
