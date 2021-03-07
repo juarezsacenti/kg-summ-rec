@@ -113,16 +113,16 @@ copy_ml_cao() {
     local path_to_new_dataset=$2
 
     mkdir -p "${path_to_new_dataset}/cao-format/ml1m/kg"
-    ln -s "${path_to_dataset}/cao-format/ml1m/i2kg_map.tsv" "${path_to_new_dataset}/cao-format/i2kg_map.tsv"
-    ln -s "${path_to_dataset}/cao-format/ml1m/train.dat" "${path_to_new_dataset}/cao-format/train.dat"
-    ln -s "${path_to_dataset}/cao-format/ml1m/valid.dat" "${path_to_new_dataset}/cao-format/valid.dat"
-    ln -s "${path_to_dataset}/cao-format/ml1m/i_map.dat" "${path_to_new_dataset}/cao-format/i_map.dat"
-    ln -s "${path_to_dataset}/cao-format/ml1m/test.dat" "${path_to_new_dataset}/cao-format/test.dat"
-    ln -s "${path_to_dataset}/cao-format/ml1m/u_map.dat" "${path_to_new_dataset}/cao-format/u_map.dat"
-    ln -s "${path_to_dataset}/cao-format/ml1m/kg/e_map.dat" "${path_to_new_dataset}/cao-format/kg/e_map.dat"
-    ln -s "${path_to_dataset}/cao-format/ml1m/kg/r_map.dat" "${path_to_new_dataset}/cao-format/kg/r_map.dat"
-    ln -s "${path_to_dataset}/cao-format/ml1m/kg/test.dat" "${path_to_new_dataset}/cao-format/kg/test.dat"
-    ln -s "${path_to_dataset}/cao-format/ml1m/kg/train.dat" "${path_to_new_dataset}/cao-format/kg/train.dat"
-    ln -s "${path_to_dataset}/cao-format/ml1m/kg/valid.dat" "${path_to_new_dataset}/cao-format/kg/valid.dat"
+    ln -s "${path_to_dataset}/cao-format/ml1m/i2kg_map.tsv" "${path_to_new_dataset}/cao-format/ml1m/i2kg_map.tsv"
+    ln -s "${path_to_dataset}/cao-format/ml1m/train.dat" "${path_to_new_dataset}/cao-format/ml1m/train.dat"
+    ln -s "${path_to_dataset}/cao-format/ml1m/valid.dat" "${path_to_new_dataset}/cao-format/ml1m/valid.dat"
+    ln -s "${path_to_dataset}/cao-format/ml1m/i_map.dat" "${path_to_new_dataset}/cao-format/ml1m/i_map.dat"
+    ln -s "${path_to_dataset}/cao-format/ml1m/test.dat" "${path_to_new_dataset}/cao-format/ml1m/test.dat"
+    ln -s "${path_to_dataset}/cao-format/ml1m/u_map.dat" "${path_to_new_dataset}/cao-format/ml1m/u_map.dat"
+    ln -s "${path_to_dataset}/cao-format/ml1m/kg/e_map.dat" "${path_to_new_dataset}/cao-format/ml1m/kg/e_map.dat"
+    ln -s "${path_to_dataset}/cao-format/ml1m/kg/r_map.dat" "${path_to_new_dataset}/cao-format/ml1m/kg/r_map.dat"
+    ln -s "${path_to_dataset}/cao-format/ml1m/kg/test.dat" "${path_to_new_dataset}/cao-format/ml1m/kg/test.dat"
+    ln -s "${path_to_dataset}/cao-format/ml1m/kg/train.dat" "${path_to_new_dataset}/cao-format/ml1m/kg/train.dat"
+    ln -s "${path_to_dataset}/cao-format/ml1m/kg/valid.dat" "${path_to_new_dataset}/cao-format/ml1m/kg/valid.dat"
 
 }
