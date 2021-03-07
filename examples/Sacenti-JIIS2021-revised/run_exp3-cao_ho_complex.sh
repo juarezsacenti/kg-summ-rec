@@ -68,7 +68,7 @@ source $HOME/git/kg-summ-rec/preprocess/cao-format_ml-cao.sh
 # FUNCTIONS:
 #   kge-k-means 'experiment' 'dataset_in' 'dataset_out' 'kg_type' 'summarization_mode' 'kge' 'epochs' 'batch_size' learning_rate' 'low_frequence'
 #######################################
-source $HOME/git/kg-summ-rec/summarization/kge-k-means-ratio.sh
+source $HOME/git/kg-summ-rec/summarization/kge-k-means-cao.sh
 
 #######################################
 # Import ../summarization/cao-format_summ.sh
@@ -246,8 +246,6 @@ summarize() {
     local learning_rate='0.005'
     local kg_filename="kg-${kg_type}.nt"
 
-    #clean_kge-k-means
-
     summ_modes=(sv mv)
     summ_ratios=(25 50 75)
     for summarization_mode in "${summ_modes[@]}"
@@ -298,9 +296,9 @@ preprocess_summ() {
                     STARTTIME=$(date +%s)
                     if [ "$verbose" = true ]
                     then
-                        cao-format_summ "${dataset_in}" "${dirName}" "${low_frequence}" 'true'
+                        cao-format_summ "${dataset_in}" "${dirName}" "${low_frequence}" "${seed}" 'true'
                     else
-                        cao-format_summ "${dataset_in}" "${dirName}" "${low_frequence}" 'false'
+                        cao-format_summ "${dataset_in}" "${dirName}" "${low_frequence}" "${seed}" 'false'
                     fi
                     ENDTIME=$(date +%s)
                     echo -e "preprocess_summ-${dataset_out}_${kg_type}-${m}-${a}-${r}\t$(($ENDTIME - $STARTTIME))\t${STARTTIME}\t${ENDTIME}" >> ${overall_comp_cost}
