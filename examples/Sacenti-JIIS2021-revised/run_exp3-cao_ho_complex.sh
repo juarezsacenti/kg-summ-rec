@@ -113,14 +113,14 @@ preprocess_cao_oKG() {
             cd $HOME/git/kg-summ-rec
         fi
 
-        Preprocess oKG
+        # Preprocess oKG
         cd $HOME/git/kg-summ-rec/preprocess
         LOW_FREQUENCE=0    #Low Frequence Filtering (0, 10)
         if [ "$verbose" = true ]
         then
-            cao-format_ml-cao "ml-cao_ho_oKG" ${LOW_FREQUENCE} ${seed} 'true'
+            cao-format_ml-cao "ml-cao_ho_oKG" ${LOW_FREQUENCE} 'ho' ${seed} 'true'
         else
-            cao-format_ml-cao "ml-cao_ho_oKG" ${LOW_FREQUENCE} ${seed} 'false'
+            cao-format_ml-cao "ml-cao_ho_oKG" ${LOW_FREQUENCE} 'ho' ${seed} 'false'
         fi
         cd $HOME/git/kg-summ-rec
 
@@ -166,9 +166,9 @@ preprocess_cao_fKG() {
         LOW_FREQUENCE=10    #Low Frequence Filtering (0, 10)
         if [ "$verbose" = true ]
         then
-            cao-format_ml-cao "ml-cao_ho_fKG" ${LOW_FREQUENCE} ${seed} 'true'
+            cao-format_ml-cao "ml-cao_ho_fKG" ${LOW_FREQUENCE} 'ho' ${seed} 'true'
         else
-            cao-format_ml-cao "ml-cao_ho_fKG" ${LOW_FREQUENCE} ${seed} 'false'
+            cao-format_ml-cao "ml-cao_ho_fKG" ${LOW_FREQUENCE} 'ho' ${seed} 'false'
         fi
         cd $HOME/git/kg-summ-rec
 
