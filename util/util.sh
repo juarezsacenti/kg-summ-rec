@@ -112,10 +112,7 @@ copy_ml_cao() {
     local path_to_dataset=$1
     local path_to_new_dataset=$2
 
-    mkdir "${path_to_new_dataset}"
-    mkdir "${path_to_new_dataset}/cao-format"
-    mkdir "${path_to_new_dataset}/cao-format/ml1m"
-    mkdir "${path_to_new_dataset}/cao-format/ml1m/kg"
+    mkdir -p "${path_to_new_dataset}/cao-format/ml1m/kg"
     ln -s "${path_to_dataset}/cao-format/ml1m/i2kg_map.tsv" "${path_to_new_dataset}/cao-format/i2kg_map.tsv"
     ln -s "${path_to_dataset}/cao-format/ml1m/train.dat" "${path_to_new_dataset}/cao-format/train.dat"
     ln -s "${path_to_dataset}/cao-format/ml1m/valid.dat" "${path_to_new_dataset}/cao-format/valid.dat"
