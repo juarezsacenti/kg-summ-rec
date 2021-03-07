@@ -95,3 +95,37 @@ copy_ml_sun() {
     ln -s "${path_to_dataset}/sun-format/test.txt" "${path_to_new_dataset}/sun-format/test.txt"
     ln -s "${path_to_dataset}/sun-format/training.txt" "${path_to_new_dataset}/sun-format/training.txt"
 }
+
+#######################################
+# Copy ml-cao dataset
+# GLOBALS:
+#   None
+# ARGUMENTS:
+#   path_to_dataset: path to dataset that will be copied
+#   path_to_new_dataset: path to the new dataset
+# OUTPUTS:
+#   None
+# RETURN:
+#   0 if print succeeds, non-zero on error.
+#######################################
+copy_ml_cao() {
+    local path_to_dataset=$1
+    local path_to_new_dataset=$2
+
+    mkdir "${path_to_new_dataset}"
+    mkdir "${path_to_new_dataset}/cao-format"
+    mkdir "${path_to_new_dataset}/cao-format/ml1m"
+    mkdir "${path_to_new_dataset}/cao-format/ml1m/kg"
+    ln -s "${path_to_dataset}/cao-format/ml1m/i2kg_map.tsv" "${path_to_new_dataset}/cao-format/i2kg_map.tsv"
+    ln -s "${path_to_dataset}/cao-format/ml1m/train.dat" "${path_to_new_dataset}/cao-format/train.dat"
+    ln -s "${path_to_dataset}/cao-format/ml1m/valid.dat" "${path_to_new_dataset}/cao-format/valid.dat"
+    ln -s "${path_to_dataset}/cao-format/ml1m/i_map.dat" "${path_to_new_dataset}/cao-format/i_map.dat"
+    ln -s "${path_to_dataset}/cao-format/ml1m/test.dat" "${path_to_new_dataset}/cao-format/test.dat"
+    ln -s "${path_to_dataset}/cao-format/ml1m/u_map.dat" "${path_to_new_dataset}/cao-format/u_map.dat"
+    ln -s "${path_to_dataset}/cao-format/ml1m/kg/e_map.dat" "${path_to_new_dataset}/cao-format/kg/e_map.dat"
+    ln -s "${path_to_dataset}/cao-format/ml1m/kg/r_map.dat" "${path_to_new_dataset}/cao-format/kg/r_map.dat"
+    ln -s "${path_to_dataset}/cao-format/ml1m/kg/test.dat" "${path_to_new_dataset}/cao-format/kg/test.dat"
+    ln -s "${path_to_dataset}/cao-format/ml1m/kg/train.dat" "${path_to_new_dataset}/cao-format/kg/train.dat"
+    ln -s "${path_to_dataset}/cao-format/ml1m/kg/valid.dat" "${path_to_new_dataset}/cao-format/kg/valid.dat"
+
+}
