@@ -564,14 +564,14 @@ run_experiment() {
         touch ${overall_comp_cost}
     fi
 
-    clean_kge-k-means
-
     # Preprocessing
     preprocess_cao_oKG
     #preprocess_cao_fKG
 
     # Summarization
+    clean_kge-k-means
     summarize_cao_sKG
+    clean_kge-k-means
     #summarize_cao_sfKG
 
     # Recommendation
