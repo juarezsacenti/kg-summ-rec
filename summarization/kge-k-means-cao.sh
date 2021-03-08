@@ -234,13 +234,13 @@ mv_kge-k-means() {
             then
                 docker run --rm -it --gpus all -v "$PWD"/kge-k-means_data:/data -w /data \
                 kge-k-means:1.0 /bin/bash -c "python kge-k-means.py --triples ${kg_filename} \
-                --mode multiview --relations '<http://ml1m-sun/actor>,<http://ml1m-sun/director>,<http://ml1m-sun/genre>' \
+                --mode multiview --relations '<http://dbpedia.org/ontology/cinematography>,<http://dbpedia.org/property/productionCompanies>,<http://dbpedia.org/property/composer>,<http://purl.org/dc/terms/subject>,<http://dbpedia.org/ontology/openingFilm>,<http://www.w3.org/2000/01/rdf-schema#seeAlso>,<http://dbpedia.org/property/story>,<http://dbpedia.org/ontology/series>,<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>,<http://dbpedia.org/ontology/basedOn>,<http://dbpedia.org/ontology/starring>,<http://dbpedia.org/ontology/country>,<http://dbpedia.org/ontology/wikiPageWikiLink>,<http://purl.org/linguistics/gold/hypernym>,<http://dbpedia.org/ontology/editing>,<http://dbpedia.org/property/producers>,<http://dbpedia.org/property/allWriting>,<http://dbpedia.org/property/notableWork>,<http://dbpedia.org/ontology/director>,<http://dbpedia.org/ontology/award>' \
                 --kge ${kge} --epochs ${epochs} --batch_size ${batch_size} \
                 --learning_rate ${learning_rate} --rates ${ratio} --seed ${seed} --verbose"
             else
                 docker run --rm -it --gpus all -v "$PWD"/kge-k-means_data:/data -w /data \
                 kge-k-means:1.0 /bin/bash -c "python kge-k-means.py --triples ${kg_filename} \
-                --mode multiview --relations '<http://ml1m-sun/actor>,<http://ml1m-sun/director>,<http://ml1m-sun/genre>' \
+                --mode multiview --relations '<http://dbpedia.org/ontology/cinematography>,<http://dbpedia.org/property/productionCompanies>,<http://dbpedia.org/property/composer>,<http://purl.org/dc/terms/subject>,<http://dbpedia.org/ontology/openingFilm>,<http://www.w3.org/2000/01/rdf-schema#seeAlso>,<http://dbpedia.org/property/story>,<http://dbpedia.org/ontology/series>,<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>,<http://dbpedia.org/ontology/basedOn>,<http://dbpedia.org/ontology/starring>,<http://dbpedia.org/ontology/country>,<http://dbpedia.org/ontology/wikiPageWikiLink>,<http://purl.org/linguistics/gold/hypernym>,<http://dbpedia.org/ontology/editing>,<http://dbpedia.org/property/producers>,<http://dbpedia.org/property/allWriting>,<http://dbpedia.org/property/notableWork>,<http://dbpedia.org/ontology/director>,<http://dbpedia.org/ontology/award>' \
                 --kge ${kge} --epochs ${epochs} --batch_size ${batch_size} \
                 --learning_rate ${learning_rate} --rates ${ratio} --seed ${seed}"
             fi
