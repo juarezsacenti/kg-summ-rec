@@ -117,6 +117,10 @@ cv_cao-format_ml-cao() {
     #     folds=(0 1 2 3 4)
     #     for fold_number in "${folds[@]}"
     #     do
+            # if [ -e "$HOME/git/datasets/${experiment}/folds/runs.csv" ]
+            # then
+            #     rm "$HOME/git/datasets/${experiment}/folds/runs.csv"
+            # fi
     #         if [ ! -d "$HOME/git/datasets/${experiment}/fold${fold_number}/${dataset}" ]
     #         then
     #             if [ "$verbose" = true ]; then echo "[kg-summ-rec] Creating ~/git/datasets/${experiment}/fold${fold_number}/${dataset}/cao-format/ml1m/kg"; fi
