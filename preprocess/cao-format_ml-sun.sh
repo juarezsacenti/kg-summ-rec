@@ -157,6 +157,10 @@ cv_cao-format_ml-sun() {
 
     if [ ! -d "$HOME/git/datasets/${experiment}/fold0/${dataset}" ]
     then
+        if [ -e "$HOME/git/datasets/${experiment}/folds/runs.csv" ]
+        then
+            rm "$HOME/git/datasets/${experiment}/folds/runs.csv"
+        fi
         folds=(0 1 2 3 4)
         for fold_number in "${folds[@]}"
         do
