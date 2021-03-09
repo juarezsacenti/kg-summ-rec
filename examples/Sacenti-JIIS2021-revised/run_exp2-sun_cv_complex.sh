@@ -606,6 +606,26 @@ recommend() {
     fi
 }
 
+
+append_evaluations() {
+    # kg-summ-rec/evaluation
+    if [[ ! $PYTHONPATH = *git/kg-summ-rec/evaluation* ]]
+    then
+        export PYTHONPATH="${HOME}/git/kg-summ-rec/evaluation:${PYTHONPATH}"
+    fi
+
+    local dirName="fold0/ml-sun_cv_sfKG_ig-sv-complex-25"
+    cp ~/git/results/$experiment/fold${fold_number}/ml-sun_cv_oKG/ml1m-bprmf-pretrained.ckpt ~/git/results/$experiment/${dirName}/ml1m-bprmf-pretrained.ckpt
+    cp ~/git/results/$experiment/fold${fold_number}/ml-sun_cv_oKG/ml1m-transup-pretrained.ckpt ~/git/results/$experiment/${dirName}/ml1m-transup-pretrained.ckpt
+    recommend "${dirName}" '540,27000,27027' '2350,235000,11750' '235,23500,1175' '9380,234500,234969' 256 0.005 # KNOWLEDGE_REPRESENTATION 1000-epochs, TUP early_stop 10-1000-50, BPRMF early_stop 1-100-5, KNOWLEDGABLE_RECOMMENDATION 500-epochs. One epoch has 27, 235, 235, 469 steps. Proportion 20-501-500.
+
+    local dirName="fold0/ml-sun_cv_sfKG_ig-mv-complex-25"
+    cp ~/git/results/$experiment/fold${fold_number}/ml-sun_cv_oKG/ml1m-bprmf-pretrained.ckpt ~/git/results/$experiment/${dirName}/ml1m-bprmf-pretrained.ckpt
+    cp ~/git/results/$experiment/fold${fold_number}/ml-sun_cv_oKG/ml1m-transup-pretrained.ckpt ~/git/results/$experiment/${dirName}/ml1m-transup-pretrained.ckpt
+    recommend "${dirName}" '540,27000,27027' '2350,235000,11750' '235,23500,1175' '9380,234500,234969' 256 0.005 # KNOWLEDGE_REPRESENTATION 1000-epochs, TUP early_stop 10-1000-50, BPRMF early_stop 1-100-5, KNOWLEDGABLE_RECOMMENDATION 500-epochs. One epoch has 27, 235, 235, 469 steps. Proportion 20-501-500.
+}
+
+
 run_experiment() {
     experiment=$1
     seed=$2
@@ -634,16 +654,8 @@ run_experiment() {
     #recommend_sun_sKG
     #recommend_sun_sfKG
 
-    local dirName="fold0/ml-sun_cv_sfKG_ig-sv-complex-25"
-    cp ~/git/results/$experiment/fold${fold_number}/ml-sun_cv_oKG/ml1m-bprmf-pretrained.ckpt ~/git/results/$experiment/${dirName}/ml1m-bprmf-pretrained.ckpt
-    cp ~/git/results/$experiment/fold${fold_number}/ml-sun_cv_oKG/ml1m-transup-pretrained.ckpt ~/git/results/$experiment/${dirName}/ml1m-transup-pretrained.ckpt
-    recommend "${dirName}" '540,27000,27027' '2350,235000,11750' '235,23500,1175' '9380,234500,234969' 256 0.005 # KNOWLEDGE_REPRESENTATION 1000-epochs, TUP early_stop 10-1000-50, BPRMF early_stop 1-100-5, KNOWLEDGABLE_RECOMMENDATION 500-epochs. One epoch has 27, 235, 235, 469 steps. Proportion 20-501-500.
-
-    local dirName="fold0/ml-sun_cv_sfKG_ig-mv-complex-25"
-    cp ~/git/results/$experiment/fold${fold_number}/ml-sun_cv_oKG/ml1m-bprmf-pretrained.ckpt ~/git/results/$experiment/${dirName}/ml1m-bprmf-pretrained.ckpt
-    cp ~/git/results/$experiment/fold${fold_number}/ml-sun_cv_oKG/ml1m-transup-pretrained.ckpt ~/git/results/$experiment/${dirName}/ml1m-transup-pretrained.ckpt
-    recommend "${dirName}" '540,27000,27027' '2350,235000,11750' '235,23500,1175' '9380,234500,234969' 256 0.005 # KNOWLEDGE_REPRESENTATION 1000-epochs, TUP early_stop 10-1000-50, BPRMF early_stop 1-100-5, KNOWLEDGABLE_RECOMMENDATION 500-epochs. One epoch has 27, 235, 235, 469 steps. Proportion 20-501-500.
-
+    append_evaluations
 }
+
 run_experiment $1 $2 $3
 #bash -i examples/Sacenti-JIIS2021-revised/run_exp2-sun_cv_complex.sh "JIIS-revised-exp2" 0 'false' |& tee out-revised-exp2-10.txt
