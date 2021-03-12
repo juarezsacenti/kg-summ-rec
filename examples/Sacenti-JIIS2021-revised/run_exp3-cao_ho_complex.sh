@@ -564,17 +564,17 @@ run_experiment() {
 
     # Preprocessing
     preprocess_cao_oKG
-    #preprocess_cao_fKG
+    preprocess_cao_fKG
 
     # Summarization
     clean_kge-k-means
     summarize_cao_sKG
     clean_kge-k-means
-    #summarize_cao_sfKG
+    summarize_cao_sfKG
 
     # Recommendation
-    recommend_cao_sKG
+    #recommend_cao_sKG
     #recommend_cao_sfKG
 }
 run_experiment $1 $2 $3
-#bash -i examples/Sacenti-JIIS2021-revised/run_exp3-cao_ho_complex.sh "JIIS-revised-exp3" 0 'false' |& tee out-revised-exp3-1.txt
+#bash -i examples/Sacenti-JIIS2021-revised/run_exp3-cao_ho_complex.sh "JIIS-revised-exp4" 0 'false' |& tee out-revised-exp4-1.txt
