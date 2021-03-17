@@ -267,10 +267,17 @@ def statistics(kg_path, input_file, output_file, KG_format='nt'):
             )
         for row in g.query('SELECT ?p (COUNT (DISTINCT ?o) AS ?count) WHERE { ?s ?p ?o . } GROUP BY ?p ORDER BY ?p'):
             fout.write(
-                nodes = row['p'].toPython()}>{sep}{row['count'].toPython()
-                n_entities = len( np.setdiff1d( np.array(nodes), np.array(items) ) )
-                f"#Entities<{n_entities}{nl}"
+                f"#Objects<{row['p'].toPython()}>{sep}{row['count'].toPython()}{nl}"
             )
+        # Objetcs minus Items are Side Information Entities
+        for p in g.query('SELECT (DISTINCT ?p) WHERE { ?s ?p ?o . } ORDER BY ?p'):
+            count=0
+            for obj in g.query('SELECT (DISTINCT ?o) WHERE { ?s <'+p+'> ?o . } ORDER BY ?o'):
+                if obj.toPython() not in items:
+                    count+=1
+                fout.write(
+                    f"#Entities<{p.toPython()}>{sep}{count}{nl}"
+                )
 
 
 def infrequent_entities(input_file, output_file, input_format="nt"):
