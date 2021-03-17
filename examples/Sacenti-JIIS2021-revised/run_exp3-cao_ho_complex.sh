@@ -577,4 +577,4 @@ run_experiment() {
     #recommend_cao_sfKG
 }
 run_experiment $1 $2 $3
-#bash -i examples/Sacenti-JIIS2021-revised/run_exp3-cao_ho_complex.sh "JIIS-revised-exp4" 0 'false' |& tee out-revised-exp4-1.txt
+#bash -i examples/Sacenti-JIIS2021-revised/run_exp3-cao_ho_complex.sh "JIIS-revised-exp4" 0 'true' |& tee out-revised-exp4-1.txt

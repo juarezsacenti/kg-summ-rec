@@ -213,9 +213,11 @@ def statistics(kg_path, input_file, output_file, KG_format='nt'):
     g.parse(input_file, format=KG_format)
 
     items = [f'{x}' for x in pd.read_csv(input_items_file, sep='\t', names=["id", "name", "url"]).url.unique().tolist()]
+    items = np.unique(items)
     #print(items[0:10])
     n_items = len(items)
     nodes = [ row['node'].toPython() for row in g.query('SELECT DISTINCT ?node WHERE { {?node ?p1 ?o1. } UNION {?s2 ?p2 ?node. FILTER(!IsLiteral(?node)).} }') ]
+    nodes = np.unique(nodes)
     n_nodes = len(nodes)
     n_nodes2 = len(set(nodes))
     #print(nodes[0:10])
@@ -259,13 +261,15 @@ def statistics(kg_path, input_file, output_file, KG_format='nt'):
             #f'#Directors{sep}{director_count}{nl}'
             #f'#Actors{sep}{actor_count}{nl}'
         )
-        for row in g.query('SELECT ?p (COUNT (*) AS ?count) WHERE { ?s ?p ?o . } GROUP BY ?p'):
+        for row in g.query('SELECT ?p (COUNT (*) AS ?count) WHERE { ?s ?p ?o . } GROUP BY ?p ORDER BY ?p'):
             fout.write(
                 f"#Triples<{row['p'].toPython()}>{sep}{row['count'].toPython()}{nl}"
             )
-        for row in g.query('SELECT ?p (COUNT (DISTINCT ?o) AS ?count) WHERE { ?s ?p ?o . } GROUP BY ?p'):
+        for row in g.query('SELECT ?p (COUNT (DISTINCT ?o) AS ?count) WHERE { ?s ?p ?o . } GROUP BY ?p ORDER BY ?p'):
             fout.write(
-                f"#Objects<{row['p'].toPython()}>{sep}{row['count'].toPython()}{nl}"
+                nodes = row['p'].toPython()}>{sep}{row['count'].toPython()
+                n_entities = len( np.setdiff1d( np.array(nodes), np.array(items) ) )
+                f"#Entities<{n_entities}{nl}"
             )
 
 
