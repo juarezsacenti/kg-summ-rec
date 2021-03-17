@@ -278,8 +278,8 @@ def statistics(kg_path, input_file, output_file, KG_format='nt'):
             for row in g.query('SELECT DISTINCT ?o WHERE { ?s <'+p+'> ?o . }'):
                 if row[0] not in items:
                     count+=1
-                else:
-                    print(row[0])
+                # else:
+                #     print(row[0])
             fout.write(
                 f"#Entities<{p}>{sep}{count}{nl}"
             )
