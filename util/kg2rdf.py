@@ -271,6 +271,7 @@ def statistics(kg_path, input_file, output_file, KG_format='nt'):
             )
         # Objetcs minus Items are Side Information Entities
         properties = np.array( [ p for p in g.predicates() ] ).sort()
+        print(properties)
         for p in properties:
             count=0
             for obj in g.query('SELECT DISTINCT ?o WHERE { ?s <'+p+'> ?o . }'):
