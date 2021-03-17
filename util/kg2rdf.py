@@ -276,9 +276,10 @@ def statistics(kg_path, input_file, output_file, KG_format='nt'):
         for p in properties:
             count=0
             for obj in g.query('SELECT DISTINCT ?o WHERE { ?s <'+p+'> ?o . }'):
-                if str(obj) not in items:
-                    print(str(obj))
+                if obj.identifier not in items:
                     count+=1
+                else:
+                    print(obj.identifier)
             fout.write(
                 f"#Entities<{p}>{sep}{count}{nl}"
             )
