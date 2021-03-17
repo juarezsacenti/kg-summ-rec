@@ -46,8 +46,9 @@ def kge_k_means(data_home, folder, triples_file, items_file, mode, kge_name, epo
     #    pickle.dump(triples, fp)
 
     # Load items:
-    items = np.array([f'<{x}>' for x in pd.read_csv(items_file, sep='\t', header=None, names=["id", "name", "url"]).url.unique().tolist()])
-
+    items_in_file = np.array([f'<{x}>' for x in pd.read_csv(items_file, sep='\t', header=None, names=["id", "name", "url"]).url.unique().tolist()])
+    items = np.unique(items_in_file)
+    
     # Print Stats:
     if verbose:
         print(f'[kge-k-means] #Triples: {len(triples)}')
@@ -98,7 +99,8 @@ def splitview(triples, items, kge_name, epochs, batch_size, learning_rate, rates
             print(cluster_df[f'cluster{rate}'].value_counts().value_counts())
         # DF to file
         cluster_df.to_csv(f'./temp/cluster{rate}-{view}.tsv', sep='\t', header=False, index=False)
-        plot_2d_genres(model, rate_df, ratio=rate, kg_map_file=kg_map_file)
+        if 'http://ml1m-sun/genre' in relations:
+            plot_2d_genres(model, rate_df, ratio=rate, kg_map_file=kg_map_file)
 
 
 def singleview(triples, items, kge_name, epochs, batch_size, learning_rate, rates, kg_map_file, seed, verbose):
@@ -134,7 +136,8 @@ def singleview(triples, items, kge_name, epochs, batch_size, learning_rate, rate
             print(cluster_df[f'cluster{rate}'].value_counts().value_counts())
         # DF to file
         cluster_df.to_csv(f'./temp/cluster{rate}.tsv', sep='\t', header=False, index=False)
-        plot_2d_genres(model, cluster_df, ratio=rate, kg_map_file=kg_map_file)
+        if 'http://ml1m-sun/genre' in relations:
+            plot_2d_genres(model, cluster_df, ratio=rate, kg_map_file=kg_map_file)
 
 
 def multiview(triples, items, kge_name, epochs, batch_size, learning_rate, rates, relations, kg_map_file, seed, verbose):
@@ -185,7 +188,8 @@ def multiview(triples, items, kge_name, epochs, batch_size, learning_rate, rates
             rate_df = pd.concat([rate_df, cluster_df])
 
         rate_df.to_csv(f'./temp/cluster{rate}.tsv', sep='\t', header=False, index=False)
-        plot_2d_genres(model, rate_df, ratio=rate, kg_map_file=kg_map_file)
+        if 'http://ml1m-sun/genre' in relations:
+            plot_2d_genres(model, rate_df, ratio=rate, kg_map_file=kg_map_file)
 
 
 def select_kge(kge_name,batch_size,epochs,seed,verbose):
