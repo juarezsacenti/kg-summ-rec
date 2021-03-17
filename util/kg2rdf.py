@@ -276,12 +276,12 @@ def statistics(kg_path, input_file, output_file, KG_format='nt'):
         for p in properties:
             count=0
             for obj in g.query('SELECT DISTINCT ?o WHERE { ?s <'+p+'> ?o . }'):
-                print(str(obj))
                 if str(obj) not in items:
+                    print(str(obj))
                     count+=1
-                fout.write(
-                    f"#Entities<{p}>{sep}{count}{nl}"
-                )
+            fout.write(
+                f"#Entities<{p}>{sep}{count}{nl}"
+            )
 
 
 def infrequent_entities(input_file, output_file, input_format="nt"):
