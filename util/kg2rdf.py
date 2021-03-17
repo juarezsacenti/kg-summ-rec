@@ -273,15 +273,14 @@ def statistics(kg_path, input_file, output_file, KG_format='nt'):
         properties = np.array( [ p for s, p, o in g ] )
         properties = np.unique(properties)
         properties = np.sort( properties)
-        print(items)
         for p in properties:
             count=0
             for obj in g.query('SELECT DISTINCT ?o WHERE { ?s <'+p+'> ?o . }'):
-                print(obj)
-                if obj not in items:
+                print(str(obj))
+                if str(obj) not in items:
                     count+=1
                 fout.write(
-                    f"#Entities<{p.toPython()}>{sep}{count}{nl}"
+                    f"#Entities<{p}>{sep}{count}{nl}"
                 )
 
 
