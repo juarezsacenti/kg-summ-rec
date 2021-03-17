@@ -46,7 +46,7 @@ def kge_k_means(data_home, folder, triples_file, items_file, mode, kge_name, epo
     #    pickle.dump(triples, fp)
 
     # Load items:
-    items = np.array([f'<{x}>' for x in pd.read_csv(items_file, sep='\t', header=None, names=["id", "name", "url"]).url.unique().tolist()])
+    items_in_file = np.array([f'<{x}>' for x in pd.read_csv(items_file, sep='\t', header=None, names=["id", "name", "url"]).url.unique().tolist()])
     items = np.unique(items_in_file)
 
     # Print Stats:
@@ -58,16 +58,16 @@ def kge_k_means(data_home, folder, triples_file, items_file, mode, kge_name, epo
 
     # Select mode:
     if mode == 'singleview':
-        singleview(triples, items, kge_name, epochs, batch_size, learning_rate, rates, kg_map_file, seed, verbose)
+        singleview(triples, items, kge_name, epochs, batch_size, learning_rate, rates, relations, kg_map_file, seed, verbose)
     elif mode == 'multiview':
         multiview(triples, items, kge_name, epochs, batch_size, learning_rate, rates, relations, kg_map_file, seed, verbose)
     elif mode == 'splitview':
-        splitview(triples, items, kge_name, epochs, batch_size, learning_rate, rates, view, kg_map_file, seed, verbose)
+        splitview(triples, items, kge_name, epochs, batch_size, learning_rate, rates, relations, view, kg_map_file, seed, verbose)
     else:
         sys.exit('Given mode is not valid.')
 
 
-def splitview(triples, items, kge_name, epochs, batch_size, learning_rate, rates, view, kg_map_file, seed, verbose):
+def splitview(triples, items, kge_name, epochs, batch_size, learning_rate, rates, relations, view, kg_map_file, seed, verbose):
     # Select all entities, except items
     triples_df = pd.DataFrame(triples, columns=['s', 'p', 'o'])
     subjects = triples_df.s.unique()
@@ -103,7 +103,7 @@ def splitview(triples, items, kge_name, epochs, batch_size, learning_rate, rates
             plot_2d_genres(model, rate_df, ratio=rate, kg_map_file=kg_map_file)
 
 
-def singleview(triples, items, kge_name, epochs, batch_size, learning_rate, rates, kg_map_file, seed, verbose):
+def singleview(triples, items, kge_name, epochs, batch_size, learning_rate, rates, relations, kg_map_file, seed, verbose):
     # Select all entities, except items
     triples_df = pd.DataFrame(triples, columns=['s', 'p', 'o'])
     subjects = triples_df.s.unique()
