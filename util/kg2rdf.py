@@ -270,9 +270,10 @@ def statistics(kg_path, input_file, output_file, KG_format='nt'):
                 f"#Objects<{row['p'].toPython()}>{sep}{row['count'].toPython()}{nl}"
             )
         # Objetcs minus Items are Side Information Entities
-        for p in g.query('SELECT (DISTINCT ?p) WHERE { ?s ?p ?o . } ORDER BY ?p'):
+        properties = np.array( [ p for p in g.predicates() ] ).sort()
+        for p in properties:
             count=0
-            for obj in g.query('SELECT (DISTINCT ?o) WHERE { ?s <'+p+'> ?o . } ORDER BY ?o'):
+            for obj in g.query('SELECT DISTINCT ?o WHERE { ?s <'+p+'> ?o . }'):
                 if obj.toPython() not in items:
                     count+=1
                 fout.write(
