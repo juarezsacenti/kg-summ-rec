@@ -271,13 +271,14 @@ def statistics(kg_path, input_file, output_file, KG_format='nt'):
             )
         # Objetcs minus Items are Side Information Entities
         properties = np.array( [ p for s, p, o in g ] )
-        print(properties)
         properties = np.unique(properties)
         properties = np.sort( properties)
+        print(items)
         for p in properties:
             count=0
             for obj in g.query('SELECT DISTINCT ?o WHERE { ?s <'+p+'> ?o . }'):
-                if obj.toPython() not in items:
+                print(obj)
+                if obj not in items:
                     count+=1
                 fout.write(
                     f"#Entities<{p.toPython()}>{sep}{count}{nl}"
