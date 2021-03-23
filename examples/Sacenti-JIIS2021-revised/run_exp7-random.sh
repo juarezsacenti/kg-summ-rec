@@ -298,4 +298,4 @@ run_experiment() {
     summarize_sun_sKG
 }
 run_experiment $1
-#bash -i examples/Sacenti-JIIS2021-revised/run_exp7-sun_summ-random.sh "exp7-random" |& tee out-exp7-1.txt
+#bash -i examples/Sacenti-JIIS2021-revised/run_exp7-random.sh "JIIS-revised-exp7" |& tee out-exp7-1.txt
