@@ -229,22 +229,9 @@ def statistics(kg_path, input_file, output_file, KG_format='nt'):
     density_rate = n_triples / (n_entities * n_relations *n_entities)
     sparsity_rate = 1 - density_rate
 
-####
-# Compression_rate
-####
-    #uncompressed_size = os.stat(original_kg).st_size
-    #compressed_size = os.stat(input_file).st_size
-    #compression_rate = uncompressed_size / compressed_size
-
-####
-# Old Sun's entities per relations counts:
-####
-    #genre_count = [ row['count'].toPython() for row in g.query('SELECT (count (distinct ?o) as ?count) WHERE { ?s <http://ml1m-sun/genre> ?o . }') ][0]
-    #director_count = [ row['count'].toPython() for row in g.query('SELECT (count (distinct ?o) as ?count) WHERE { ?s <http://ml1m-sun/director> ?o . }') ][0]
-    #actor_count = [ row['count'].toPython() for row in g.query('SELECT (count (distinct ?o) as ?count) WHERE { ?s <http://ml1m-sun/actor> ?o . }') ][0]
-
     nl = '\n'
     sep = '\t'
+    ignore_list = items
     with open(output_file, 'w') as fout:
         fout.write(
             f'#Items{sep}{n_items}{nl}'
@@ -256,32 +243,30 @@ def statistics(kg_path, input_file, output_file, KG_format='nt'):
             f'#Triples{sep}{n_triples}{nl}'
             f'Sparsity rate{sep}{sparsity_rate*100}{nl}'
             f'#Loops{sep}{n_loops}{nl}'
-            #f'Compression rate{sep}{compression_rate}{nl}'
-            #f'#Genres{sep}{genre_count}{nl}'
-            #f'#Directors{sep}{director_count}{nl}'
-            #f'#Actors{sep}{actor_count}{nl}'
         )
-        for row in g.query('SELECT ?p (COUNT (*) AS ?count) WHERE { ?s ?p ?o . } GROUP BY ?p ORDER BY ?p'):
+        for row_t in g.query('SELECT ?p (COUNT (*) AS ?count) WHERE { ?s ?p ?o . } GROUP BY ?p ORDER BY ?p'):
             fout.write(
-                f"#Triples<{row['p'].toPython()}>{sep}{row['count'].toPython()}{nl}"
+                f"#Triples<{row_t['p'].toPython()}>{sep}{row['count'].toPython()}{nl}"
             )
-        for row in g.query('SELECT ?p (COUNT (DISTINCT ?o) AS ?count) WHERE { ?s ?p ?o . } GROUP BY ?p ORDER BY ?p'):
+            count_head=0
+            count_head_entities=0
+            for row_s in g.query('SELECT DISTINCT ?s WHERE { ?s <'+row_t['p'].toPython()+'> ?o . }'):
+                count_head+=1
+                if row_s[0] not in ignore_list:
+                    count_head_entities+=1
             fout.write(
-                f"#Objects<{row['p'].toPython()}>{sep}{row['count'].toPython()}{nl}"
+                f"#Head<{row_t['p'].toPython()}>{sep}{count_head}{nl}"
+                f"#Head-Entities<{row_t['p'].toPython()}>{sep}{count_head_entities}{nl}"
             )
-        # Objetcs minus Items are Side Information Entities
-        properties = np.array( [ p for s, p, o in g ] )
-        properties = np.unique(properties)
-        properties = np.sort( properties)
-        for p in properties:
-            count=0
-            for row in g.query('SELECT DISTINCT ?o WHERE { ?s <'+p+'> ?o . }'):
-                if row[0] not in items:
-                    count+=1
-                # else:
-                #     print(row[0])
+            count_tail=0
+            count_tail_entities=0
+            for row_o in g.query('SELECT DISTINCT ?o WHERE { ?s <'+row_t['p'].toPython()+'> ?o . }'):
+                count_tail+=1
+                if row_o[0] not in ignore_list:
+                    count_tail_entities+=1
             fout.write(
-                f"#Entities<{p}>{sep}{count}{nl}"
+                f"#Head<{row_t['p'].toPython()}>{sep}{count_tail}{nl}"
+                f"#Head-Entities<{row_t['p'].toPython()}>{sep}{count_tail_entities}{nl}"
             )
 
 
