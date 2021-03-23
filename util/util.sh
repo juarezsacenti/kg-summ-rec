@@ -17,7 +17,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #######################################
-# Summarize using KGE-K-Means
+# Test if a file exists
 # GLOBALS:
 #   None
 # ARGUMENTS:
@@ -45,11 +45,11 @@ no_exist() {
 }
 
 #######################################
-# Summarize using KGE-K-Means
+# Test if a directory exists
 # GLOBALS:
 #   None
 # ARGUMENTS:
-#   path_to_file: Input path to file
+#   path_to_dir: Input path to directory
 # OUTPUTS:
 #   None
 # RETURN:
@@ -76,7 +76,7 @@ no_exist_dir() {
 # OUTPUTS:
 #   None
 # RETURN:
-#   0 if print succeeds, non-zero on error.
+#   None
 #######################################
 copy_ml_sun() {
     local path_to_dataset=$1
@@ -106,7 +106,7 @@ copy_ml_sun() {
 # OUTPUTS:
 #   None
 # RETURN:
-#   0 if print succeeds, non-zero on error.
+#   None
 #######################################
 copy_ml_cao() {
     local path_to_dataset=$1
