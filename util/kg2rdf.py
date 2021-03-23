@@ -246,7 +246,7 @@ def statistics(kg_path, input_file, output_file, KG_format='nt'):
         )
         for row_t in g.query('SELECT ?p (COUNT (*) AS ?count) WHERE { ?s ?p ?o . } GROUP BY ?p ORDER BY ?p'):
             fout.write(
-                f"#Triples<{row_t['p'].toPython()}>{sep}{row['count'].toPython()}{nl}"
+                f"#Triples<{row_t['p'].toPython()}>{sep}{row_t['count'].toPython()}{nl}"
             )
             count_head=0
             count_head_entities=0
