@@ -265,8 +265,8 @@ def statistics(kg_path, input_file, output_file, KG_format='nt'):
                 if row_o[0] not in ignore_list:
                     count_tail_entities+=1
             fout.write(
-                f"#Head<{row_t['p'].toPython()}>{sep}{count_tail}{nl}"
-                f"#Head-Entities<{row_t['p'].toPython()}>{sep}{count_tail_entities}{nl}"
+                f"#Tail<{row_t['p'].toPython()}>{sep}{count_tail}{nl}"
+                f"#Tail-Entities<{row_t['p'].toPython()}>{sep}{count_tail_entities}{nl}"
             )
 
 
