@@ -268,7 +268,6 @@ summarize() {
                 echo -e "summarize-${dataset_out}_${kg_type}-${summarization_mode}-${kge}-${ratio}\t$(($ENDTIME - $STARTTIME))\t${STARTTIME}\t${ENDTIME}" >> ${overall_comp_cost}
             fi
             yes | rm "$HOME/git/kg-summ-rec/docker/kge-k-means_data/temp/cluster${ratio}.tsv"
-            yes | rm "$HOME/git/kg-summ-rec/docker/kge-k-means_data/temp/cluster${ratio}.png"
         done
     done
 }
@@ -569,14 +568,14 @@ run_experiment() {
     preprocess_cao_fKG
 
     # Summarization
-    #clean_kge-k-means
-    #summarize_cao_sKG
+    clean_kge-k-means
+    summarize_cao_sKG
     clean_kge-k-means
     summarize_cao_sfKG
 
     # Recommendation
-    #recommend_cao_sKG
-    #recommend_cao_sfKG
+    recommend_cao_sKG
+    recommend_cao_sfKG
 }
 run_experiment $1 $2 $3
 #bash -i examples/Sacenti-JIIS2021-revised/run_exp3-cao_ho_complex.sh "JIIS-revised-exp3" 0 'true' |& tee out-revised-exp3-1.txt
