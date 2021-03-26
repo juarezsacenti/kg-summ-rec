@@ -434,7 +434,7 @@ recommend_cao_sfKG() {
         cp ~/git/results/$experiment/fold${fold_number}/ml-cao_cv_oKG/ml1m-bprmf-pretrained.ckpt ~/git/results/$experiment/fold${fold_number}/ml-cao_cv_fKG/ml1m-bprmf-pretrained.ckpt
         cp ~/git/results/$experiment/fold${fold_number}/ml-cao_cv_oKG/ml1m-transup-pretrained.ckpt ~/git/results/$experiment/fold${fold_number}/ml-cao_cv_fKG/ml1m-transup-pretrained.ckpt
 
-        if [ "$verbose" = true ]; then echo "[kg-summ-rec] kg_recommendation: Creating ~/git/results/${experiment}/ml-cao_ho_fKG/*.log"; fi
+        if [ "$verbose" = true ]; then echo "[kg-summ-rec] kg_recommendation: Creating ~/git/results/${experiment}/ml-cao_cv_fKG/*.log"; fi
         recommend "fold${fold_number}/ml-cao_cv_fKG" '540,27000,27027' '2350,235000,11750' '235,23500,1175' '9380,234500,234969' 256 0.005 # KNOWLEDGE_REPRESENTATION 1000-epochs, TUP early_stop 10-1000-50, BPRMF early_stop 1-100-5, KNOWLEDGABLE_RECOMMENDATION 500-epochs. One epoch has 27, 235, 235, 469 steps. Proportion 20-501-500.
     done
 
@@ -544,7 +544,7 @@ recommend() {
     then
         STARTTIME=$(date +%s)
         if [ "$verbose" = true ]; then echo "[kg-summ-rec] recommend: Running TransUP with $DATASET"; fi
-        CUDA_VISIBLE_DEVICES=0 nohup python run_item_recommendation.py -data_path ~/git/datasets/$experiment/$DATASET/cao-format/ -log_path ~/git/results/$experiment/$DATASET/ -rec_test_files valid.dat:test.dat -l2_lambda 1e-5 -negtive_samples 1 -model_type transup -nohas_visualization -dataset ml1m -batch_size ${BATCH_SIZE} -embedding_size 100 -learning_rate ${LEARNING_RATE} -topn 10 -seed ${seed} -eval_interval_steps ${TUP_EPOCHS[0]} -training_steps ${TUP_EPOCHS[1]} -early_stopping_steps_to_wait ${TUP_EPOCHS[2]} -optimizer_type Adagrad -L1_flag -num_preferences 3 -nouse_st_gumbel -load_ckpt_file "$HOME/git/results/$experiment/$DATASET/ml1m-bprmf-pretrained.ckpt" & # ml-sun num_preferences = 3
+        CUDA_VISIBLE_DEVICES=0 nohup python run_item_recommendation.py -data_path ~/git/datasets/$experiment/$DATASET/cao-format/ -log_path ~/git/results/$experiment/$DATASET/ -rec_test_files valid.dat:test.dat -l2_lambda 1e-5 -negtive_samples 1 -model_type transup -nohas_visualization -dataset ml1m -batch_size ${BATCH_SIZE} -embedding_size 100 -learning_rate ${LEARNING_RATE} -topn 10 -seed ${seed} -eval_interval_steps ${TUP_EPOCHS[0]} -training_steps ${TUP_EPOCHS[1]} -early_stopping_steps_to_wait ${TUP_EPOCHS[2]} -optimizer_type Adagrad -L1_flag -num_preferences 20 -nouse_st_gumbel -load_ckpt_file "$HOME/git/results/$experiment/$DATASET/ml1m-bprmf-pretrained.ckpt" & # ml-sun num_preferences = 3
         wait $!
         mv ~/git/results/$experiment/$DATASET/ml1m-transup-*.ckpt ~/git/results/$experiment/$DATASET/ml1m-transup-pretrained.ckpt
         ENDTIME=$(date +%s)

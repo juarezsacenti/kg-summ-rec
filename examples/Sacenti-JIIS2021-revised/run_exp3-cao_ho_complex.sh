@@ -383,12 +383,11 @@ recommend_cao_sfKG() {
         export PYTHONPATH="${HOME}/git/kg-summ-rec/evaluation:${PYTHONPATH}"
     fi
 
-    # fKG
-    if no_exist "$HOME/git/results/${experiment}/ml-sun_ho_fKG/*.log"
-    then
-        if [ "$verbose" = true ]; then echo "[kg-summ-rec] kg_recommendation: Creating ~/git/results/${experiment}/ml-sun_ho_fKG/*.log"; fi
-        recommend "ml-cao_ho_fKG" '9150,915000,45750' '500,50000,2500' '5000,500000,25000' '19520,1952000,97600' 256 0.005
-    fi
+    cp ~/git/results/$experiment/ml-cao_ho_oKG/ml1m-bprmf-pretrained.ckpt ~/git/results/$experiment/ml-cao_ho_fKG/ml1m-bprmf-pretrained.ckpt
+    cp ~/git/results/$experiment/ml-cao_ho_oKG/ml1m-transup-pretrained.ckpt ~/git/results/$experiment/ml-cao_ho_fKG/ml1m-transup-pretrained.ckpt
+
+    if [ "$verbose" = true ]; then echo "[kg-summ-rec] kg_recommendation: Creating ~/git/results/${experiment}/ml-sun_ho_fKG/*.log"; fi
+    recommend "ml-cao_ho_fKG" '9150,915000,45750' '500,50000,2500' '5000,500000,25000' '19520,1952000,97600' 256 0.005
 
     kg_recommendation "ml-cao_ho_oKG" "ml-cao_ho_sfKG"
 }
@@ -398,11 +397,8 @@ kg_recommendation() {
     local dataset_out=$2
 
     # original KG
-    if no_exist "$HOME/git/results/${experiment}/${dataset_in}/*.log"
-    then
-        if [ "$verbose" = true ]; then echo "[kg-summ-rec] kg_recommendation: Creating ~/git/results/${experiment}/${dataset_in}/*.log"; fi
-        recommend "${dataset_in}" '9150,915000,45750' '500,50000,2500' '5000,500000,25000' '19520,1952000,97600' 256 0.005
-    fi
+    if [ "$verbose" = true ]; then echo "[kg-summ-rec] kg_recommendation: Creating ~/git/results/${experiment}/${dataset_in}/*.log"; fi
+    recommend "${dataset_in}" '9150,915000,45750' '500,50000,2500' '5000,500000,25000' '19520,1952000,97600' 256 0.005
 
     summ_algos=(complex)
     #summ_types=(ig uig euig)
@@ -418,6 +414,10 @@ kg_recommendation() {
                 for m in "${summ_modes[@]}"
                 do
                     local dirName="${dataset_out}_${t}-${m}-${a}-${r}"
+
+                    cp ~/git/results/$experiment/${dataset_in}/ml1m-bprmf-pretrained.ckpt ~/git/results/$experiment/${dirName}/ml1m-bprmf-pretrained.ckpt
+                    cp ~/git/results/$experiment/${dataset_in}/ml1m-transup-pretrained.ckpt ~/git/results/$experiment/${dirName}/ml1m-transup-pretrained.ckpt
+
                     if [ "$verbose" = true ]; then echo "[kg-summ-rec] kg_recommendation: Creating ~/git/results/${experiment}/${dirName}/*.log"; fi
                     recommend "${dirName}" '9150,915000,45750' '500,50000,2500' '5000,500000,25000' '19520,1952000,97600' 256 0.005
                 done
@@ -489,7 +489,7 @@ recommend() {
     then
         STARTTIME=$(date +%s)
         if [ "$verbose" = true ]; then echo "[kg-summ-rec] recommend: Running TransUP with $DATASET"; fi
-        CUDA_VISIBLE_DEVICES=0 nohup python run_item_recommendation.py -data_path ~/git/datasets/$experiment/$DATASET/cao-format/ -log_path ~/git/results/$experiment/$DATASET/ -rec_test_files valid.dat:test.dat -l2_lambda 1e-5 -negtive_samples 1 -model_type transup -nohas_visualization -dataset ml1m -batch_size ${BATCH_SIZE} -embedding_size 100 -learning_rate ${LEARNING_RATE} -topn 10 -seed ${seed} -eval_interval_steps ${TUP_EPOCHS[0]} -training_steps ${TUP_EPOCHS[1]} -early_stopping_steps_to_wait ${TUP_EPOCHS[2]} -optimizer_type Adagrad -L1_flag -num_preferences 3 -nouse_st_gumbel -load_ckpt_file "$HOME/git/results/$experiment/$DATASET/ml1m-bprmf-pretrained.ckpt" & # ml-cao num_preferences = 3
+        CUDA_VISIBLE_DEVICES=0 nohup python run_item_recommendation.py -data_path ~/git/datasets/$experiment/$DATASET/cao-format/ -log_path ~/git/results/$experiment/$DATASET/ -rec_test_files valid.dat:test.dat -l2_lambda 1e-5 -negtive_samples 1 -model_type transup -nohas_visualization -dataset ml1m -batch_size ${BATCH_SIZE} -embedding_size 100 -learning_rate ${LEARNING_RATE} -topn 10 -seed ${seed} -eval_interval_steps ${TUP_EPOCHS[0]} -training_steps ${TUP_EPOCHS[1]} -early_stopping_steps_to_wait ${TUP_EPOCHS[2]} -optimizer_type Adagrad -L1_flag -num_preferences 20 -nouse_st_gumbel -load_ckpt_file "$HOME/git/results/$experiment/$DATASET/ml1m-bprmf-pretrained.ckpt" & # ml-sun num_preferences = 3
         wait $!
         mv ~/git/results/$experiment/$DATASET/ml1m-transup-*.ckpt ~/git/results/$experiment/$DATASET/ml1m-transup-pretrained.ckpt
         ENDTIME=$(date +%s)
