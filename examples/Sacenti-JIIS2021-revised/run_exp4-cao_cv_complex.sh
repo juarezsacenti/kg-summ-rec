@@ -432,7 +432,9 @@ recommend_cao_sfKG() {
     for fold_number in "${folds[@]}"
     do
         cp ~/git/results/$experiment/fold${fold_number}/ml-cao_cv_oKG/ml1m-bprmf-pretrained.ckpt ~/git/results/$experiment/fold${fold_number}/ml-cao_cv_fKG/ml1m-bprmf-pretrained.ckpt
+        cp ~/git/results/$experiment/fold${fold_number}/ml-cao_cv_oKG/ml1m-bprmf-1*.log ~/git/results/$experiment/fold${fold_number}/ml-cao_cv_fKG/
         cp ~/git/results/$experiment/fold${fold_number}/ml-cao_cv_oKG/ml1m-transup-pretrained.ckpt ~/git/results/$experiment/fold${fold_number}/ml-cao_cv_fKG/ml1m-transup-pretrained.ckpt
+        cp ~/git/results/$experiment/fold${fold_number}/ml-cao_cv_oKG/ml1m-transup-1*.log ~/git/results/$experiment/fold${fold_number}/ml-cao_cv_fKG/
 
         if [ "$verbose" = true ]; then echo "[kg-summ-rec] kg_recommendation: Creating ~/git/results/${experiment}/ml-cao_cv_fKG/*.log"; fi
         recommend "fold${fold_number}/ml-cao_cv_fKG" '540,27000,27027' '2350,235000,11750' '235,23500,1175' '9380,234500,234969' 256 0.005 # KNOWLEDGE_REPRESENTATION 1000-epochs, TUP early_stop 10-1000-50, BPRMF early_stop 1-100-5, KNOWLEDGABLE_RECOMMENDATION 500-epochs. One epoch has 27, 235, 235, 469 steps. Proportion 20-501-500.
@@ -469,7 +471,9 @@ kg_recommendation() {
                         local dirName="fold${fold_number}/${dataset_out}_${t}-${m}-${a}-${r}"
 
                         cp ~/git/results/$experiment/fold${fold_number}/${dataset_in}/ml1m-bprmf-pretrained.ckpt ~/git/results/$experiment/${dirName}/ml1m-bprmf-pretrained.ckpt
+                        cp ~/git/results/$experiment/fold${fold_number}/${dataset_in}/ml1m-bprmf-1*.log ~/git/results/$experiment/${dirName}/
                         cp ~/git/results/$experiment/fold${fold_number}/${dataset_in}/ml1m-transup-pretrained.ckpt ~/git/results/$experiment/${dirName}/ml1m-transup-pretrained.ckpt
+                        cp ~/git/results/$experiment/fold${fold_number}/${dataset_in}/ml1m-transup-1*.log ~/git/results/$experiment/${dirName}/
 
                         if [ "$verbose" = true ]; then echo "[kg-summ-rec] kg_recommendation: Creating ~/git/results/${experiment}/${dirName}/*.log"; fi
                         #recommend "${dirName}" '4873,487300,24363' '2663,266300,13317' '266,26630,1331' '10392,1039200,51960' 256 0.005 # Early stopping parameters
