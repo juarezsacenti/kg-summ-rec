@@ -98,7 +98,7 @@ def splitview(triples, items, kge_name, epochs, batch_size, learning_rate, rates
         cluster_dict = cluster_df[f'cluster{rate}'].value_counts().to_dict()
         for cluster, count in cluster_dict.items():
             if count == 1:
-                cluster_df.loc[df[f'cluster{rate}'] == cluster, f'cluster{rate}'] = cluster_df.loc[df[f'cluster{rate}'] == cluster, 'entities']
+                cluster_df.loc[cluster_df[f'cluster{rate}'] == cluster, f'cluster{rate}'] = cluster_df.loc[cluster_df[f'cluster{rate}'] == cluster, 'entities']
         if verbose:
             print(cluster_df[f'cluster{rate}'].value_counts())
             print(cluster_df[f'cluster{rate}'].value_counts().value_counts())
@@ -140,7 +140,7 @@ def singleview(triples, items, kge_name, epochs, batch_size, learning_rate, rate
         cluster_dict = cluster_df[f'cluster{rate}'].value_counts().to_dict()
         for cluster, count in cluster_dict.items():
             if count == 1:
-                cluster_df.loc[df[f'cluster{rate}'] == cluster, f'cluster{rate}'] = cluster_df.loc[df[f'cluster{rate}'] == cluster, 'entities']
+                cluster_df.loc[cluster_df[f'cluster{rate}'] == cluster, f'cluster{rate}'] = cluster_df.loc[cluster_df[f'cluster{rate}'] == cluster, 'entities']
         if verbose:
             print(cluster_df[f'cluster{rate}'].value_counts())
             print(cluster_df[f'cluster{rate}'].value_counts().value_counts())
@@ -192,7 +192,7 @@ def multiview(triples, items, kge_name, epochs, batch_size, learning_rate, rates
             cluster_dict = cluster_df[f'cluster{rate}'].value_counts().to_dict()
             for cluster, count in cluster_dict.items():
                 if count == 1:
-                    cluster_df.loc[df[f'cluster{rate}'] == cluster, f'cluster{rate}'] = cluster_df.loc[df[f'cluster{rate}'] == cluster, 'entities']
+                    cluster_df.loc[cluster_df[f'cluster{rate}'] == cluster, f'cluster{rate}'] = cluster_df.loc[cluster_df[f'cluster{rate}'] == cluster, 'entities']
             if verbose:
                 print(cluster_df[f'cluster{rate}'].value_counts())
                 print(cluster_df[f'cluster{rate}'].value_counts().value_counts())
