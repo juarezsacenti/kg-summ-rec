@@ -390,11 +390,13 @@ recommend_sun_sfKG() {
     fi
 
     # fKG
-    if no_exist "$HOME/git/results/${experiment}/ml-sun_ho_fKG/*.log"
-    then
-        if [ "$verbose" = true ]; then echo "[kg-summ-rec] kg_recommendation: Creating ~/git/results/${experiment}/ml-sun_ho_fKG/*.log"; fi
-        recommend "ml-sun_ho_fKG" '4873,487300,24363' '2663,266300,13317' '266,26630,1331' '10392,1039200,51960' 256 0.005
-    fi
+    cp ~/git/results/$experiment/ml-sun_ho_oKG/ml1m-bprmf-pretrained.ckpt ~/git/results/$experiment/ml-sun_ho_fKG/ml1m-bprmf-pretrained.ckpt
+    cp ~/git/results/$experiment/ml-sun_ho_oKG/ml1m-bprmf-1*.log ~/git/results/$experiment/ml-sun_ho_fKG/
+    cp ~/git/results/$experiment/ml-sun_ho_oKG/ml1m-transup-pretrained.ckpt ~/git/results/$experiment/ml-sun_ho_fKG/ml1m-transup-pretrained.ckpt
+    cp ~/git/results/$experiment/ml-sun_ho_oKG/ml1m-transup-1*.log ~/git/results/$experiment/ml-sun_ho_fKG/
+
+    if [ "$verbose" = true ]; then echo "[kg-summ-rec] kg_recommendation: Creating ~/git/results/${experiment}/ml-sun_ho_fKG/*.log"; fi
+    recommend "ml-sun_ho_fKG" '4873,487300,24363' '2663,266300,13317' '266,26630,1331' '10392,1039200,51960' 256 0.005
 
     kg_recommendation "ml-sun_ho_oKG" "ml-sun_ho_sfKG"
 }
@@ -419,7 +421,9 @@ kg_recommendation() {
                     local dirName="${dataset_out}_${t}-${m}-${a}-${r}"
 
                     cp ~/git/results/$experiment/${dataset_in}/ml1m-bprmf-pretrained.ckpt ~/git/results/$experiment/${dirName}/ml1m-bprmf-pretrained.ckpt
+                    cp ~/git/results/$experiment/${dataset_in}/ml1m-bprmf-1*.log ~/git/results/$experiment/${dirName}/
                     cp ~/git/results/$experiment/${dataset_in}/ml1m-transup-pretrained.ckpt ~/git/results/$experiment/${dirName}/ml1m-transup-pretrained.ckpt
+                    cp ~/git/results/$experiment/${dataset_in}/ml1m-transup-1*.log ~/git/results/$experiment/${dirName}/
 
                     if [ "$verbose" = true ]; then echo "[kg-summ-rec] kg_recommendation: Creating ~/git/results/${experiment}/${dirName}/*.log"; fi
                     recommend "${dirName}" '4873,487300,24363' '2663,266300,13317' '266,26630,1331' '10392,1039200,51960' 256 0.005

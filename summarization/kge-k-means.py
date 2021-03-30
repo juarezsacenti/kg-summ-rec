@@ -94,6 +94,11 @@ def splitview(triples, items, kge_name, epochs, batch_size, learning_rate, rates
         # clusters to DF
         cluster_df = pd.DataFrame({'entities': entities,
                                 f'cluster{rate}': f'cluster{rate}' + pd.Series(clusters).astype(str)})
+        # Replacing clusters with a single entity by the entity url
+        cluster_dict = cluster_df[f'cluster{rate}'].value_counts().to_dict()
+        for cluster, count in cluster_dict.items():
+            if count == 1:
+                cluster_df.loc[df[f'cluster{rate}'] == cluster, f'cluster{rate}'] = cluster_df.loc[df[f'cluster{rate}'] == cluster, 'entities']
         if verbose:
             print(cluster_df[f'cluster{rate}'].value_counts())
             print(cluster_df[f'cluster{rate}'].value_counts().value_counts())
@@ -131,6 +136,11 @@ def singleview(triples, items, kge_name, epochs, batch_size, learning_rate, rate
         # clusters to DF
         cluster_df = pd.DataFrame({'entities': entities,
                                 f'cluster{rate}': f'cluster{rate}' + pd.Series(clusters).astype(str)})
+        # Replacing clusters with a single entity by the entity url
+        cluster_dict = cluster_df[f'cluster{rate}'].value_counts().to_dict()
+        for cluster, count in cluster_dict.items():
+            if count == 1:
+                cluster_df.loc[df[f'cluster{rate}'] == cluster, f'cluster{rate}'] = cluster_df.loc[df[f'cluster{rate}'] == cluster, 'entities']
         if verbose:
             print(cluster_df[f'cluster{rate}'].value_counts())
             print(cluster_df[f'cluster{rate}'].value_counts().value_counts())
@@ -166,27 +176,27 @@ def multiview(triples, items, kge_name, epochs, batch_size, learning_rate, rates
             objects = view.o.unique()
             nodes = np.unique(np.concatenate((subjects, objects)))
             entities = np.setdiff1d(nodes,items)
-
             if verbose:
                 print(f'[kge-k-means] Relation: {r}')
                 print(f'[kge-k-means] #Nodes: {len(nodes)}')
                 #print(nodes[0:10])
                 print(f'[kge-k-means] #Entities: {len(entities)}')
                 #print(entities[0:10])
-
             # Group entities into n-clusters
             clusters = clustering(entities, model, rate, seed, verbose)
             # to DF, then to File
             cluster_df = pd.DataFrame({'entities': entities,
                                     f'cluster{rate}': f'cluster{rate}' + pd.Series(clusters).astype(str)})
             cluster_df['relation'] = r
-
+            # Replacing clusters with a single entity by the entity url
+            cluster_dict = cluster_df[f'cluster{rate}'].value_counts().to_dict()
+            for cluster, count in cluster_dict.items():
+                if count == 1:
+                    cluster_df.loc[df[f'cluster{rate}'] == cluster, f'cluster{rate}'] = cluster_df.loc[df[f'cluster{rate}'] == cluster, 'entities']
             if verbose:
                 print(cluster_df[f'cluster{rate}'].value_counts())
                 print(cluster_df[f'cluster{rate}'].value_counts().value_counts())
-
             rate_df = pd.concat([rate_df, cluster_df])
-
         rate_df.to_csv(f'./temp/cluster{rate}.tsv', sep='\t', header=False, index=False)
         if 'http://ml1m-sun/genre' in relations:
             plot_2d_genres(model, rate_df, ratio=rate, kg_map_file=kg_map_file)
