@@ -249,7 +249,8 @@ summarize() {
     local kg_filename="kg-${kg_type}.nt"
 
     summ_modes=(sv mv)
-    summ_ratios=(25 50 75)
+    #summ_ratios=(25 50 75)
+    summ_ratios=(25)
     for summarization_mode in "${summ_modes[@]}"
     do
         for ratio in "${summ_ratios[@]}"
@@ -282,14 +283,15 @@ preprocess_summ() {
 
     summ_modes=(sv mv)
     summ_algos=(complex)
-    summ_rates=(25 50 75)
+    #summ_ratios=(25 50 75)
+    summ_ratios=(25)
     local STARTTIME=0
     local ENDTIME=0
     for m in "${summ_modes[@]}"
     do
         for a in "${summ_algos[@]}"
         do
-            for r in "${summ_rates[@]}"
+            for r in "${summ_ratios[@]}"
             do
                 local dirName="${dataset_out}_${kg_type}-${m}-${a}-${r}"
                 if no_exist "$HOME/git/datasets/${experiment}/${dirName}/cao-format/ml1m/kg/kg_hop0.dat"
@@ -323,14 +325,15 @@ measure_summ_impact() {
 
     summ_modes=(sv mv)
     summ_algos=(complex)
-    summ_rates=(25 50 75)
+    #summ_ratios=(25 50 75)
+    summ_ratios=(25)
     local STARTTIME=0
     local ENDTIME=0
     for m in "${summ_modes[@]}"
     do
         for a in "${summ_algos[@]}"
         do
-            for r in "${summ_rates[@]}"
+            for r in "${summ_ratios[@]}"
             do
                 local dirName="${dataset_out}_${kg_type}-${m}-${a}-${r}"
                 if no_exist "$HOME/git/results/${experiment}/${dirName}/kg-ig_stats.tsv"
@@ -569,17 +572,17 @@ run_experiment() {
 
     # Preprocessing
     preprocess_cao_oKG
-    preprocess_cao_fKG
+    #preprocess_cao_fKG
 
     # Summarization
     clean_kge-k-means
     summarize_cao_sKG
-    clean_kge-k-means
-    summarize_cao_sfKG
+    #clean_kge-k-means
+    #summarize_cao_sfKG
 
     # Recommendation
-    recommend_cao_sKG
-    recommend_cao_sfKG
+    #recommend_cao_sKG
+    #recommend_cao_sfKG
 }
 run_experiment $1 $2 $3
 #bash -i examples/Sacenti-JIIS2021-revised/run_exp3-cao_ho_complex.sh "JIIS-revised-exp3" 0 'true' |& tee out-revised-exp3-1.txt
