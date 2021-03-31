@@ -98,7 +98,7 @@ def splitview(triples, items, kge_name, epochs, batch_size, learning_rate, rates
         cluster_dict = cluster_df[f'cluster{rate}'].value_counts().to_dict()
         for cluster, count in cluster_dict.items():
             if count == 1:
-                cluster_df.drop(cluster_df.loc[f'cluster{rate}'] == cluster].index, inplace=True) # remove cluster with single entity
+                cluster_df.drop(cluster_df.loc[cluster_df[f'cluster{rate}'] == cluster].index, inplace=True) # remove cluster with single entity
                 #cluster_df.loc[cluster_df[f'cluster{rate}'] == cluster, f'cluster{rate}'] = cluster_df.loc[cluster_df[f'cluster{rate}'] == cluster, 'entities'] #keep entity uri
         if verbose:
             print(cluster_df[f'cluster{rate}'].value_counts())
@@ -141,7 +141,7 @@ def singleview(triples, items, kge_name, epochs, batch_size, learning_rate, rate
         cluster_dict = cluster_df[f'cluster{rate}'].value_counts().to_dict()
         for cluster, count in cluster_dict.items():
             if count == 1:
-                cluster_df.drop(cluster_df.loc[f'cluster{rate}'] == cluster].index, inplace=True) # remove cluster with single entity
+                cluster_df.drop(cluster_df.loc[cluster_df[f'cluster{rate}'] == cluster].index, inplace=True) # remove cluster with single entity
                 #cluster_df.loc[cluster_df[f'cluster{rate}'] == cluster, f'cluster{rate}'] = cluster_df.loc[cluster_df[f'cluster{rate}'] == cluster, 'entities'] #keep entity uri
         if verbose:
             print(cluster_df[f'cluster{rate}'].value_counts())
@@ -194,7 +194,7 @@ def multiview(triples, items, kge_name, epochs, batch_size, learning_rate, rates
             cluster_dict = cluster_df[f'cluster{rate}'].value_counts().to_dict()
             for cluster, count in cluster_dict.items():
                 if count == 1:
-                    cluster_df.drop(cluster_df.loc[f'cluster{rate}'] == cluster].index, inplace=True) # remove cluster with single entity
+                    cluster_df.drop(cluster_df.loc[cluster_df[f'cluster{rate}'] == cluster].index, inplace=True) # remove cluster with single entity
                     #cluster_df.loc[cluster_df[f'cluster{rate}'] == cluster, f'cluster{rate}'] = cluster_df.loc[cluster_df[f'cluster{rate}'] == cluster, 'entities'] #keep entity uri
             if verbose:
                 print(cluster_df[f'cluster{rate}'].value_counts())
