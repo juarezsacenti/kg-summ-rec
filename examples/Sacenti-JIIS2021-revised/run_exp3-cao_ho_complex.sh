@@ -250,7 +250,7 @@ summarize() {
 
     summ_modes=(sv mv)
     #summ_ratios=(25 50 75)
-    summ_ratios=(25)
+    summ_ratios=(75)
     for summarization_mode in "${summ_modes[@]}"
     do
         for ratio in "${summ_ratios[@]}"
@@ -284,7 +284,7 @@ preprocess_summ() {
     summ_modes=(sv mv)
     summ_algos=(complex)
     #summ_ratios=(25 50 75)
-    summ_ratios=(25)
+    summ_ratios=(75)
     local STARTTIME=0
     local ENDTIME=0
     for m in "${summ_modes[@]}"
@@ -326,7 +326,7 @@ measure_summ_impact() {
     summ_modes=(sv mv)
     summ_algos=(complex)
     #summ_ratios=(25 50 75)
-    summ_ratios=(25)
+    summ_ratios=(75)
     local STARTTIME=0
     local ENDTIME=0
     for m in "${summ_modes[@]}"
