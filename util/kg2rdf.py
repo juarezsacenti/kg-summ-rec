@@ -136,7 +136,7 @@ def mv_cluster2nt(cluster_file, input_file, output_file):
                 c_map[relation] = {}
                 r_map[relation] = n_relation
                 n_relation += 1
-            c_map[relation][entity] = f'<http://know-rec/relation{r_map[relation]}-'+cluster+'>'
+            c_map[relation][entity] = f'<http://kg-summ-rec/relation{r_map[relation]}-'+cluster+'>'
     #find'n'replace entities with clusters
     with open(input_file) as fin, open('temp.dat', 'w') as fout:
         #for each cluster, each triple, each entity in cluster, replace entity in triple with cluster
@@ -161,7 +161,7 @@ def cluster2nt(cluster_file, input_file, output_file):
         #for each cluster, each triple, each entity in cluster, replace entity in triple with cluster
         for line in fin:
             (entity, cluster) = line.rstrip('\n').split('\t')
-            c_map[entity] = '<http://know-rec/' + cluster + '>'
+            c_map[entity] = '<http://kg-summ-rec/' + cluster + '>'
     #find'n'replace entities with clusters
     with open(input_file) as fin, open('temp.dat', 'w') as fout:
         #for each cluster, each triple, each entity in cluster, replace entity in triple with cluster

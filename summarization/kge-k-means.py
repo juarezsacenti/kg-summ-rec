@@ -93,12 +93,13 @@ def splitview(triples, items, kge_name, epochs, batch_size, learning_rate, rates
         clusters = clustering(entities, model, rate, seed, verbose)
         # clusters to DF
         cluster_df = pd.DataFrame({'entities': entities,
-                                f'cluster{rate}': f'cluster{rate}' + pd.Series(clusters).astype(str)})
+                                f'cluster{rate}': f'cluster{rate}-' + pd.Series(clusters).astype(str)})
         # Replacing clusters with a single entity by the entity url
         cluster_dict = cluster_df[f'cluster{rate}'].value_counts().to_dict()
         for cluster, count in cluster_dict.items():
             if count == 1:
-                cluster_df.loc[cluster_df[f'cluster{rate}'] == cluster, f'cluster{rate}'] = cluster_df.loc[cluster_df[f'cluster{rate}'] == cluster, 'entities']
+                cluster_df.drop(cluster_df.loc[f'cluster{rate}'] == cluster].index, inplace=True) # remove cluster with single entity
+                #cluster_df.loc[cluster_df[f'cluster{rate}'] == cluster, f'cluster{rate}'] = cluster_df.loc[cluster_df[f'cluster{rate}'] == cluster, 'entities'] #keep entity uri
         if verbose:
             print(cluster_df[f'cluster{rate}'].value_counts())
             print(cluster_df[f'cluster{rate}'].value_counts().value_counts())
@@ -135,12 +136,13 @@ def singleview(triples, items, kge_name, epochs, batch_size, learning_rate, rate
         clusters = clustering(entities, model, rate, seed, verbose)
         # clusters to DF
         cluster_df = pd.DataFrame({'entities': entities,
-                                f'cluster{rate}': f'cluster{rate}' + pd.Series(clusters).astype(str)})
+                                f'cluster{rate}': f'cluster{rate}-' + pd.Series(clusters).astype(str)})
         # Replacing clusters with a single entity by the entity url
         cluster_dict = cluster_df[f'cluster{rate}'].value_counts().to_dict()
         for cluster, count in cluster_dict.items():
             if count == 1:
-                cluster_df.loc[cluster_df[f'cluster{rate}'] == cluster, f'cluster{rate}'] = cluster_df.loc[cluster_df[f'cluster{rate}'] == cluster, 'entities']
+                cluster_df.drop(cluster_df.loc[f'cluster{rate}'] == cluster].index, inplace=True) # remove cluster with single entity
+                #cluster_df.loc[cluster_df[f'cluster{rate}'] == cluster, f'cluster{rate}'] = cluster_df.loc[cluster_df[f'cluster{rate}'] == cluster, 'entities'] #keep entity uri
         if verbose:
             print(cluster_df[f'cluster{rate}'].value_counts())
             print(cluster_df[f'cluster{rate}'].value_counts().value_counts())
@@ -186,13 +188,14 @@ def multiview(triples, items, kge_name, epochs, batch_size, learning_rate, rates
             clusters = clustering(entities, model, rate, seed, verbose)
             # to DF, then to File
             cluster_df = pd.DataFrame({'entities': entities,
-                                    f'cluster{rate}': f'cluster{rate}' + pd.Series(clusters).astype(str)})
+                                    f'cluster{rate}': f'cluster{rate}-' + pd.Series(clusters).astype(str)})
             cluster_df['relation'] = r
             # Replacing clusters with a single entity by the entity url
             cluster_dict = cluster_df[f'cluster{rate}'].value_counts().to_dict()
             for cluster, count in cluster_dict.items():
                 if count == 1:
-                    cluster_df.loc[cluster_df[f'cluster{rate}'] == cluster, f'cluster{rate}'] = cluster_df.loc[cluster_df[f'cluster{rate}'] == cluster, 'entities']
+                    cluster_df.drop(cluster_df.loc[f'cluster{rate}'] == cluster].index, inplace=True) # remove cluster with single entity
+                    #cluster_df.loc[cluster_df[f'cluster{rate}'] == cluster, f'cluster{rate}'] = cluster_df.loc[cluster_df[f'cluster{rate}'] == cluster, 'entities'] #keep entity uri
             if verbose:
                 print(cluster_df[f'cluster{rate}'].value_counts())
                 print(cluster_df[f'cluster{rate}'].value_counts().value_counts())
