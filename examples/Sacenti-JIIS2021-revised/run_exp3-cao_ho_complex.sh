@@ -249,8 +249,7 @@ summarize() {
     local kg_filename="kg-${kg_type}.nt"
 
     summ_modes=(sv mv)
-    #summ_ratios=(25 50 75)
-    summ_ratios=(75)
+    summ_ratios=(25 50 75)
     for summarization_mode in "${summ_modes[@]}"
     do
         for ratio in "${summ_ratios[@]}"
@@ -283,8 +282,7 @@ preprocess_summ() {
 
     summ_modes=(sv mv)
     summ_algos=(complex)
-    #summ_ratios=(25 50 75)
-    summ_ratios=(75)
+    summ_ratios=(25 50 75)
     local STARTTIME=0
     local ENDTIME=0
     for m in "${summ_modes[@]}"
@@ -325,8 +323,7 @@ measure_summ_impact() {
 
     summ_modes=(sv mv)
     summ_algos=(complex)
-    #summ_ratios=(25 50 75)
-    summ_ratios=(75)
+    summ_ratios=(25 50 75)
     local STARTTIME=0
     local ENDTIME=0
     for m in "${summ_modes[@]}"
@@ -406,10 +403,9 @@ kg_recommendation() {
     recommend "${dataset_in}" '9150,915000,45750' '500,50000,2500' '5000,500000,25000' '19520,1952000,97600' 256 0.005
 
     summ_algos=(complex)
-    #summ_types=(ig uig euig)
+    summ_modes=(sv mv)
     summ_types=(ig)
     summ_ratios=(25 50 75)
-    summ_modes=(sv mv)
     for a in "${summ_algos[@]}"
     do
         for t in "${summ_types[@]}"
@@ -572,17 +568,17 @@ run_experiment() {
 
     # Preprocessing
     preprocess_cao_oKG
-    #preprocess_cao_fKG
+    preprocess_cao_fKG
 
     # Summarization
     clean_kge-k-means
     summarize_cao_sKG
-    #clean_kge-k-means
-    #summarize_cao_sfKG
+    clean_kge-k-means
+    summarize_cao_sfKG
 
     # Recommendation
-    #recommend_cao_sKG
-    #recommend_cao_sfKG
+    recommend_cao_sKG
+    recommend_cao_sfKG
 }
 run_experiment $1 $2 $3
 #bash -i examples/Sacenti-JIIS2021-revised/run_exp3-cao_ho_complex.sh "JIIS-revised-exp3" 0 'true' |& tee out-revised-exp3-1.txt
