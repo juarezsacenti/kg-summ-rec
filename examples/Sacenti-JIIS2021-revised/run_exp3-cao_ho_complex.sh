@@ -389,7 +389,7 @@ recommend_cao_sfKG() {
     cp ~/git/results/$experiment/ml-cao_ho_oKG/ml1m-transup-1*.log ~/git/results/$experiment/ml-cao_ho_fKG/
 
     if [ "$verbose" = true ]; then echo "[kg-summ-rec] kg_recommendation: Creating ~/git/results/${experiment}/ml-sun_ho_fKG/*.log"; fi
-    recommend "ml-cao_ho_fKG" '9150,915000,45750' '500,50000,2500' '5000,500000,25000' '19520,1952000,97600' 256 0.005
+    recommend "ml-cao_ho_fKG" '11880,1188000,59400' '27410,2741000,137050' '274100,27410000,1370500' '54820,5482000,274100' 256 0.005
 
     kg_recommendation "ml-cao_ho_oKG" "ml-cao_ho_sfKG"
 }
@@ -422,7 +422,8 @@ kg_recommendation() {
                     cp ~/git/results/$experiment/${dataset_in}/ml1m-transup-1*.log ~/git/results/$experiment/${dirName}/
 
                     if [ "$verbose" = true ]; then echo "[kg-summ-rec] kg_recommendation: Creating ~/git/results/${experiment}/${dirName}/*.log"; fi
-                    recommend "${dirName}" '9150,915000,45750' '500,50000,2500' '5000,500000,25000' '19520,1952000,97600' 256 0.005
+                    recommend "${dirName}" '11880,1188000,59400' '27410,2741000,137050' '274100,27410000,1370500' '54820,5482000,274100' 256 0.005
+
                 done
             done
         done
