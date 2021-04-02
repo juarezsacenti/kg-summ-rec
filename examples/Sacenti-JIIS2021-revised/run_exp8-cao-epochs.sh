@@ -218,9 +218,9 @@ recommend() {
     then
         STARTTIME=$(date +%s)
         echo "[kg-summ-rec] recommend: Running FM with ${dataset_out}"
-        CUDA_VISIBLE_DEVICES=0 nohup python run_item_recommendation.py -batch_size ${BATCH_SIZES[1]} -data_path ~/git/datasets/${experiment}/${dataset_in}/cao-format/ -dataset ml1m -early_stopping_steps_to_wait ${ITEM_RECOMMENDATION_EPOCHS[2]} -embedding_size 100 -eval_interval_steps ${ITEM_RECOMMENDATION_EPOCHS[0]} -nohas_visualization -kg_lambda 0.5 -l2_lambda 1e-5 -learning_rate ${LEARNING_RATES[1]} -log_path ~/git/results/${experiment}/${dataset_out}/ -model_type bprmf -negtive_samples 1 -norm_lambda 1 -optimizer_type Adagrad -rec_test_files valid.dat:test.dat -seed ${seed} -topn 10 -training_steps ${ITEM_RECOMMENDATION_EPOCHS[1]} &
-        wait $!
+        CUDA_VISIBLE_DEVICES=0 nohup python run_item_recommendation.py -batch_size ${BATCH_SIZES[1]} -data_path ~/git/datasets/${experiment}/${dataset_in}/cao-format/ -dataset ml1m -early_stopping_steps_to_wait ${ITEM_RECOMMENDATION_EPOCHS[2]} -embedding_size 100 -eval_interval_steps ${ITEM_RECOMMENDATION_EPOCHS[0]} -nohas_visualization -kg_lambda 0.5 -l2_lambda 1e-5 -learning_rate ${LEARNING_RATES[1]} -log_path ~/git/results/${experiment}/${dataset_out}/ -model_type fm -negtive_samples 1 -norm_lambda 1 -optimizer_type Adagrad -rec_test_files valid.dat:test.dat -seed ${seed} -topn 10 -training_steps ${ITEM_RECOMMENDATION_EPOCHS[1]} &
         mv ~/git/results/${experiment}/${dataset_out}/ml1m-bprmf-*.ckpt ~/git/results/${experiment}/${dataset_out}/ml1m-bprmf-pretrained.ckpt
+        wait $!
         ENDTIME=$(date +%s)
         echo -e "recommend-BPRMF-${dataset_out}\t$(($ENDTIME - $STARTTIME))\t${STARTTIME}\t${ENDTIME}" >> ${overall_comp_cost}
     fi
