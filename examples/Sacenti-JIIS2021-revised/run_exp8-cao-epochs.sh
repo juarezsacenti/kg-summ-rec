@@ -96,6 +96,10 @@ preprocess_cao_oKG() {
         fi
         cd $HOME/git/kg-summ-rec
 
+        echo "experiment: $experiment"
+        echo "seed: $seed"
+        echo "verbose: $verbose"
+
         # Collect oKG statistics
         if no_exist "$HOME/git/results/${experiment}/ml-cao_ho_oKG"
         then
@@ -192,6 +196,10 @@ recommend() {
     conda deactivate
     conda activate jointrec
 
+    echo "experiment: $experiment"
+    echo "seed: $seed"
+    echo "verbose: $verbose"
+    
     local STARTTIME=0
     local ENDTIME=0
     #[TRANSE]
@@ -263,6 +271,10 @@ run_experiment() {
     seed=$2
     if [ "$3" = 'true' ]; then verbose=true; else verbose=false; fi
     overall_comp_cost="$HOME/git/results/${experiment}/overall_efficiency.tsv"
+
+    echo "experiment: $experiment"
+    echo "seed: $seed"
+    echo "verbose: $verbose"
 
     if [ ! -d "$HOME/git/datasets/${experiment}" ]
     then
