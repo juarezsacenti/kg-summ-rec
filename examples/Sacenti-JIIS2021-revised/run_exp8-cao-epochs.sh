@@ -199,7 +199,7 @@ recommend() {
     echo "experiment: $experiment"
     echo "seed: $seed"
     echo "verbose: $verbose"
-    
+
     local STARTTIME=0
     local ENDTIME=0
     #[TRANSE]
@@ -272,9 +272,9 @@ run_experiment() {
     if [ "$3" = 'true' ]; then verbose=true; else verbose=false; fi
     overall_comp_cost="$HOME/git/results/${experiment}/overall_efficiency.tsv"
 
-    echo "experiment: $experiment"
-    echo "seed: $seed"
-    echo "verbose: $verbose"
+    echo "1. experiment: $experiment"
+    echo "1. seed: $seed"
+    echo "1. verbose: $verbose"
 
     if [ ! -d "$HOME/git/datasets/${experiment}" ]
     then
@@ -290,5 +290,5 @@ run_experiment() {
     # Recommendation
     recommend_cao_oKG '1'
 }
-run_experiment $1
+run_experiment $1 $2 $3
 #bash -i examples/Sacenti-JIIS2021-revised/run_exp8-cao-epochs.sh "JIIS-revised-exp8" 3 'true' |& tee out-exp8-1.txt
