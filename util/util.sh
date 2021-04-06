@@ -126,3 +126,29 @@ copy_ml_cao() {
     ln -s "${path_to_dataset}/cao-format/ml1m/kg/valid.dat" "${path_to_new_dataset}/cao-format/ml1m/kg/valid.dat"
 
 }
+
+resource_usage() {
+    local pid=$1
+    local every_sec=$2
+    local file=$3
+
+    # If this script is killed, kill the process.
+    trap "kill $pid 2> /dev/null" EXIT
+
+    # While process is running...
+    while kill -0 $pid 2> /dev/null; do
+        ps -p ${pid} -o %cpu >> ${file}
+        echo ',' >> ${file}
+        ps -p ${pid} -o %mem >> ${file}
+        echo ',' >> ${file}
+        pmap ${pid} | tail -n 1 >> ${file}
+        echo ',' >> ${file}
+        #nvidia-smi --format=csv --query-gpu=memory.used | tail -n 1 >>> ${file}
+        nvidia-smi | grep ${pid} >> ${file}
+        echo '\n' >> ${file}
+        sleep ${every_sec}
+    done
+
+    # Disable the trap on a normal exit.
+    trap - EXIT
+}
