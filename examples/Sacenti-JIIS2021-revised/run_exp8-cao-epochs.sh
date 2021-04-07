@@ -326,7 +326,7 @@ recommend_cao() {
     then
         STARTTIME=$(date +%s)
         if [ "$verbose" = true ]; then echo "[kg-summ-rec] recommend: Running TUP with ${dataset_out}"; fi
-        CUDA_VISIBLE_DEVICES=0 nohup python run_item_recommendation.py -L1_flag -batch_size 1024 -data_path ~/git/datasets/${experiment}/${dataset_out}/cao-format/ -dataset ml1m -early_stopping_steps_to_wait 35000 -embedding_size 100 -eval_interval_steps 7000 -nohas_visualization -joint_ratio 0.5 -kg_lambda 0.5 -l2_lambda 0 -learning_rate 0.001 -load_ckpt_file "$HOME/git/results/${experiment}/${dataset_out}/ml1m-bprmf-pretrained2.ckpt" -log_path ~/git/results/${experiment}/${dataset_out}/ -model_type transup -negtive_samples 1 -norm_lambda 1 -num_preferences 20 -optimizer_type Adam -rec_test_files valid.dat:test.dat -seed 3 -topn 10 -training_steps 700000 -use_st_gumbel &
+        CUDA_VISIBLE_DEVICES=0 nohup python run_item_recommendation.py -L1_flag -batch_size 1024 -data_path ~/git/datasets/${experiment}/${dataset_in}/cao-format/ -dataset ml1m -early_stopping_steps_to_wait 35000 -embedding_size 100 -eval_interval_steps 7000 -nohas_visualization -joint_ratio 0.5 -kg_lambda 0.5 -l2_lambda 0 -learning_rate 0.001 -load_ckpt_file "$HOME/git/results/${experiment}/${dataset_out}/ml1m-bprmf-pretrained2.ckpt" -log_path ~/git/results/${experiment}/${dataset_out}/ -model_type transup -negtive_samples 1 -norm_lambda 1 -num_preferences 20 -optimizer_type Adam -rec_test_files valid.dat:test.dat -seed 3 -topn 10 -training_steps 700000 -use_st_gumbel &
         resource_usage $! 1800 "${HOME}/git/results/${experiment}/${dataset_out}/tup-resource_usage.csv"
         wait $!
         mv ~/git/results/${experiment}/${dataset_out}/ml1m-transup-1*.ckpt ~/git/results/${experiment}/${dataset_out}/ml1m-transup-pretrained.ckpt
@@ -382,7 +382,7 @@ recommend_cao() {
     then
        STARTTIME=$(date +%s)
        if [ "$verbose" = true ]; then echo "[kg-summ-rec] recommend: Running CKE with ${dataset_out}"; fi
-       CUDA_VISIBLE_DEVICES=0 nohup python run_knowledgable_recommendation.py -L1_flag -batch_size 256 -data_path ~/git/datasets/${experiment}/${dataset_out}/cao-format/ -dataset ml1m -early_stopping_steps_to_wait 275000 -embedding_size 100 -eval_interval_steps 55000 -nohas_visualization -joint_ratio 0.5 -kg_lambda 1 -kg_test_files valid.dat:test.dat -l2_lambda 0 -learning_rate 0.001 -log_path ~/git/results/${experiment}/${dataset_out}/ -model_type cke -negtive_samples 1 -norm_lambda 1 -optimizer_type Adam -rec_test_files valid.dat:test.dat -seed 3 -topn 10 -training_steps 5500000 -nouse_st_gumbel &
+       CUDA_VISIBLE_DEVICES=0 nohup python run_knowledgable_recommendation.py -L1_flag -batch_size 256 -data_path ~/git/datasets/${experiment}/${dataset_in}/cao-format/ -dataset ml1m -early_stopping_steps_to_wait 275000 -embedding_size 100 -eval_interval_steps 55000 -nohas_visualization -joint_ratio 0.5 -kg_lambda 1 -kg_test_files valid.dat:test.dat -l2_lambda 0 -learning_rate 0.001 -log_path ~/git/results/${experiment}/${dataset_out}/ -model_type cke -negtive_samples 1 -norm_lambda 1 -optimizer_type Adam -rec_test_files valid.dat:test.dat -seed 3 -topn 10 -training_steps 5500000 -nouse_st_gumbel &
        resource_usage $! 1800 "${HOME}/git/results/${experiment}/${dataset_out}/cke-resource_usage.csv"
        wait $!
        ENDTIME=$(date +%s)
