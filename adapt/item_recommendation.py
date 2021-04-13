@@ -82,24 +82,25 @@ def case_rec_evaluate(FLAGS, model, eval_iter, eval_dict, all_dicts, logger, i, 
     logger.info("From CaseRecommender evaluator: {}.".format(str(item_rec_metrics)))
 
     # Creating kg-summ-rec evaluator with diversity parameters
-    evaluator2 = DiversityEvaluation(n_ranks=[10])
-    dataset_path = os.path.normpath(FLAGS.data_path + os.sep + os.pardir)
-    dataset_name = os.path.basename(dataset_path)
-    #tags = dataset_name.split('-')
-    #if len(tags) > 2:
-    #    mode = dataset_name.split('-')[2]
-    #    ratio = dataset_name.split('-')[4]
-    #else:
-    #    mode = 'sv'
-    #    ratio = '100'
     tags = dataset_name.split('_')
-    dataset_path=os.path.normpath(FLAGS.data_path + os.sep + os.pardir + os.sep + os.pardir + os.sep + tags[0] + '_' + tags[1] + '_' + 'oKG')
-    mode='sv'
-    ratio='100'
-    i2genre_map = read_i2genre_map(dataset_path, mode, ratio)
-    diversity_metrics = evaluator2.evaluate(predictions_data['feedback'], eval_data, i2genre_map)
-    print("From kg-summ-rec diversity evaluator: {}.".format(str(diversity_metrics)))
-    logger.info("From kg-summ-rec diversity evaluator: {}.".format(str(diversity_metrics)))
+    if tags[1] == 'sun':
+        evaluator2 = DiversityEvaluation(n_ranks=[10])
+        dataset_path = os.path.normpath(FLAGS.data_path + os.sep + os.pardir)
+        dataset_name = os.path.basename(dataset_path)
+        #tags = dataset_name.split('-')
+        #if len(tags) > 2:
+        #    mode = dataset_name.split('-')[2]
+        #    ratio = dataset_name.split('-')[4]
+        #else:
+        #    mode = 'sv'
+        #    ratio = '100'
+        dataset_path=os.path.normpath(FLAGS.data_path + os.sep + os.pardir + os.sep + os.pardir + os.sep + tags[0] + '_' + tags[1] + '_' + 'oKG')
+        mode='sv'
+        ratio='100'
+        i2genre_map = read_i2genre_map(dataset_path, mode, ratio)
+        diversity_metrics = evaluator2.evaluate(predictions_data['feedback'], eval_data, i2genre_map)
+        print("From kg-summ-rec diversity evaluator: {}.".format(str(diversity_metrics)))
+        logger.info("From kg-summ-rec diversity evaluator: {}.".format(str(diversity_metrics)))
 
     model.enable_grad()
     return item_rec_metrics
