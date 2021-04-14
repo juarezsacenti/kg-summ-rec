@@ -83,7 +83,7 @@ def case_rec_evaluate(FLAGS, model, eval_iter, eval_dict, all_dicts, logger, i, 
 
     # Creating kg-summ-rec evaluator with diversity parameters
     tags = FLAGS.dataset.split('_')
-    if tags[1] == 'sun':
+    if tags[0] == 'ml-sun':
         evaluator2 = DiversityEvaluation(n_ranks=[10])
         dataset_path = os.path.normpath(FLAGS.data_path + os.sep + os.pardir)
         dataset_name = os.path.basename(dataset_path)
