@@ -21,7 +21,7 @@ def case_rec_evaluator(test_file, predictions_file, top_score_dict):
         for user, item_list in top_score_dict.items():
             for item in item_list:
                 score = 1.0 / (item_list.index(item) + 1)
-                print_list.append((user, item, score))
+                print_list.append((int(user[1:]), int(item[1:]), float(score)))
         WriteFile(predictions_file, data=print_list, sep='\t').write()
 
         # Using CaseRecommender ReadFile class to read test_set from file
@@ -35,8 +35,6 @@ def case_rec_evaluator(test_file, predictions_file, top_score_dict):
         item_rec_metrics = evaluator.evaluate(predictions_data['feedback'], eval_data)
 
         print ('\nItem Recommendation Metrics:\n', item_rec_metrics)
-
-        model.enable_grad()
 
         return item_rec_metrics
 

@@ -82,7 +82,7 @@ def case_rec_evaluate(FLAGS, model, eval_iter, eval_dict, all_dicts, logger, i, 
     logger.info("From CaseRecommender evaluator: {}.".format(str(item_rec_metrics)))
 
     # Creating kg-summ-rec evaluator with diversity parameters
-    dataset_name = os.path.basename(os.path.dirname(os.path.dirname((FLAGS.log_path))
+    dataset_name = os.path.basename(os.path.dirname(os.path.dirname(FLAGS.log_path)))
     tags = dataset_name.split('_')
     if tags[0] == 'ml-sun':
         evaluator2 = DiversityEvaluation(n_ranks=[10])
