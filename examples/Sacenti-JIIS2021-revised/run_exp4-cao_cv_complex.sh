@@ -140,7 +140,7 @@ preprocess_cao_oKG() {
                 mkdir ~/git/results/${experiment}/fold${fold_number}/ml-cao_cv_oKG
             fi
             # Collect ml-cao_cv_oKG statistics
-            if no_exist "$HOME/git/results/${experiment}/fold${fold_number}/ml-cao_cv_oKG/kg-ig_stats.tsv"
+            if no_exist "$HOME/git/results/${experiment}/fold0/ml-cao_cv_oKG/kg-ig_stats.tsv"
             then
                 if [ "$verbose" = true ]; then echo "[kg-summ-rec] preprocess_cao_oKG: Creating ~/git/results/${experiment}/fold${fold_number}/ml-cao_cv_oKG/kg-ig_stats.tsv"; fi
                 cd $HOME/git/kg-summ-rec/util
@@ -197,7 +197,7 @@ preprocess_cao_fKG() {
                 mkdir ~/git/results/${experiment}/fold${fold_number}/ml-cao_cv_fKG
             fi
             # Collect ml-cao_cv_oKG statistics
-            if no_exist "$HOME/git/results/${experiment}/fold${fold_number}/ml-cao_cv_fKG/kg-ig_stats.tsv"
+            if no_exist "$HOME/git/results/${experiment}/fold0/ml-cao_cv_fKG/kg-ig_stats.tsv"
             then
                 if [ "$verbose" = true ]; then echo "[kg-summ-rec] preprocess_cao_fKG: Creating ~/git/results/${experiment}/fold${fold_number}/ml-cao_cv_fKG/kg-ig_stats.tsv"; fi
                 cd $HOME/git/kg-summ-rec/util
@@ -431,7 +431,9 @@ recommend_cao_sfKG() {
     folds=(0 1 2 3 4)
     for fold_number in "${folds[@]}"
     do
-        cp ~/git/results/$experiment/fold${fold_number}/ml-cao_cv_oKG/ml1m-bprmf-pretrained.ckpt ~/git/results/$experiment/fold${fold_number}/ml-cao_cv_fKG/ml1m-bprmf-pretrained.ckpt
+        cp ~/git/results/$experiment/fold${fold_number}/ml-cao_cv_oKG/ml1m-fm-pretrained.ckpt ~/git/results/$experiment/fold${fold_number}/ml-cao_cv_fKG/ml1m-fm-pretrained.ckpt
+        cp ~/git/results/$experiment/fold${fold_number}/ml-cao_cv_oKG/ml1m-fm-1*.log ~/git/results/$experiment/fold${fold_number}/ml-cao_cv_fKG/
+        cp ~/git/results/$experiment/fold${fold_number}/ml-cao_cv_oKG/ml1m-bprmf-pretrained2.ckpt ~/git/results/$experiment/fold${fold_number}/ml-cao_cv_fKG/ml1m-bprmf-pretrained2.ckpt
         cp ~/git/results/$experiment/fold${fold_number}/ml-cao_cv_oKG/ml1m-bprmf-1*.log ~/git/results/$experiment/fold${fold_number}/ml-cao_cv_fKG/
         cp ~/git/results/$experiment/fold${fold_number}/ml-cao_cv_oKG/ml1m-transup-pretrained.ckpt ~/git/results/$experiment/fold${fold_number}/ml-cao_cv_fKG/ml1m-transup-pretrained.ckpt
         cp ~/git/results/$experiment/fold${fold_number}/ml-cao_cv_oKG/ml1m-transup-1*.log ~/git/results/$experiment/fold${fold_number}/ml-cao_cv_fKG/
@@ -472,10 +474,12 @@ kg_recommendation() {
                     do
                         local dirName="fold${fold_number}/${dataset_out}_${t}-${m}-${a}-${r}"
 
-                        cp ~/git/results/$experiment/fold${fold_number}/${dataset_in}/ml1m-bprmf-pretrained.ckpt ~/git/results/$experiment/${dirName}/ml1m-bprmf-pretrained.ckpt
-                        cp ~/git/results/$experiment/fold${fold_number}/${dataset_in}/ml1m-bprmf-1*.log ~/git/results/$experiment/${dirName}/
-                        cp ~/git/results/$experiment/fold${fold_number}/${dataset_in}/ml1m-transup-pretrained.ckpt ~/git/results/$experiment/${dirName}/ml1m-transup-pretrained.ckpt
-                        cp ~/git/results/$experiment/fold${fold_number}/${dataset_in}/ml1m-transup-1*.log ~/git/results/$experiment/${dirName}/
+                        cp ~/git/results/$experiment/fold${fold_number}/ml-cao_cv_oKG/ml1m-fm-pretrained.ckpt ~/git/results/$experiment/fold${fold_number}/ml-cao_cv_fKG/ml1m-fm-pretrained.ckpt
+                        cp ~/git/results/$experiment/fold${fold_number}/ml-cao_cv_oKG/ml1m-fm-1*.log ~/git/results/$experiment/fold${fold_number}/ml-cao_cv_fKG/
+                        cp ~/git/results/$experiment/fold${fold_number}/ml-cao_cv_oKG/ml1m-bprmf-pretrained2.ckpt ~/git/results/$experiment/fold${fold_number}/ml-cao_cv_fKG/ml1m-bprmf-pretrained2.ckpt
+                        cp ~/git/results/$experiment/fold${fold_number}/ml-cao_cv_oKG/ml1m-bprmf-1*.log ~/git/results/$experiment/fold${fold_number}/ml-cao_cv_fKG/
+                        cp ~/git/results/$experiment/fold${fold_number}/ml-cao_cv_oKG/ml1m-transup-pretrained.ckpt ~/git/results/$experiment/fold${fold_number}/ml-cao_cv_fKG/ml1m-transup-pretrained.ckpt
+                        cp ~/git/results/$experiment/fold${fold_number}/ml-cao_cv_oKG/ml1m-transup-1*.log ~/git/results/$experiment/fold${fold_number}/ml-cao_cv_fKG/
 
                         if [ "$verbose" = true ]; then echo "[kg-summ-rec] kg_recommendation: Creating ~/git/results/${experiment}/${dirName}/*.log"; fi
                         #recommend "${dirName}" '4873,487300,24363' '2663,266300,13317' '266,26630,1331' '10392,1039200,51960' 256 0.005 # Early stopping parameters
@@ -680,7 +684,7 @@ recommend_cao() {
         STARTTIME=$(date +%s)
         echo "[kg-summ-rec] recommend: Running TransH with ${dataset_out}"
         local training_steps=$((3040 * 600)) # step_per_epoch * limit
-        CUDA_VISIBLE_DEVICES=0 nohup python run_knowledge_representation.py -L1_flag -batch_size 100 -data_path ~/git/datasets/${experiment}/${dataset_in}/cao-format/ -dataset ml1m -early_stopping_steps_to_wait $((training_steps + 1)) -embedding_size 100 -eval_interval_steps $((training_steps + 1)) -nohas_visualization -joint_ratio 0.5 -kg_lambda 0.5 -kg_test_files valid.dat:test.dat -l2_lambda 0 -learning_rate 0.001 -load_ckpt_file "$HOME/git/results/${experiment}/${dataset_out}/ml1m-transe-pretrained1.ckpt"  -log_path ~/git/results/${experiment}/${dataset_out}/ -model_type transh -norm_lambda 1 -optimizer_type Adam -seed 3 -topn 10 -training_steps ${training_steps} &
+        CUDA_VISIBLE_DEVICES=0 nohup python run_knowledge_representation.py -L1_flag -batch_size 100 -data_path ~/git/datasets/${experiment}/${dataset_in}/cao-format/ -dataset ml1m -early_stopping_steps_to_wait $((training_steps + 1)) -embedding_size 100 -eval_interval_steps $((training_steps + 1)) -nohas_visualization -joint_ratio 0.5 -kg_lambda 0.5 -kg_test_files valid.dat:test.dat -l2_lambda 0 -learning_rate 0.001 -load_ckpt_file "$HOME/git/results/${experiment}/${dataset_out}/ml1m-transe-pretrained2.ckpt"  -log_path ~/git/results/${experiment}/${dataset_out}/ -model_type transh -norm_lambda 1 -optimizer_type Adam -seed 3 -topn 10 -training_steps ${training_steps} &
         resource_usage $! 1800 "${HOME}/git/results/${experiment}/${dataset_out}/transh-resource_usage.csv"
         wait $!
         mv ~/git/results/${experiment}/${dataset_out}/ml1m-transh-1*.ckpt_final ~/git/results/${experiment}/${dataset_out}/ml1m-transh-pretrained.ckpt
@@ -693,7 +697,7 @@ recommend_cao() {
        STARTTIME=$(date +%s)
        if [ "$verbose" = true ]; then echo "[kg-summ-rec] recommend: Running CFKG with ${dataset_out}"; fi
        local training_steps=$((3509 * 300)) # step_per_epoch * limit
-       CUDA_VISIBLE_DEVICES=0 nohup python run_knowledgable_recommendation.py -L1_flag -batch_size 400 -data_path ~/git/datasets/${experiment}/${dataset_in}/cao-format/ -dataset ml1m -early_stopping_steps_to_wait $((training_steps + 1)) -embedding_size 100 -eval_interval_steps $((training_steps + 1)) -nohas_visualization -joint_ratio 0.5 -kg_lambda 1 -kg_test_files valid.dat:test.dat -l2_lambda 0 -learning_rate 0.001 -load_ckpt_file "$HOME/git/results/${experiment}/${dataset_out}/ml1m-bprmf-pretrained1.ckpt:$HOME/git/results/${experiment}/${dataset_out}/ml1m-transe-pretrained2.ckpt" -log_path ~/git/results/${experiment}/${dataset_out}/ -model_type cfkg -negtive_samples 1 -norm_lambda 1 -optimizer_type Adam -rec_test_files valid.dat:test.dat -seed 3 -share_embeddings -topn 10 -training_steps ${training_steps} -nouse_st_gumbel &
+       CUDA_VISIBLE_DEVICES=0 nohup python run_knowledgable_recommendation.py -L1_flag -batch_size 400 -data_path ~/git/datasets/${experiment}/${dataset_in}/cao-format/ -dataset ml1m -early_stopping_steps_to_wait $((training_steps + 1)) -embedding_size 100 -eval_interval_steps $((training_steps + 1)) -nohas_visualization -joint_ratio 0.5 -kg_lambda 1 -kg_test_files valid.dat:test.dat -l2_lambda 0 -learning_rate 0.001 -load_ckpt_file "$HOME/git/results/${experiment}/${dataset_out}/ml1m-bprmf-pretrained2.ckpt:$HOME/git/results/${experiment}/${dataset_out}/ml1m-transe-pretrained2.ckpt" -log_path ~/git/results/${experiment}/${dataset_out}/ -model_type cfkg -negtive_samples 1 -norm_lambda 1 -optimizer_type Adam -rec_test_files valid.dat:test.dat -seed 3 -share_embeddings -topn 10 -training_steps ${training_steps} -nouse_st_gumbel &
        resource_usage $! 1800 "${HOME}/git/results/${experiment}/${dataset_out}/cfkg-resource_usage.csv"
        wait $!
        ENDTIME=$(date +%s)
@@ -717,7 +721,7 @@ recommend_cao() {
       STARTTIME=$(date +%s)
       if [ "$verbose" = true ]; then echo "[kg-summ-rec] recommend: Running CoFM with ${dataset_out}"; fi
       local training_steps=$((3509 * 300)) # step_per_epoch * limit
-      CUDA_VISIBLE_DEVICES=0 nohup python run_knowledgable_recommendation.py -L1_flag -batch_size 400 -data_path ~/git/datasets/${experiment}/${dataset_in}/cao-format/ -dataset ml1m -early_stopping_steps_to_wait $((training_steps + 1)) -embedding_size 100 -eval_interval_steps $((training_steps + 1)) -nohas_visualization -joint_ratio 0.5 -kg_lambda 1 -kg_test_files valid.dat:test.dat -l2_lambda 0 -learning_rate 0.001 -load_ckpt_file "$HOME/git/results/${experiment}/${dataset_out}/ml1m-fm-pretrained.ckpt:$HOME/git/results/${experiment}/${dataset_out}/ml1m-transe-pretrained1.ckpt" -log_path ~/git/results/${experiment}/${dataset_out}/ -model_type cofm -negtive_samples 1 -norm_lambda 1 -optimizer_type Adam -rec_test_files valid.dat:test.dat -seed 3 -share_embeddings -topn 10 -training_steps ${training_steps} -nouse_st_gumbel &
+      CUDA_VISIBLE_DEVICES=0 nohup python run_knowledgable_recommendation.py -L1_flag -batch_size 400 -data_path ~/git/datasets/${experiment}/${dataset_in}/cao-format/ -dataset ml1m -early_stopping_steps_to_wait $((training_steps + 1)) -embedding_size 100 -eval_interval_steps $((training_steps + 1)) -nohas_visualization -joint_ratio 0.5 -kg_lambda 1 -kg_test_files valid.dat:test.dat -l2_lambda 0 -learning_rate 0.001 -load_ckpt_file "$HOME/git/results/${experiment}/${dataset_out}/ml1m-fm-pretrained.ckpt:$HOME/git/results/${experiment}/${dataset_out}/ml1m-transe-pretrained2.ckpt" -log_path ~/git/results/${experiment}/${dataset_out}/ -model_type cofm -negtive_samples 1 -norm_lambda 1 -optimizer_type Adam -rec_test_files valid.dat:test.dat -seed 3 -share_embeddings -topn 10 -training_steps ${training_steps} -nouse_st_gumbel &
       resource_usage $! 1800 "${HOME}/git/results/${experiment}/${dataset_out}/cofm-resource_usage.csv"
       wait $!
       ENDTIME=$(date +%s)
@@ -776,4 +780,4 @@ run_experiment() {
 }
 
 run_experiment $1 $2 $3
-#bash -i examples/Sacenti-JIIS2021-revised/run_exp4-cao_cv_complex.sh "JIIS-revised-exp4" 0 'false' |& tee out-exp4-1.txt
+#bash -i examples/Sacenti-JIIS2021-revised/run_exp4-cao_cv_complex.sh "JIIS-revised-exp4" 0 'true' |& tee out-exp4-1.txt
