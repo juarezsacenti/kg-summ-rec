@@ -169,7 +169,7 @@ cv_cao-format_ml-cao() {
                 ln -s "$HOME/git/datasets/${experiment}/${dataset}/kg/valid.dat" "$HOME/git/datasets/${experiment}/fold${fold_number}/${dataset}/cao-format/ml1m/kg/valid.dat"
                 ln -s "$HOME/git/datasets/${experiment}/${dataset}/kg/test.dat" "$HOME/git/datasets/${experiment}/fold${fold_number}/${dataset}/cao-format/ml1m/kg/test.dat"
                 ln -s "$HOME/git/datasets/${experiment}/ml-cao/cao-format/ml1m/kg/e_map.dat" "$HOME/git/datasets/${experiment}/fold${fold_number}/${dataset}/cao-format/ml1m/kg_map.dat"
-                ln -s "$HOME/git/datasets/${experiment}/ml-cao/cao-format/ml1m/kg/kg-ig.nt" "$HOME/git/datasets/${experiment}/fold${fold_number}/${dataset}/kg-ig.nt"
+                ln -s "$HOME/git/datasets/${experiment}/ml-cao/kg-ig.nt" "$HOME/git/datasets/${experiment}/fold${fold_number}/${dataset}/kg-ig.nt"
                 cd "$HOME/git/kg-summ-rec/preprocess"
             fi
 
