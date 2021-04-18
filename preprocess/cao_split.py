@@ -70,7 +70,7 @@ if __name__ == '__main__':
 
     parsed_args = parser.parse_args()
 
-    load_file = os.path.expanduser(parsed_args.load_file)
+    load_path = os.path.expanduser(parsed_args.load_path)
     column = parsed_args.column
     frac = np.fromstring(parsed_args.frac, dtype=float, sep=',')
     #print(frac)
