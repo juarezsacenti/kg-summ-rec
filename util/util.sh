@@ -127,7 +127,29 @@ copy_ml_cao() {
 
 }
 
-resource_usage() {
+resource_usage1() {
+    local pid=$1
+    local every_sec=$2
+    local file=$3
+
+    # If this script is killed, kill the process.
+    trap "kill $pid 2> /dev/null" EXIT
+
+    # While process is running...
+    while kill -0 $pid 2> /dev/null; do
+        ps -p ${pid} -o %cpu | cpu_perc=$(</dev/stdin)
+        ps -p ${pid} -o %mem | mem_perc=$(</dev/stdin)
+        pmap ${pid} | tail -n 1 | tr -s ' ' | cut -d ' ' -f3 | mem_kb=$(</dev/stdin)
+        nvidia-smi | grep ${pid} | tr -s ' ' | cut -d ' ' -f8 | ded_mem=$(</dev/stdin)
+        echo "${cpu_perc}, ${mem_perc}, ${mem_kb}, ${ded_mem}" >> ${file}
+        sleep ${every_sec}
+    done
+
+    # Disable the trap on a normal exit.
+    trap - EXIT
+}
+
+resource_usage1() {
     local pid=$1
     local every_sec=$2
     local file=$3
@@ -144,7 +166,7 @@ resource_usage() {
         pmap ${pid} | tail -n 1 >> ${file}
         echo ',' >> ${file}
         #nvidia-smi --format=csv --query-gpu=memory.used | tail -n 1 >>> ${file}
-        nvidia-smi | grep ${pid} >> ${file}
+        nvidia-smi | grep ${pid} | tr -s ' ' | cut -d ' ' -f8 >> ${file}
         echo '\n' >> ${file}
         sleep ${every_sec}
     done

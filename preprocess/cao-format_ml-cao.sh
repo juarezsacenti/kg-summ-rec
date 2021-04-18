@@ -66,6 +66,9 @@ ho_cao-format_ml-cao() {
     local dataset=$1 # Dataset
     local low_frequence=$2 # Filtering
 
+    #[Cleaning KG]
+    clean_cao
+
     #[activate kg-summ-rec]
     conda deactivate
     conda activate kg-summ-rec
@@ -89,84 +92,129 @@ cv_cao-format_ml-cao() {
     local dataset=$1 # Dataset
     local low_frequence=$2 # Filtering
 
-    # # Create folds, fold0, ..., folders
-    # if [ ! -d "$HOME/git/datasets/${experiment}/folds" ]
-    # then
-    #     if [ "$verbose" = true ]; then echo "[kg-summ-rec] Creating ~/git/datasets/${experiment}/folds"; fi
-    #     mkdir ~/git/datasets/${experiment}/folds
-    #     mkdir ~/git/datasets/${experiment}/fold0
-    #     mkdir ~/git/datasets/${experiment}/fold1
-    #     mkdir ~/git/datasets/${experiment}/fold2
-    #     mkdir ~/git/datasets/${experiment}/fold3
-    #     mkdir ~/git/datasets/${experiment}/fold4
-    # fi
-    #
-    # #[activate kg-summ-rec]
-    # conda deactivate
-    # conda activate kg-summ-rec
-    #
-    # # Create files in folds, fold0, ..., folders
-    # if no_exist "$HOME/git/datasets/${experiment}/folds/fold0.dat"
-    # then
-    #     if [ "$verbose" = true ]; then echo "[kg-summ-rec] Creating ~/git/datasets/${experiment}/folds"; fi
-    #     python sun_split.py --loadfile "$HOME/git/datasets/${experiment}/ml-sun/sun-format/rating-delete-missing-itemid.txt" --column 'user_id' --frac '0.2,0.2,0.2,0.2' --savepath "$HOME/git/datasets/${experiment}/folds/" --seed "${seed}"
-    # fi
-    #
-    # if [ ! -d "$HOME/git/datasets/${experiment}/fold0/${dataset}" ]
-    # then
-    #     folds=(0 1 2 3 4)
-    #     for fold_number in "${folds[@]}"
-    #     do
-            # if [ -e "$HOME/git/datasets/${experiment}/folds/runs.csv" ]
-            # then
-            #     rm "$HOME/git/datasets/${experiment}/folds/runs.csv"
-            # fi
-    #         if [ ! -d "$HOME/git/datasets/${experiment}/fold${fold_number}/${dataset}" ]
-    #         then
-    #             if [ "$verbose" = true ]; then echo "[kg-summ-rec] Creating ~/git/datasets/${experiment}/fold${fold_number}/${dataset}/cao-format/ml1m/kg"; fi
-    #             mkdir ~/git/datasets/${experiment}/fold${fold_number}/${dataset}
-    #             mkdir ~/git/datasets/${experiment}/fold${fold_number}/${dataset}/cao-format
-    #             mkdir ~/git/datasets/${experiment}/fold${fold_number}/${dataset}/cao-format/ml1m
-    #             mkdir ~/git/datasets/${experiment}/fold${fold_number}/${dataset}/cao-format/ml1m/kg
-    #         fi
-    #
-    #         if no_exist "$HOME/git/datasets/${experiment}/fold${fold_number}/${dataset}/cao-format/ml1m/train.dat"
-    #         then
-    #             if [ "$verbose" = true ]; then echo "[kg-summ-rec] Creating ~/git/datasets/${experiment}/fold${fold_number}/${dataset}/cao-format/ml1m/train.dat"; fi
-    #             cd "$HOME/git/kg-summ-rec/util"
-    #             python select_fold.py --foldpath "$HOME/git/datasets/${experiment}/folds/" --ammount '5' --savepath "$HOME/git/datasets/${experiment}/fold${fold_number}/${dataset}/cao-format/ml1m/" --seed "${seed}"
-    #             cp "$HOME/git/datasets/${experiment}/folds/i_map.dat" "$HOME/git/datasets/${experiment}/fold${fold_number}/${dataset}/cao-format/ml1m/i_map.dat"
-    #             cp "$HOME/git/datasets/${experiment}/folds/u_map.dat" "$HOME/git/datasets/${experiment}/fold${fold_number}/${dataset}/cao-format/ml1m/u_map.dat"
-    #             cd "$HOME/git/kg-summ-rec/preprocess"
-    #         fi
-    #
-    #         #[clean_auxiliary.txt]
-    #         if no_exist "$HOME/git/datasets/${experiment}/fold${fold_number}/${dataset}/cao-format/ml1m/clean_auxiliary.txt"
-    #         then
-    #             if [ "$verbose" = true ]; then echo "[kg-summ-rec] Creating ~/git/datasets/${experiment}/fold${fold_number}/${dataset}/cao-format/ml1m/clean_auxiliary.txt"; fi
-    #             python sun2cao_step0.py --auxiliary "$HOME/git/datasets/${experiment}/ml-sun/sun-format/auxiliary.txt" --output "$HOME/git/datasets/${experiment}/fold${fold_number}/${dataset}/cao-format/ml1m/clean_auxiliary.txt"
-    #         fi
-    #
-    #         #[sun2cao_step1]
-    #         if no_exist "$HOME/git/datasets/${experiment}/fold${fold_number}/${dataset}/cao-format/ml1m/kg/kg_hop0.dat"
-    #         then
-    #             if [ "$verbose" = true ]
-    #             then
-    #                 echo "[kg-summ-rec] Creating ~/git/datasets/${experiment}/fold${fold_number}/${dataset}/cao-format/ml1m/kg/kg_hop0.dat"
-    #                 python sun2cao_step1.py --input "$HOME/git/datasets/${experiment}/fold${fold_number}/${dataset}/cao-format/ml1m/clean_auxiliary.txt"  --mapping "$HOME/git/datasets/${experiment}/fold${fold_number}/${dataset}/cao-format/ml1m/" --verbose
-    #             else
-    #                 python sun2cao_step1.py --input "$HOME/git/datasets/${experiment}/fold${fold_number}/${dataset}/cao-format/ml1m/clean_auxiliary.txt"  --mapping "$HOME/git/datasets/${experiment}/fold${fold_number}/${dataset}/cao-format/ml1m/"
-    #             fi
-    #         fi
-    #
-    #         #[sun2cao_step2]
-    #         if no_exist "$HOME/git/datasets/${experiment}/fold${fold_number}/${dataset}/cao-format/ml1m/kg/e_map.dat"
-    #         then
-    #             if [ "$verbose" = true ]; then echo "[kg-summ-rec] Creating ~/git/datasets/${experiment}/fold${fold_number}/${dataset}/cao-format/ml1m/kg/e_map.dat"; fi
-    #             python sun2cao_step2.py --data_path "~/git/datasets/${experiment}/fold${fold_number}/${dataset}/cao-format/" --dataset 'ml1m' --lowfrequence ${low_frequence} --seed "${seed}"
-    #         fi
-    #     done
-    # fi
+    #[Cleaning KG]
+    clean_cao
+
+    # Create folds, fold0, ..., folders
+    if [ ! -d "$HOME/git/datasets/${experiment}/folds" ]
+    then
+        if [ "$verbose" = true ]; then echo "[kg-summ-rec] Creating ~/git/datasets/${experiment}/folds"; fi
+        mkdir ~/git/datasets/${experiment}/folds
+        mkdir ~/git/datasets/${experiment}/fold0
+        mkdir ~/git/datasets/${experiment}/fold1
+        mkdir ~/git/datasets/${experiment}/fold2
+        mkdir ~/git/datasets/${experiment}/fold3
+        mkdir ~/git/datasets/${experiment}/fold4
+    fi
+
+    #[activate kg-summ-rec]
+    conda deactivate
+    conda activate kg-summ-rec
+
+    # Create files in folds, fold0, ..., folders
+    if no_exist "$HOME/git/datasets/${experiment}/folds/fold0.dat"
+    then
+        if [ "$verbose" = true ]; then echo "[kg-summ-rec] Creating ~/git/datasets/${experiment}/folds"; fi
+        python cao_split.py --loadfile "$HOME/git/datasets/${experiment}/${dataset}/cao-format/ml1m/" --column 'user_id' --frac '0.2,0.2,0.2,0.2' --savepath "$HOME/git/datasets/${experiment}/folds/" --seed "${seed}"
+    fi
+
+    if no_exist "$HOME/git/datasets/${experiment}/${dataset}/kg-ig.nt"
+    then
+        cd ../util
+        if [ "$verbose" = true ]; then echo "[kg-summ-rec] Creating ~/git/datasets/${experiment}//${dataset}/kg-ig.nt"; fi
+        python kg2rdf.py --mode 'splitkg' --kgpath "$HOME/git/datasets/${experiment}/${dataset}/cao-format/ml1m/kg/" --output "$HOME/git/datasets/${experiment}/${dataset}/kg-ig.nt"
+        ln -s "$HOME/git/datasets/${experiment}/${dataset}/cao-format/ml1m/kg/e_map.dat" "$HOME/git/datasets/${experiment}/${dataset}/cao-format/ml1m/kg_map.dat"
+        cd ../preprocess
+    fi
+
+    if [ ! -d "$HOME/git/datasets/${experiment}/fold0/${dataset}" ]
+    then
+        folds=(0 1 2 3 4)
+        for fold_number in "${folds[@]}"
+        do
+            if [ -e "$HOME/git/datasets/${experiment}/folds/runs.csv" ]
+            then
+                rm "$HOME/git/datasets/${experiment}/folds/runs.csv"
+            fi
+            if [ ! -d "$HOME/git/datasets/${experiment}/fold${fold_number}/${dataset}" ]
+            then
+                if [ "$verbose" = true ]; then echo "[kg-summ-rec] Creating ~/git/datasets/${experiment}/fold${fold_number}/${dataset}/cao-format/ml1m/kg"; fi
+                mkdir ~/git/datasets/${experiment}/fold${fold_number}/${dataset}
+                mkdir ~/git/datasets/${experiment}/fold${fold_number}/${dataset}/cao-format
+                mkdir ~/git/datasets/${experiment}/fold${fold_number}/${dataset}/cao-format/ml1m
+                mkdir ~/git/datasets/${experiment}/fold${fold_number}/${dataset}/cao-format/ml1m/kg
+            fi
+
+            if no_exist "$HOME/git/datasets/${experiment}/fold${fold_number}/${dataset}/cao-format/ml1m/train.dat"
+            then
+                if [ "$verbose" = true ]; then echo "[kg-summ-rec] Creating ~/git/datasets/${experiment}/fold${fold_number}/${dataset}/cao-format/ml1m/train.dat"; fi
+                cd "$HOME/git/kg-summ-rec/util"
+                python select_fold.py --foldpath "$HOME/git/datasets/${experiment}/folds/" --ammount '5' --savepath "$HOME/git/datasets/${experiment}/fold${fold_number}/${dataset}/cao-format/ml1m/" --seed "${seed}"
+                ln -s "$HOME/git/datasets/${experiment}/${dataset}/i_map.dat" "$HOME/git/datasets/${experiment}/fold${fold_number}/${dataset}/cao-format/ml1m/i_map.dat"
+                ln -s "$HOME/git/datasets/${experiment}/${dataset}/u_map.dat" "$HOME/git/datasets/${experiment}/fold${fold_number}/${dataset}/cao-format/ml1m/u_map.dat"
+                ln -s "$HOME/git/datasets/${experiment}/${dataset}/i2kg_map.tsv" "$HOME/git/datasets/${experiment}/fold${fold_number}/${dataset}/cao-format/ml1m/i2kg_map.dat"
+                ln -s "$HOME/git/datasets/${experiment}/${dataset}/kg/e_map.dat" "$HOME/git/datasets/${experiment}/fold${fold_number}/${dataset}/cao-format/ml1m/kg/e_map.dat"
+                ln -s "$HOME/git/datasets/${experiment}/${dataset}/kg/r_map.dat" "$HOME/git/datasets/${experiment}/fold${fold_number}/${dataset}/cao-format/ml1m/kg/r_map.dat"
+                ln -s "$HOME/git/datasets/${experiment}/${dataset}/kg/train.dat" "$HOME/git/datasets/${experiment}/fold${fold_number}/${dataset}/cao-format/ml1m/kg/train.dat"
+                ln -s "$HOME/git/datasets/${experiment}/${dataset}/kg/valid.dat" "$HOME/git/datasets/${experiment}/fold${fold_number}/${dataset}/cao-format/ml1m/kg/valid.dat"
+                ln -s "$HOME/git/datasets/${experiment}/${dataset}/kg/test.dat" "$HOME/git/datasets/${experiment}/fold${fold_number}/${dataset}/cao-format/ml1m/kg/test.dat"
+                cd "$HOME/git/kg-summ-rec/preprocess"
+            fi
+
+        done
+    fi
+
     #return to starting folder
     cd "$HOME/git/kg-summ-rec/preprocess"
+}
+
+claen_cao() {
+    #[Cleaning KG]
+    sed -i 's/14584	2967	18/14584	2967	7/' "$HOME/git/datasets/${experiment}/${dataset}/cao-format/ml1m/kg/train.dat"
+    sed -i 's/14171	963	18/14171	963	7/' "$HOME/git/datasets/${experiment}/${dataset}/cao-format/ml1m/kg/train.dat"
+    sed -i 's/3250	10992	10/10992	3250	10/' "$HOME/git/datasets/${experiment}/${dataset}/cao-format/ml1m/kg/train.dat"
+    sed -i 's/3250	4736	10/4736	3250	10/' "$HOME/git/datasets/${experiment}/${dataset}/cao-format/ml1m/kg/train.dat"
+    sed -i 's/3250	3032	10/3032	3250	10/' "$HOME/git/datasets/${experiment}/${dataset}/cao-format/ml1m/kg/train.dat"
+    sed -i 's/3250	13432	10/13432	3250	10/' "$HOME/git/datasets/${experiment}/${dataset}/cao-format/ml1m/kg/train.dat"
+    sed -i 's/3250	10625	10/10625	3250	10/' "$HOME/git/datasets/${experiment}/${dataset}/cao-format/ml1m/kg/train.dat"
+    sed -i 's/3250	11194	10/11194	3250	10/' "$HOME/git/datasets/${experiment}/${dataset}/cao-format/ml1m/kg/train.dat"
+    sed -i 's/3250	5364	10/5364	3250	10/' "$HOME/git/datasets/${experiment}/${dataset}/cao-format/ml1m/kg/train.dat"
+    sed -i 's/12003	13841	1/13841	12003	1/' "$HOME/git/datasets/${experiment}/${dataset}/cao-format/ml1m/kg/train.dat"
+    sed -i 's/12003	4156	1/4156	12003	1/' "$HOME/git/datasets/${experiment}/${dataset}/cao-format/ml1m/kg/train.dat"
+    sed -i 's/12003	6579	1/6579	12003	1/' "$HOME/git/datasets/${experiment}/${dataset}/cao-format/ml1m/kg/train.dat"
+    sed -i 's/3992	10293	1/10293	3992	1/' "$HOME/git/datasets/${experiment}/${dataset}/cao-format/ml1m/kg/train.dat"
+    sed -i 's/9140	5381	13/5381	9140	13/' "$HOME/git/datasets/${experiment}/${dataset}/cao-format/ml1m/kg/train.dat"
+    sed -i 's/5089	1707	5/1707	5089	7/' "$HOME/git/datasets/${experiment}/${dataset}/cao-format/ml1m/kg/train.dat"
+
+    sed -i 's/14584	2967	18/14584	2967	7/' "$HOME/git/datasets/${experiment}/${dataset}/cao-format/ml1m/kg/valid.dat"
+    sed -i 's/14171	963	18/14171	963	7/' "$HOME/git/datasets/${experiment}/${dataset}/cao-format/ml1m/kg/valid.dat"
+    sed -i 's/3250	10992	10/10992	3250	10/' "$HOME/git/datasets/${experiment}/${dataset}/cao-format/ml1m/kg/valid.dat"
+    sed -i 's/3250	4736	10/4736	3250	10/' "$HOME/git/datasets/${experiment}/${dataset}/cao-format/ml1m/kg/valid.dat"
+    sed -i 's/3250	3032	10/3032	3250	10/' "$HOME/git/datasets/${experiment}/${dataset}/cao-format/ml1m/kg/valid.dat"
+    sed -i 's/3250	13432	10/13432	3250	10/' "$HOME/git/datasets/${experiment}/${dataset}/cao-format/ml1m/kg/valid.dat"
+    sed -i 's/3250	10625	10/10625	3250	10/' "$HOME/git/datasets/${experiment}/${dataset}/cao-format/ml1m/kg/valid.dat"
+    sed -i 's/3250	11194	10/11194	3250	10/' "$HOME/git/datasets/${experiment}/${dataset}/cao-format/ml1m/kg/valid.dat"
+    sed -i 's/3250	5364	10/5364	3250	10/' "$HOME/git/datasets/${experiment}/${dataset}/cao-format/ml1m/kg/valid.dat"
+    sed -i 's/12003	13841	1/13841	12003	1/' "$HOME/git/datasets/${experiment}/${dataset}/cao-format/ml1m/kg/valid.dat"
+    sed -i 's/12003	4156	1/4156	12003	1/' "$HOME/git/datasets/${experiment}/${dataset}/cao-format/ml1m/kg/valid.dat"
+    sed -i 's/12003	6579	1/6579	12003	1/' "$HOME/git/datasets/${experiment}/${dataset}/cao-format/ml1m/kg/valid.dat"
+    sed -i 's/3992	10293	1/10293	3992	1/' "$HOME/git/datasets/${experiment}/${dataset}/cao-format/ml1m/kg/valid.dat"
+    sed -i 's/9140	5381	13/5381	9140	13/' "$HOME/git/datasets/${experiment}/${dataset}/cao-format/ml1m/kg/valid.dat"
+    sed -i 's/5089	1707	5/1707	5089	7/' "$HOME/git/datasets/${experiment}/${dataset}/cao-format/ml1m/kg/valid.dat"
+
+    sed -i 's/14584	2967	18/14584	2967	7/' "$HOME/git/datasets/${experiment}/${dataset}/cao-format/ml1m/kg/test.dat"
+    sed -i 's/14171	963	18/14171	963	7/' "$HOME/git/datasets/${experiment}/${dataset}/cao-format/ml1m/kg/test.dat"
+    sed -i 's/3250	10992	10/10992	3250	10/' "$HOME/git/datasets/${experiment}/${dataset}/cao-format/ml1m/kg/test.dat"
+    sed -i 's/3250	4736	10/4736	3250	10/' "$HOME/git/datasets/${experiment}/${dataset}/cao-format/ml1m/kg/test.dat"
+    sed -i 's/3250	3032	10/3032	3250	10/' "$HOME/git/datasets/${experiment}/${dataset}/cao-format/ml1m/kg/test.dat"
+    sed -i 's/3250	13432	10/13432	3250	10/' "$HOME/git/datasets/${experiment}/${dataset}/cao-format/ml1m/kg/test.dat"
+    sed -i 's/3250	10625	10/10625	3250	10/' "$HOME/git/datasets/${experiment}/${dataset}/cao-format/ml1m/kg/test.dat"
+    sed -i 's/3250	11194	10/11194	3250	10/' "$HOME/git/datasets/${experiment}/${dataset}/cao-format/ml1m/kg/test.dat"
+    sed -i 's/3250	5364	10/5364	3250	10/' "$HOME/git/datasets/${experiment}/${dataset}/cao-format/ml1m/kg/test.dat"
+    sed -i 's/12003	13841	1/13841	12003	1/' "$HOME/git/datasets/${experiment}/${dataset}/cao-format/ml1m/kg/test.dat"
+    sed -i 's/12003	4156	1/4156	12003	1/' "$HOME/git/datasets/${experiment}/${dataset}/cao-format/ml1m/kg/test.dat"
+    sed -i 's/12003	6579	1/6579	12003	1/' "$HOME/git/datasets/${experiment}/${dataset}/cao-format/ml1m/kg/test.dat"
+    sed -i 's/3992	10293	1/10293	3992	1/' "$HOME/git/datasets/${experiment}/${dataset}/cao-format/ml1m/kg/test.dat"
+    sed -i 's/9140	5381	13/5381	9140	13/' "$HOME/git/datasets/${experiment}/${dataset}/cao-format/ml1m/kg/test.dat"
+    sed -i 's/5089	1707	5/1707	5089	7/' "$HOME/git/datasets/${experiment}/${dataset}/cao-format/ml1m/kg/test.dat"
 }
