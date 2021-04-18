@@ -73,6 +73,13 @@ ho_cao-format_ml-cao() {
     conda deactivate
     conda activate kg-summ-rec
 
+    mv "$HOME/git/datasets/${experiment}/${dataset}/cao-format/ml1m/train.dat" "$HOME/git/datasets/${experiment}/${dataset}/cao-format/ml1m/train.dat.old"
+    mv "$HOME/git/datasets/${experiment}/${dataset}/cao-format/ml1m/valid.dat" "$HOME/git/datasets/${experiment}/${dataset}/cao-format/ml1m/valid.dat.old"
+    mv "$HOME/git/datasets/${experiment}/${dataset}/cao-format/ml1m/test.dat" "$HOME/git/datasets/${experiment}/${dataset}/cao-format/ml1m/test.dat.old"
+    if [ "$verbose" = true ]; then echo "[kg-summ-rec] Creating ~/git/datasets/${experiment}/${dataset}/cao-format/ml1m/train.dat"; fi
+    #[train.dat, valid.dat, test.dat by splitting rating-delete-missing-item.txt]
+    python cao_split.py --loadpath "$HOME/git/datasets/${experiment}/${dataset}/cao-format/ml1m/" --column 'user_id' --frac '0.1,0.2' --savepath "$HOME/git/datasets/${experiment}/${dataset}/cao-format/ml1m/" --seed "${seed}"
+
     if no_exist "$HOME/git/datasets/${experiment}/${dataset}/kg-ig.nt"
     then
         cd ../util
@@ -115,7 +122,7 @@ cv_cao-format_ml-cao() {
     if no_exist "$HOME/git/datasets/${experiment}/folds/fold0.dat"
     then
         if [ "$verbose" = true ]; then echo "[kg-summ-rec] Creating ~/git/datasets/${experiment}/folds"; fi
-        python cao_split.py --loadfile "$HOME/git/datasets/${experiment}/${dataset}/cao-format/ml1m/" --column 'user_id' --frac '0.2,0.2,0.2,0.2' --savepath "$HOME/git/datasets/${experiment}/folds/" --seed "${seed}"
+        python cao_split.py --loadpath "$HOME/git/datasets/${experiment}/${dataset}/cao-format/ml1m/" --column 'user_id' --frac '0.2,0.2,0.2,0.2' --savepath "$HOME/git/datasets/${experiment}/folds/" --seed "${seed}"
     fi
 
     if no_exist "$HOME/git/datasets/${experiment}/${dataset}/kg-ig.nt"

@@ -75,9 +75,9 @@ if __name__ == '__main__':
     print(frac)
     save_path = os.path.expanduser(parsed_args.save_path)
 
-    df_train = load_ml1m_cao_data(os.path.join(load_path, 'train.dat'))
-    df_valid = load_ml1m_cao_data(os.path.join(load_path, 'valid.dat'))
-    df_test = load_ml1m_cao_data(os.path.join(load_path, 'test.dat'))
+    df_train = load_ml1m_cao_data(os.path.join(load_path, 'train.dat.old'))
+    df_valid = load_ml1m_cao_data(os.path.join(load_path, 'valid.dat.old'))
+    df_test = load_ml1m_cao_data(os.path.join(load_path, 'test.dat.old'))
     df = pd.concat([df_train,df_valid,df_test], ignore_index=True)
 
     cao_remain, cao_sets = cao_split(df, column, frac)
