@@ -131,9 +131,9 @@ cv_cao-format_ml-cao() {
     if no_exist "$HOME/git/datasets/${experiment}/${dataset}/kg-ig.nt"
     then
         cd ../util
-        if [ "$verbose" = true ]; then echo "[kg-summ-rec] Creating ~/git/datasets/${experiment}//${dataset}/kg-ig.nt"; fi
-        python kg2rdf.py --mode 'splitkg' --kgpath "$HOME/git/datasets/${experiment}/${dataset}/cao-format/ml1m/kg/" --output "$HOME/git/datasets/${experiment}/${dataset}/kg-ig.nt"
-        ln -s "$HOME/git/datasets/${experiment}/${dataset}/cao-format/ml1m/kg/e_map.dat" "$HOME/git/datasets/${experiment}/${dataset}/cao-format/ml1m/kg_map.dat"
+        if [ "$verbose" = true ]; then echo "[kg-summ-rec] Creating ~/git/datasets/${experiment}/ml-cao/kg-ig.nt"; fi
+        python kg2rdf.py --mode 'splitkg' --kgpath "$HOME/git/datasets/${experiment}/ml-cao/cao-format/ml1m/kg/" --output "$HOME/git/datasets/${experiment}/ml-cao/kg-ig.nt"
+        ln -s "$HOME/git/datasets/${experiment}/ml-cao/cao-format/ml1m/kg/e_map.dat" "$HOME/git/datasets/${experiment}/ml-cao/cao-format/ml1m/kg_map.dat"
         cd ../preprocess
     fi
 
@@ -168,6 +168,8 @@ cv_cao-format_ml-cao() {
                 ln -s "$HOME/git/datasets/${experiment}/${dataset}/kg/train.dat" "$HOME/git/datasets/${experiment}/fold${fold_number}/${dataset}/cao-format/ml1m/kg/train.dat"
                 ln -s "$HOME/git/datasets/${experiment}/${dataset}/kg/valid.dat" "$HOME/git/datasets/${experiment}/fold${fold_number}/${dataset}/cao-format/ml1m/kg/valid.dat"
                 ln -s "$HOME/git/datasets/${experiment}/${dataset}/kg/test.dat" "$HOME/git/datasets/${experiment}/fold${fold_number}/${dataset}/cao-format/ml1m/kg/test.dat"
+                ln -s "$HOME/git/datasets/${experiment}/ml-cao/cao-format/ml1m/kg/kg-ig.nt" "$HOME/git/datasets/${experiment}/fold${fold_number}/${dataset}/cao-format/ml1m/kg-ig.nt"
+                ln -s "$HOME/git/datasets/${experiment}/ml-cao/cao-format/ml1m/kg/e_map.dat" "$HOME/git/datasets/${experiment}/fold${fold_number}/${dataset}/cao-format/ml1m/kg_map.dat"
                 cd "$HOME/git/kg-summ-rec/preprocess"
             fi
 
