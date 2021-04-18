@@ -127,7 +127,7 @@ copy_ml_cao() {
 
 }
 
-resource_usage1() {
+resource_usage() {
     local pid=$1
     local every_sec=$2
     local file=$3

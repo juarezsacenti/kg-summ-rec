@@ -140,7 +140,7 @@ preprocess_cao_oKG() {
                 mkdir ~/git/results/${experiment}/fold${fold_number}/ml-cao_cv_oKG
             fi
             # Collect ml-cao_cv_oKG statistics
-            if no_exist "$HOME/git/results/${experiment}/fold${fold_number}/ml-cao_cv_oKG/kg-ig_stats.tsv"
+            if no_exist "$HOME/git/results/${experiment}/fold0/ml-cao_cv_oKG/kg-ig_stats.tsv"
             then
                 if [ "$verbose" = true ]; then echo "[kg-summ-rec] preprocess_cao_oKG: Creating ~/git/results/${experiment}/fold${fold_number}/ml-cao_cv_oKG/kg-ig_stats.tsv"; fi
                 cd $HOME/git/kg-summ-rec/util
