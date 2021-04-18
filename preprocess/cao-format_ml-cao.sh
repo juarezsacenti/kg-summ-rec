@@ -67,7 +67,7 @@ ho_cao-format_ml-cao() {
     local low_frequence=$2 # Filtering
 
     #[Cleaning KG]
-    clean_cao ml-cao
+    clean_cao ${dataset}
 
     #[activate kg-summ-rec]
     conda deactivate
@@ -100,7 +100,7 @@ cv_cao-format_ml-cao() {
     local low_frequence=$2 # Filtering
 
     #[Cleaning KG]
-    clean_cao
+    clean_cao ml-cao
 
     # Create folds, fold0, ..., folders
     if [ ! -d "$HOME/git/datasets/${experiment}/folds" ]
@@ -122,7 +122,7 @@ cv_cao-format_ml-cao() {
     if no_exist "$HOME/git/datasets/${experiment}/folds/fold0.dat"
     then
         if [ "$verbose" = true ]; then echo "[kg-summ-rec] Creating ~/git/datasets/${experiment}/folds"; fi
-        python cao_split.py --loadpath "$HOME/git/datasets/${experiment}/${dataset}/cao-format/ml1m/" --column 'user_id' --frac '0.2,0.2,0.2,0.2' --savepath "$HOME/git/datasets/${experiment}/folds/" --seed "${seed}"
+        python cao_split.py --loadpath "$HOME/git/datasets/${experiment}/ml-cao/cao-format/ml1m/" --column 'user_id' --frac '0.2,0.2,0.2,0.2' --savepath "$HOME/git/datasets/${experiment}/folds/" --seed "${seed}"
     fi
 
     if no_exist "$HOME/git/datasets/${experiment}/${dataset}/kg-ig.nt"
