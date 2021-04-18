@@ -162,7 +162,7 @@ cv_cao-format_ml-cao() {
                 python select_fold.py --foldpath "$HOME/git/datasets/${experiment}/folds/" --ammount '5' --savepath "$HOME/git/datasets/${experiment}/fold${fold_number}/${dataset}/cao-format/ml1m/" --seed "${seed}"
                 ln -s "$HOME/git/datasets/${experiment}/${dataset}/i_map.dat" "$HOME/git/datasets/${experiment}/fold${fold_number}/${dataset}/cao-format/ml1m/i_map.dat"
                 ln -s "$HOME/git/datasets/${experiment}/${dataset}/u_map.dat" "$HOME/git/datasets/${experiment}/fold${fold_number}/${dataset}/cao-format/ml1m/u_map.dat"
-                ln -s "$HOME/git/datasets/${experiment}/${dataset}/i2kg_map.tsv" "$HOME/git/datasets/${experiment}/fold${fold_number}/${dataset}/cao-format/ml1m/i2kg_map.dat"
+                ln -s "$HOME/git/datasets/${experiment}/${dataset}/i2kg_map.tsv" "$HOME/git/datasets/${experiment}/fold${fold_number}/${dataset}/cao-format/ml1m/i2kg_map.tsv"
                 ln -s "$HOME/git/datasets/${experiment}/${dataset}/kg/e_map.dat" "$HOME/git/datasets/${experiment}/fold${fold_number}/${dataset}/cao-format/ml1m/kg/e_map.dat"
                 ln -s "$HOME/git/datasets/${experiment}/${dataset}/kg/r_map.dat" "$HOME/git/datasets/${experiment}/fold${fold_number}/${dataset}/cao-format/ml1m/kg/r_map.dat"
                 ln -s "$HOME/git/datasets/${experiment}/${dataset}/kg/train.dat" "$HOME/git/datasets/${experiment}/fold${fold_number}/${dataset}/cao-format/ml1m/kg/train.dat"
