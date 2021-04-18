@@ -175,7 +175,7 @@ cv_cao-format_ml-cao() {
     cd "$HOME/git/kg-summ-rec/preprocess"
 }
 
-claen_cao() {
+clean_cao() {
     #[Cleaning KG]
     sed -i 's/14584	2967	18/14584	2967	7/' "$HOME/git/datasets/${experiment}/${dataset}/cao-format/ml1m/kg/train.dat"
     sed -i 's/14171	963	18/14171	963	7/' "$HOME/git/datasets/${experiment}/${dataset}/cao-format/ml1m/kg/train.dat"
