@@ -635,6 +635,8 @@ recommend_cao() {
         ENDTIME=$(date +%s)
         echo -e "recommend-FM-${dataset_out}\t$(($ENDTIME - $STARTTIME))\t${STARTTIME}\t${ENDTIME}" >> ${overall_comp_cost}
     fi
+    if no_exist "$HOME/git/results/${experiment}/${dataset_out}/ml1m-bprmf-*.log"
+    then
     #[BPRMF] - Steffen Rendle, Christoph Freudenthaler, Zeno Gantner, and Lars Schmidt-Thieme. 2009. BPR: Bayesian personalized ranking from implicit feedback. In UAI.
         STARTTIME=$(date +%s)
         echo "[kg-summ-rec] recommend: Running BPRMF2 with ${dataset_out}"
@@ -760,18 +762,18 @@ run_experiment() {
 
     # Preprocessing
     preprocess_cao_oKG
-    preprocess_cao_fKG
+    #preprocess_cao_fKG
 
     # Summarization
-    clean_kge-k-means
-    summarize_cao_sKG
-    clean_kge-k-means
-    summarize_cao_sfKG
+    #clean_kge-k-means
+    #summarize_cao_sKG
+    #clean_kge-k-means
+    #summarize_cao_sfKG
 
     # Recommendation
     recommend_cao_sKG
-    recommend_cao_sfKG
+    #recommend_cao_sfKG
 }
 
 run_experiment $1 $2 $3
-#bash -i examples/Sacenti-JIIS2021-revised/run_exp4-cao_cv_complex.sh "JIIS-revised-exp4" 0 'false' |& tee out-revised-exp4-1.txt
+#bash -i examples/Sacenti-JIIS2021-revised/run_exp4-cao_cv_complex.sh "JIIS-revised-exp4" 0 'false' |& tee out-exp4-1.txt
