@@ -70,7 +70,7 @@ source $HOME/git/kg-summ-rec/preprocess/cao-format_ml-cao.sh
 # FUNCTIONS:
 #   kge-k-means 'experiment' 'dataset_in' 'dataset_out' 'kg_type' 'summarization_mode' 'kge' 'epochs' 'batch_size' learning_rate' 'low_frequence'
 #######################################
-source $HOME/git/kg-summ-rec/summarization/kge-k-means-cao.sh
+source $HOME/git/kg-summ-rec/summarization/kge-k-means-ratio.sh
 
 #######################################
 # Import ../summarization/cao-format_summ.sh
