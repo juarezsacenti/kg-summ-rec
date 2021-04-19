@@ -161,7 +161,7 @@ sv_kge-k-means() {
         cp "$HOME/git/kg-summ-rec/docker/kge-k-means_data/temp/embeddings.tsv" "$HOME/git/datasets/${experiment}/${dataset_out}-${kge}-${ratio}/embeddings.tsv"
         cp "$HOME/git/kg-summ-rec/docker/kge-k-means_data/temp/cluster${ratio}.tsv" "$HOME/git/datasets/${experiment}/${dataset_out}-${kge}-${ratio}/cluster${ratio}.tsv"
         cp "$HOME/git/kg-summ-rec/docker/kge-k-means_data/temp/cluster${ratio}.png" "$HOME/git/datasets/${experiment}/${dataset_out}-${kge}-${ratio}/cluster${ratio}.png"
-        cp "$HOME/git/kg-summ-rec/docker/kge-k-means_data/temp/out-${kg_filename}-${kge}-mv-${ratio}.txt" "$HOME/git/datasets/${experiment}/${dataset_out}-${kge}-${ratio}/out-${kg_filename}-${kge}-mv-${ratio}.txt"
+        cp "$HOME/git/kg-summ-rec/docker/kge-k-means_data/temp/out-${kg_filename}-${kge}-sv-${ratio}.txt" "$HOME/git/datasets/${experiment}/${dataset_out}-${kge}-${ratio}/out-${kg_filename}-${kge}-sv-${ratio}.txt"
         cd $HOME/git/kg-summ-rec
     fi
 

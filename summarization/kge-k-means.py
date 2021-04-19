@@ -105,7 +105,7 @@ def splitview(triples, items, kge_name, epochs, batch_size, learning_rate, rates
             print(cluster_df[f'cluster{rate}'].value_counts().value_counts())
         # DF to file
         cluster_df.to_csv(f'./temp/cluster{rate}-{view}.tsv', sep='\t', header=False, index=False)
-        if 'http://ml1m-sun/genre' in relations:
+        if '<http://ml1m-sun/genre>' in relations:
             plot_2d_genres(model, rate_df, ratio=rate, kg_map_file=kg_map_file)
 
 
@@ -148,7 +148,7 @@ def singleview(triples, items, kge_name, epochs, batch_size, learning_rate, rate
             print(cluster_df[f'cluster{rate}'].value_counts().value_counts())
         # DF to file
         cluster_df.to_csv(f'./temp/cluster{rate}.tsv', sep='\t', header=False, index=False)
-        if 'http://ml1m-sun/genre' in relations:
+        if '<http://ml1m-sun/genre>' in relations:
             plot_2d_genres(model, cluster_df, ratio=rate, kg_map_file=kg_map_file)
 
 
@@ -159,7 +159,6 @@ def multiview(triples, items, kge_name, epochs, batch_size, learning_rate, rates
     objects = triples_df.o.unique()
     concatenated = np.concatenate((subjects, objects))
     nodes = np.unique(concatenated)
-    relations = relations.split(',')
 
     # Train KGE model
     model = kge(triples, kge_name, epochs, batch_size, learning_rate, seed, verbose)
@@ -201,7 +200,7 @@ def multiview(triples, items, kge_name, epochs, batch_size, learning_rate, rates
                 print(cluster_df[f'cluster{rate}'].value_counts().value_counts())
             rate_df = pd.concat([rate_df, cluster_df])
         rate_df.to_csv(f'./temp/cluster{rate}.tsv', sep='\t', header=False, index=False)
-        if 'http://ml1m-sun/genre' in relations:
+        if '<http://ml1m-sun/genre>' in relations:
             plot_2d_genres(model, rate_df, ratio=rate, kg_map_file=kg_map_file)
 
 
@@ -489,7 +488,7 @@ if __name__ == '__main__':
 
     rates = [ int(rate) for rate in parsed_args.rates.split(',') ]
     view = parsed_args.view
-    relations = parsed_args.relations
+    relations = parsed_args.relations.split(',')
     kg_map_file = parsed_args.kgmap
     seed = int(parsed_args.seed)
     verbose = parsed_args.verbose
