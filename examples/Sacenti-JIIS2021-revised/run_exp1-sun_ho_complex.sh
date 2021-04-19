@@ -245,6 +245,7 @@ summarize() {
     local batch_size='100'
     local learning_rate='0.005'
     local kg_filename="kg-${kg_type}.nt"
+    local relations='<http://ml1m-sun/actor>,<http://ml1m-sun/director>,<http://ml1m-sun/genre>'
 
     summ_modes=(sv mv)
     summ_ratios=(25 50 75)
@@ -258,9 +259,9 @@ summarize() {
                 STARTTIME=$(date +%s)
                 if [ "${verbose}" = true ]
                 then
-                    kge-k-means ${experiment} ${dataset_in} ${dirName} ${kg_filename} ${summarization_mode} ${kge} ${epochs} ${batch_size} ${learning_rate} ${low_frequence} ${ratio} ${seed} 'true'
+                    kge-k-means ${experiment} ${dataset_in} ${dirName} ${kg_filename} ${summarization_mode} ${kge} ${epochs} ${batch_size} ${learning_rate} ${low_frequence} ${ratio} ${relations} ${seed} 'true'
                 else
-                    kge-k-means ${experiment} ${dataset_in} ${dirName} ${kg_filename} ${summarization_mode} ${kge} ${epochs} ${batch_size} ${learning_rate} ${low_frequence} ${ratio} ${seed} 'false'
+                    kge-k-means ${experiment} ${dataset_in} ${dirName} ${kg_filename} ${summarization_mode} ${kge} ${epochs} ${batch_size} ${learning_rate} ${low_frequence} ${ratio} ${relations} ${seed} 'false'
                 fi
                 ENDTIME=$(date +%s)
                 echo -e "summarize-${dataset_out}_${kg_type}-${summarization_mode}-${kge}-${ratio}\t$(($ENDTIME - $STARTTIME))\t${STARTTIME}\t${ENDTIME}" >> ${overall_comp_cost}
