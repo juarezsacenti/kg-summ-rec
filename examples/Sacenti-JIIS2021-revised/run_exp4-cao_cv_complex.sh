@@ -265,6 +265,7 @@ summarize() {
     local batch_size='100'
     local learning_rate='0.005'
     local kg_filename="kg-${kg_type}.nt"
+    local relations='<http://dbpedia.org/ontology/cinematography>,<http://dbpedia.org/property/productionCompanies>,<http://dbpedia.org/property/composer>,<http://purl.org/dc/terms/subject>,<http://dbpedia.org/ontology/openingFilm>,<http://www.w3.org/2000/01/rdf-schema#seeAlso>,<http://dbpedia.org/property/story>,<http://dbpedia.org/ontology/series>,<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>,<http://dbpedia.org/ontology/basedOn>,<http://dbpedia.org/ontology/starring>,<http://dbpedia.org/ontology/country>,<http://dbpedia.org/ontology/wikiPageWikiLink>,<http://purl.org/linguistics/gold/hypernym>,<http://dbpedia.org/ontology/editing>,<http://dbpedia.org/property/producers>,<http://dbpedia.org/property/allWriting>,<http://dbpedia.org/property/notableWork>,<http://dbpedia.org/ontology/director>,<http://dbpedia.org/ontology/award>'
 
     summ_modes=(sv mv)
     summ_ratios=(25 50 75)
@@ -279,9 +280,9 @@ summarize() {
                 STARTTIME=$(date +%s)
                 if [ "${verbose}" = true ]
                 then
-                    kge-k-means ${experiment} "fold${fold_number}/${dataset_in}" ${dirName} ${kg_filename} ${summarization_mode} ${kge} ${epochs} ${batch_size} ${learning_rate} ${low_frequence} ${ratio} ${seed} 'true'
+                    kge-k-means ${experiment} "fold${fold_number}/${dataset_in}" ${dirName} ${kg_filename} ${summarization_mode} ${kge} ${epochs} ${batch_size} ${learning_rate} ${low_frequence} ${ratio} ${relations} ${seed} 'true'
                 else
-                    kge-k-means ${experiment} "fold${fold_number}/${dataset_in}" ${dirName} ${kg_filename} ${summarization_mode} ${kge} ${epochs} ${batch_size} ${learning_rate} ${low_frequence} ${ratio} ${seed} 'false'
+                    kge-k-means ${experiment} "fold${fold_number}/${dataset_in}" ${dirName} ${kg_filename} ${summarization_mode} ${kge} ${epochs} ${batch_size} ${learning_rate} ${low_frequence} ${ratio} ${relations} ${seed} 'false'
                 fi
                 ENDTIME=$(date +%s)
                 echo -e "summarize-fold${fold_number}/${dataset_out}_${kg_type}-${summarization_mode}-${kge}-${ratio}\t$(($ENDTIME - $STARTTIME))\t${STARTTIME}\t${ENDTIME}" >> ${overall_comp_cost}
@@ -296,9 +297,9 @@ summarize() {
                     STARTTIME=$(date +%s)
                     if [ "${verbose}" = true ]
                     then
-                        kge-k-means ${experiment} "fold${fold_number}/${dataset_in}" ${dirName} ${kg_filename} ${summarization_mode} ${kge} ${epochs} ${batch_size} ${learning_rate} ${low_frequence} ${ratio} ${seed} 'true'
+                        kge-k-means ${experiment} "fold${fold_number}/${dataset_in}" ${dirName} ${kg_filename} ${summarization_mode} ${kge} ${epochs} ${batch_size} ${learning_rate} ${low_frequence} ${ratio} ${relations} ${seed} 'true'
                     else
-                        kge-k-means ${experiment} "fold${fold_number}/${dataset_in}" ${dirName} ${kg_filename} ${summarization_mode} ${kge} ${epochs} ${batch_size} ${learning_rate} ${low_frequence} ${ratio} ${seed} 'false'
+                        kge-k-means ${experiment} "fold${fold_number}/${dataset_in}" ${dirName} ${kg_filename} ${summarization_mode} ${kge} ${epochs} ${batch_size} ${learning_rate} ${low_frequence} ${ratio} ${relations} ${seed} 'false'
                     fi
                     ENDTIME=$(date +%s)
                     echo -e "summarize-fold${fold_number}/${dataset_out}_${kg_type}-${summarization_mode}-${kge}-${ratio}\t$(($ENDTIME - $STARTTIME))\t${STARTTIME}\t${ENDTIME}" >> ${overall_comp_cost}
@@ -769,8 +770,8 @@ run_experiment() {
     #preprocess_cao_fKG
 
     # Summarization
-    #clean_kge-k-means
-    #summarize_cao_sKG
+    clean_kge-k-means
+    summarize_cao_sKG
     #clean_kge-k-means
     #summarize_cao_sfKG
 

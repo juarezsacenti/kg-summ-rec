@@ -58,8 +58,9 @@ kge-k-means() {
     local learning_rate=$9
     local low_frequence=${10}
     local ratios_list=${11}
-    seed=${12}
-    if [ "${13}" = 'true' ]; then verbose=true; else verbose=false; fi
+    local relations=${12}
+    seed=${13}
+    if [ "${14}" = 'true' ]; then verbose=true; else verbose=false; fi
 
     if [ ${summarization_mode} = 'sv' ]
     then
@@ -75,7 +76,7 @@ kge-k-means() {
         for ratio in "${ratios[@]}"
         do
             mv_kge-k-means "${experiment}" "${dataset_in}" "${dataset_out}" "${kg_filename}" \
-            "${kge}" "${epochs}" "${batch_size}" "${learning_rate}" "${low_frequence}" "${ratio}"
+            "${kge}" "${epochs}" "${batch_size}" "${learning_rate}" "${low_frequence}" "${ratio}" "${relations}"
         done
     else
         echo "[kg-summ-rec] kge-k-means: Parameter error: summarization mode ${summarization_mode} should be sv or mv."
@@ -143,12 +144,12 @@ sv_kge-k-means() {
                 docker run --rm -it --gpus all -v "$PWD"/kge-k-means_data:/data -w /data \
                 kge-k-means:1.0 /bin/bash -c "python kge-k-means.py --triples ${kg_filename} \
                 --mode singleview --kge ${kge} --epochs ${epochs} --batch_size ${batch_size} \
-                --learning_rate ${learning_rate} --rates ${ratio} --seed ${seed} --verbose"
+                --learning_rate ${learning_rate} --rates ${ratio} --seed ${seed} --verbose |& tee out-${kg_filename}-${kge}-sv-${ratio}.txt"
             else
                 docker run --rm -it --gpus all -v "$PWD"/kge-k-means_data:/data -w /data \
                 kge-k-means:1.0 /bin/bash -c "python kge-k-means.py --triples ${kg_filename} \
                 --mode singleview --kge ${kge} --epochs ${epochs} --batch_size ${batch_size} \
-                --learning_rate ${learning_rate} --rates ${ratio} --seed ${seed}"
+                --learning_rate ${learning_rate} --rates ${ratio} --seed ${seed} |& tee out-${kg_filename}-${kge}-sv-${ratio}.txt"
             fi
         fi
 
@@ -188,6 +189,7 @@ mv_kge-k-means() {
     local learning_rate=$8
     local low_frequence=$9
     local ratio=${10}
+    local relations=${11}
 
     ############################################################################
     ###                        Create dataset Folders                        ###
@@ -232,15 +234,15 @@ mv_kge-k-means() {
             then
                 docker run --rm -it --gpus all -v "$PWD"/kge-k-means_data:/data -w /data \
                 kge-k-means:1.0 /bin/bash -c "python kge-k-means.py --triples ${kg_filename} \
-                --mode multiview --relations '<http://ml1m-sun/actor>,<http://ml1m-sun/director>,<http://ml1m-sun/genre>' \
+                --mode multiview --relations ${relations} \
                 --kge ${kge} --epochs ${epochs} --batch_size ${batch_size} \
-                --learning_rate ${learning_rate} --rates ${ratio} --seed ${seed} --verbose"
+                --learning_rate ${learning_rate} --rates ${ratio} --seed ${seed} --verbose |& tee out-${kg_filename}-${kge}-mv-${ratio}.txt"
             else
                 docker run --rm -it --gpus all -v "$PWD"/kge-k-means_data:/data -w /data \
                 kge-k-means:1.0 /bin/bash -c "python kge-k-means.py --triples ${kg_filename} \
-                --mode multiview --relations '<http://ml1m-sun/actor>,<http://ml1m-sun/director>,<http://ml1m-sun/genre>' \
+                --mode multiview --relations ${relations} \
                 --kge ${kge} --epochs ${epochs} --batch_size ${batch_size} \
-                --learning_rate ${learning_rate} --rates ${ratio} --seed ${seed}"
+                --learning_rate ${learning_rate} --rates ${ratio} --seed ${seed} |& tee out-${kg_filename}-${kge}-mv-${ratio}.txt"
             fi
         fi
 
