@@ -62,6 +62,8 @@ kge-k-means() {
     seed=${13}
     if [ "${14}" = 'true' ]; then verbose=true; else verbose=false; fi
 
+    echo ${seed}
+
     if [ ${summarization_mode} = 'sv' ]
     then
         IFS=',' read -r -a ratios <<< "${ratios_list}"
@@ -95,6 +97,7 @@ sv_kge-k-means() {
     local low_frequence=$9
     local ratio=${10}
 
+    echo ${seed}
     ############################################################################
     ###                        Create dataset Folders                        ###
     ############################################################################
@@ -192,6 +195,7 @@ mv_kge-k-means() {
     local ratio=${10}
     local relations=${11}
 
+    echo ${seed}
     ############################################################################
     ###                        Create dataset Folders                        ###
     ############################################################################
