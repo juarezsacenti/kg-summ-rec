@@ -142,8 +142,6 @@ sv_kge-k-means() {
             cp kge-k-means_Dockerfile Dockerfile
             docker build -t kge-k-means:1.0 .
 
-            echo "$relations"
-
             if [ "$verbose" = true ]
             then
                 docker run --rm -it --gpus all -v "$PWD"/kge-k-means_data:/data -w /data \
