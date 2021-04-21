@@ -52,7 +52,7 @@ def read_summ_log(mode, log_file):
                     loss = float(t[0][:-1])
                     losses.append(loss)
 
-    return losses[:int(len(losses)/2)], [], 2
+    return losses[:int(len(losses)/2)], [], 0.5
 
 
 def plot_convergence(mode, save_file, train_losses, test_losses, epochs_per_eval):
