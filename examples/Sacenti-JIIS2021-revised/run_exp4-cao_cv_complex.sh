@@ -286,7 +286,7 @@ summarize() {
                     kge-k-means ${experiment} "fold${fold_number}/${dataset_in}" ${dirName} ${kg_filename} ${summarization_mode} ${kge} ${epochs} ${batch_size} ${learning_rate} ${low_frequence} ${ratio} ${relations} ${seed} 'false' &
                 fi
                 pid = $!
-                resource_usage $! 600 "${HOME}/git/datasets/${experiment}/${dirName}/kge-k-means-resource_usage.csv" &
+                resource_usage $! 600 "${HOME}/git/datasets/${experiment}/${dirName}-${kge}-${ratio}/kge-k-means-resource_usage.csv" &
                 wait $pid
                 ENDTIME=$(date +%s)
                 echo -e "summarize-fold${fold_number}/${dataset_out}_${kg_type}-${summarization_mode}-${kge}-${ratio}\t$(($ENDTIME - $STARTTIME))\t${STARTTIME}\t${ENDTIME}" >> ${overall_comp_cost}
@@ -306,7 +306,7 @@ summarize() {
                         kge-k-means ${experiment} "fold${fold_number}/${dataset_in}" ${dirName} ${kg_filename} ${summarization_mode} ${kge} ${epochs} ${batch_size} ${learning_rate} ${low_frequence} ${ratio} ${relations} ${seed} 'false' &
                     fi
                     pid = $!
-                    resource_usage $! 600 "${HOME}/git/datasets/${experiment}/${dirName}/kge-k-means-resource_usage.csv" &
+                    resource_usage $! 600 "${HOME}/git/datasets/${experiment}/${dirName}-${kge}-${ratio}/kge-k-means-resource_usage.csv" &
                     wait $pid
                     ENDTIME=$(date +%s)
                     echo -e "summarize-fold${fold_number}/${dataset_out}_${kg_type}-${summarization_mode}-${kge}-${ratio}\t$(($ENDTIME - $STARTTIME))\t${STARTTIME}\t${ENDTIME}" >> ${overall_comp_cost}
