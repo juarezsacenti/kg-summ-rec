@@ -105,9 +105,8 @@ def splitview(triples, items, kge_name, epochs, batch_size, learning_rate, rates
             print(cluster_df[f'cluster{rate}'].value_counts().value_counts())
         # DF to file
         cluster_df.to_csv(f'./temp/cluster{rate}-{view}.tsv', sep='\t', header=False, index=False)
-        print(relations)
+
         if '<http://ml1m-sun/genre>' in relations:
-            print('<http://ml1m-sun/genre> is in relations')
             plot_2d_genres(model, rate_df, ratio=rate, kg_map_file=kg_map_file)
 
 
@@ -150,9 +149,7 @@ def singleview(triples, items, kge_name, epochs, batch_size, learning_rate, rate
             print(cluster_df[f'cluster{rate}'].value_counts().value_counts())
         # DF to file
         cluster_df.to_csv(f'./temp/cluster{rate}.tsv', sep='\t', header=False, index=False)
-        print(relations)
         if '<http://ml1m-sun/genre>' in relations:
-            print('<http://ml1m-sun/genre> is in relations')
             plot_2d_genres(model, cluster_df, ratio=rate, kg_map_file=kg_map_file)
 
 
@@ -204,9 +201,7 @@ def multiview(triples, items, kge_name, epochs, batch_size, learning_rate, rates
                 print(cluster_df[f'cluster{rate}'].value_counts().value_counts())
             rate_df = pd.concat([rate_df, cluster_df])
         rate_df.to_csv(f'./temp/cluster{rate}.tsv', sep='\t', header=False, index=False)
-        print(relations)
         if '<http://ml1m-sun/genre>' in relations:
-            print('<http://ml1m-sun/genre> is in relations')
             plot_2d_genres(model, rate_df, ratio=rate, kg_map_file=kg_map_file)
 
 
