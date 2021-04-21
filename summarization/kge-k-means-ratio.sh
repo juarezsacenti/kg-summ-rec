@@ -146,13 +146,13 @@ sv_kge-k-means() {
             then
                 docker run --rm -it --gpus all -v "$PWD"/kge-k-means_data:/data -w /data \
                 kge-k-means:1.0 /bin/bash -c "python kge-k-means.py --triples ${kg_filename} \
-                --mode singleview --relations ${relations} \
+                --mode singleview --relations "${relations}" \
                 --kge ${kge} --epochs ${epochs} --batch_size ${batch_size} \
                 --learning_rate ${learning_rate} --rates ${ratio} --seed ${seed} --verbose |& tee temp/out-${kg_filename}-${kge}-sv-${ratio}.log"
             else
                 docker run --rm -it --gpus all -v "$PWD"/kge-k-means_data:/data -w /data \
                 kge-k-means:1.0 /bin/bash -c "python kge-k-means.py --triples ${kg_filename} \
-                --mode singleview --relations ${relations} \
+                --mode singleview --relations "${relations}" \
                 --kge ${kge} --epochs ${epochs} --batch_size ${batch_size} \
                 --learning_rate ${learning_rate} --rates ${ratio} --seed ${seed} |& tee temp/out-${kg_filename}-${kge}-sv-${ratio}.log"
             fi
@@ -241,13 +241,13 @@ mv_kge-k-means() {
             then
                 docker run --rm -it --gpus all -v "$PWD"/kge-k-means_data:/data -w /data \
                 kge-k-means:1.0 /bin/bash -c "python kge-k-means.py --triples ${kg_filename} \
-                --mode multiview --relations ${relations} \
+                --mode multiview --relations "${relations}" \
                 --kge ${kge} --epochs ${epochs} --batch_size ${batch_size} \
                 --learning_rate ${learning_rate} --rates ${ratio} --seed ${seed} --verbose |& tee temp/out-${kg_filename}-${kge}-mv-${ratio}.log"
             else
                 docker run --rm -it --gpus all -v "$PWD"/kge-k-means_data:/data -w /data \
                 kge-k-means:1.0 /bin/bash -c "python kge-k-means.py --triples ${kg_filename} \
-                --mode multiview --relations ${relations} \
+                --mode multiview --relations "${relations}" \
                 --kge ${kge} --epochs ${epochs} --batch_size ${batch_size} \
                 --learning_rate ${learning_rate} --rates ${ratio} --seed ${seed} |& tee temp/out-${kg_filename}-${kge}-mv-${ratio}.log"
             fi
