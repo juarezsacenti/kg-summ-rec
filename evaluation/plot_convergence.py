@@ -42,7 +42,7 @@ def read_rec_log(mode, log_file):
 def read_summ_log(mode, log_file):
     losses = []
     epochs = 0
-    with open(log_file) as fin:
+    with open(log_file, encoding='utf8') as fin:
         for line in fin:
             line = line.strip()
             if 'Average Loss:' in line:
@@ -52,7 +52,7 @@ def read_summ_log(mode, log_file):
                     loss = float(t[0][:-1])
                     losses.append(loss)
 
-    return losses[:int(len(losses)/2)], [], 1
+    return losses[:int(len(losses)/2)], [], 2
 
 
 def plot_convergence(mode, save_file, train_losses, test_losses, epochs_per_eval):

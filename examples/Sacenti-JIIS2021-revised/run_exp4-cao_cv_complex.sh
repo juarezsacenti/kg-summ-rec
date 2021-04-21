@@ -261,7 +261,7 @@ summarize() {
 
     # default parameters
     local kge='complex'
-    local epochs='150'
+    local epochs='100'
     #epochs='2'
     local batch_size='100'
     local learning_rate='0.005'
