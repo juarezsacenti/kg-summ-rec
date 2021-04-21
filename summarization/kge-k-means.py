@@ -494,7 +494,9 @@ if __name__ == '__main__':
 
     rates = [ int(rate) for rate in parsed_args.rates.split(',') ]
     view = parsed_args.view
+    print(parsed_args.relations)
     relations = parsed_args.relations.split(',')
+    print(relations)
     kg_map_file = parsed_args.kgmap
     seed = int(parsed_args.seed)
     verbose = parsed_args.verbose
