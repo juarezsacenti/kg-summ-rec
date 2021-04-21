@@ -96,7 +96,7 @@ sv_kge-k-means() {
     local learning_rate=$8
     local low_frequence=$9
     local ratio=${10}
-    local relations=${11}
+    local relations="${11}"
 
     echo ${seed}
     ############################################################################
@@ -142,17 +142,19 @@ sv_kge-k-means() {
             cp kge-k-means_Dockerfile Dockerfile
             docker build -t kge-k-means:1.0 .
 
+            echo "$relations"
+
             if [ "$verbose" = true ]
             then
                 docker run --rm -it --gpus all -v "$PWD"/kge-k-means_data:/data -w /data \
                 kge-k-means:1.0 /bin/bash -c "python kge-k-means.py --triples ${kg_filename} \
-                --mode singleview --relations "${relations}" \
+                --mode singleview --relations '${relations}' \
                 --kge ${kge} --epochs ${epochs} --batch_size ${batch_size} \
                 --learning_rate ${learning_rate} --rates ${ratio} --seed ${seed} --verbose |& tee temp/out-${kg_filename}-${kge}-sv-${ratio}.log"
             else
                 docker run --rm -it --gpus all -v "$PWD"/kge-k-means_data:/data -w /data \
                 kge-k-means:1.0 /bin/bash -c "python kge-k-means.py --triples ${kg_filename} \
-                --mode singleview --relations "${relations}" \
+                --mode singleview --relations '${relations}' \
                 --kge ${kge} --epochs ${epochs} --batch_size ${batch_size} \
                 --learning_rate ${learning_rate} --rates ${ratio} --seed ${seed} |& tee temp/out-${kg_filename}-${kge}-sv-${ratio}.log"
             fi
@@ -241,13 +243,13 @@ mv_kge-k-means() {
             then
                 docker run --rm -it --gpus all -v "$PWD"/kge-k-means_data:/data -w /data \
                 kge-k-means:1.0 /bin/bash -c "python kge-k-means.py --triples ${kg_filename} \
-                --mode multiview --relations "${relations}" \
+                --mode multiview --relations '${relations}' \
                 --kge ${kge} --epochs ${epochs} --batch_size ${batch_size} \
                 --learning_rate ${learning_rate} --rates ${ratio} --seed ${seed} --verbose |& tee temp/out-${kg_filename}-${kge}-mv-${ratio}.log"
             else
                 docker run --rm -it --gpus all -v "$PWD"/kge-k-means_data:/data -w /data \
                 kge-k-means:1.0 /bin/bash -c "python kge-k-means.py --triples ${kg_filename} \
-                --mode multiview --relations "${relations}" \
+                --mode multiview --relations '${relations}' \
                 --kge ${kge} --epochs ${epochs} --batch_size ${batch_size} \
                 --learning_rate ${learning_rate} --rates ${ratio} --seed ${seed} |& tee temp/out-${kg_filename}-${kge}-mv-${ratio}.log"
             fi
