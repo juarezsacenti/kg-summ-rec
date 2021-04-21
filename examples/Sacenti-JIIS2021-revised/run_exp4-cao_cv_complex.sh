@@ -140,17 +140,17 @@ preprocess_cao_oKG() {
                 mkdir ~/git/results/${experiment}/fold${fold_number}/ml-cao_cv_oKG
             fi
             # Collect ml-cao_cv_oKG statistics
-            if no_exist "$HOME/git/results/${experiment}/fold0/ml-cao_cv_oKG/kg-ig_stats.tsv"
-            then
-                if [ "$verbose" = true ]; then echo "[kg-summ-rec] preprocess_cao_oKG: Creating ~/git/results/${experiment}/fold${fold_number}/ml-cao_cv_oKG/kg-ig_stats.tsv"; fi
-                cd $HOME/git/kg-summ-rec/util
-                conda deactivate
-                conda activate kg-summ-rec
-                python kg2rdf.py --mode 'statistics' --kgpath "~/git/datasets/${experiment}/fold${fold_number}/ml-cao_cv_oKG" \
-                --input "~/git/datasets/${experiment}/fold${fold_number}/ml-cao_cv_oKG/kg-ig.nt" \
-                --output "~/git/results/${experiment}/fold${fold_number}/ml-cao_cv_oKG/kg-ig_stats.tsv"
-                cd $HOME/git/kg-summ-rec
-            fi
+            # if no_exist "$HOME/git/results/${experiment}/fold0/ml-cao_cv_oKG/kg-ig_stats.tsv"
+            # then
+            #     if [ "$verbose" = true ]; then echo "[kg-summ-rec] preprocess_cao_oKG: Creating ~/git/results/${experiment}/fold${fold_number}/ml-cao_cv_oKG/kg-ig_stats.tsv"; fi
+            #     cd $HOME/git/kg-summ-rec/util
+            #     conda deactivate
+            #     conda activate kg-summ-rec
+            #     python kg2rdf.py --mode 'statistics' --kgpath "~/git/datasets/${experiment}/fold${fold_number}/ml-cao_cv_oKG" \
+            #     --input "~/git/datasets/${experiment}/fold${fold_number}/ml-cao_cv_oKG/kg-ig.nt" \
+            #     --output "~/git/results/${experiment}/fold${fold_number}/ml-cao_cv_oKG/kg-ig_stats.tsv"
+            #     cd $HOME/git/kg-summ-rec
+            # fi
         done
 
         local ENDTIME=$(date +%s)
@@ -286,7 +286,7 @@ summarize() {
                     kge-k-means ${experiment} "fold${fold_number}/${dataset_in}" ${dirName} ${kg_filename} ${summarization_mode} ${kge} ${epochs} ${batch_size} ${learning_rate} ${low_frequence} ${ratio} ${relations} ${seed} 'false' &
                 fi
                 pid = $!
-                resource_usage $! 600 "${HOME}/git/datasets/${experiment}/${dirName}-${kge}-${ratio}/kge-k-means-resource_usage.csv" &
+                resource_usage $pid 600 "${HOME}/git/datasets/${experiment}/${dirName}-${kge}-${ratio}/kge-k-means-resource_usage.csv" &
                 wait $pid
                 ENDTIME=$(date +%s)
                 echo -e "summarize-fold${fold_number}/${dataset_out}_${kg_type}-${summarization_mode}-${kge}-${ratio}\t$(($ENDTIME - $STARTTIME))\t${STARTTIME}\t${ENDTIME}" >> ${overall_comp_cost}
@@ -306,7 +306,7 @@ summarize() {
                         kge-k-means ${experiment} "fold${fold_number}/${dataset_in}" ${dirName} ${kg_filename} ${summarization_mode} ${kge} ${epochs} ${batch_size} ${learning_rate} ${low_frequence} ${ratio} ${relations} ${seed} 'false' &
                     fi
                     pid = $!
-                    resource_usage $! 600 "${HOME}/git/datasets/${experiment}/${dirName}-${kge}-${ratio}/kge-k-means-resource_usage.csv" &
+                    resource_usage $pid 600 "${HOME}/git/datasets/${experiment}/${dirName}-${kge}-${ratio}/kge-k-means-resource_usage.csv" &
                     wait $pid
                     ENDTIME=$(date +%s)
                     echo -e "summarize-fold${fold_number}/${dataset_out}_${kg_type}-${summarization_mode}-${kge}-${ratio}\t$(($ENDTIME - $STARTTIME))\t${STARTTIME}\t${ENDTIME}" >> ${overall_comp_cost}
@@ -643,7 +643,7 @@ recommend_cao() {
         training_steps=$((686 * 2)) # step_per_epoch * limit
         CUDA_VISIBLE_DEVICES=0 nohup python run_item_recommendation.py -batch_size 1024 -data_path ~/git/datasets/${experiment}/${dataset_in}/cao-format/ -dataset ml1m -early_stopping_steps_to_wait $((training_steps + 1)) -embedding_size 100 -eval_interval_steps $((training_steps - 1)) -nohas_visualization -joint_ratio 0.5 -kg_lambda 0.5 -l2_lambda 1e-5 -learning_rate 0.005 -log_path ~/git/results/${experiment}/${dataset_out}/ -model_type fm -negtive_samples 1 -norm_lambda 1 -optimizer_type Adagrad -rec_test_files valid.dat:test.dat -seed 3 -topn 10 -training_steps ${training_steps} &
         pid = $!
-        resource_usage $! 600 "${HOME}/git/results/${experiment}/${dataset_out}/fm-resource_usage.csv" &
+        resource_usage $pid 600 "${HOME}/git/results/${experiment}/${dataset_out}/fm-resource_usage.csv" &
         wait $pid
         mv ~/git/results/${experiment}/${dataset_out}/ml1m-fm-1*.ckpt ~/git/results/${experiment}/${dataset_out}/ml1m-fm-pretrained.ckpt
         ENDTIME=$(date +%s)
@@ -658,7 +658,7 @@ recommend_cao() {
         training_steps=$((1371 * 2)) # step_per_epoch * limit
         CUDA_VISIBLE_DEVICES=0 nohup python run_item_recommendation.py -batch_size 512 -data_path ~/git/datasets/${experiment}/${dataset_in}/cao-format/ -dataset ml1m -early_stopping_steps_to_wait $((training_steps + 1)) -embedding_size 100 -eval_interval_steps $((training_steps - 1)) -nohas_visualization -joint_ratio 0.5 -kg_lambda 0.5 -l2_lambda 1e-5 -learning_rate 0.005 -log_path ~/git/results/${experiment}/${dataset_out}/ -model_type bprmf -negtive_samples 1 -norm_lambda 1 -optimizer_type Adagrad -rec_test_files valid.dat:test.dat -seed 3 -topn 10 -training_steps ${training_steps} &
         pid = $!
-        resource_usage $! 600 "${HOME}/git/results/${experiment}/${dataset_out}/bprmf2-resource_usage.csv" &
+        resource_usage $pid 600 "${HOME}/git/results/${experiment}/${dataset_out}/bprmf2-resource_usage.csv" &
         wait $pid
         mv ~/git/results/${experiment}/${dataset_out}/ml1m-bprmf-1*.ckpt ~/git/results/${experiment}/${dataset_out}/ml1m-bprmf-pretrained2.ckpt
         ENDTIME=$(date +%s)
@@ -673,7 +673,7 @@ recommend_cao() {
         training_steps=$((686 * 2)) # step_per_epoch * limit
         CUDA_VISIBLE_DEVICES=0 nohup python run_item_recommendation.py -L1_flag -batch_size 1024 -data_path ~/git/datasets/${experiment}/${dataset_in}/cao-format/ -dataset ml1m -early_stopping_steps_to_wait $((training_steps + 1)) -embedding_size 100 -eval_interval_steps $((training_steps - 1)) -nohas_visualization -joint_ratio 0.5 -kg_lambda 0.5 -l2_lambda 0 -learning_rate 0.001 -load_ckpt_file "$HOME/git/results/${experiment}/${dataset_out}/ml1m-bprmf-pretrained2.ckpt" -log_path ~/git/results/${experiment}/${dataset_out}/ -model_type transup -negtive_samples 1 -norm_lambda 1 -num_preferences 20 -optimizer_type Adam -rec_test_files valid.dat:test.dat -seed 3 -topn 10 -training_steps ${training_steps} -use_st_gumbel &
         pid = $!
-        resource_usage $! 600 "${HOME}/git/results/${experiment}/${dataset_out}/tup-resource_usage.csv" &
+        resource_usage $pid 600 "${HOME}/git/results/${experiment}/${dataset_out}/tup-resource_usage.csv" &
         wait $pid
         mv ~/git/results/${experiment}/${dataset_out}/ml1m-transup-1*.ckpt ~/git/results/${experiment}/${dataset_out}/ml1m-transup-pretrained.ckpt
         ENDTIME=$(date +%s)
@@ -688,7 +688,7 @@ recommend_cao() {
         training_steps=$((760 * 2)) # step_per_epoch * limit
         CUDA_VISIBLE_DEVICES=0 nohup python run_knowledge_representation.py -L1_flag -batch_size 400 -data_path ~/git/datasets/${experiment}/${dataset_in}/cao-format/ -dataset ml1m -early_stopping_steps_to_wait $((training_steps + 1)) -embedding_size 100 -eval_interval_steps $((training_steps - 1)) -nohas_visualization -joint_ratio 0.5 -kg_lambda 1 -kg_test_files valid.dat:test.dat -l2_lambda 0 -learning_rate 0.001 -log_path ~/git/results/${experiment}/${dataset_out}/ -model_type transe -negtive_samples 1 -norm_lambda 1 -optimizer_type Adam -seed 3 -topn 10 -training_steps ${training_steps} &
         pid = $!
-        resource_usage $! 600 "${HOME}/git/results/${experiment}/${dataset_out}/transe2-resource_usage.csv" &
+        resource_usage $pid 600 "${HOME}/git/results/${experiment}/${dataset_out}/transe2-resource_usage.csv" &
         wait $pid
         mv ~/git/results/${experiment}/${dataset_out}/ml1m-transe-1*.ckpt_final ~/git/results/${experiment}/${dataset_out}/ml1m-transe-pretrained2.ckpt
         ENDTIME=$(date +%s)
@@ -703,7 +703,7 @@ recommend_cao() {
         training_steps=$((3040 * 2)) # step_per_epoch * limit
         CUDA_VISIBLE_DEVICES=0 nohup python run_knowledge_representation.py -L1_flag -batch_size 100 -data_path ~/git/datasets/${experiment}/${dataset_in}/cao-format/ -dataset ml1m -early_stopping_steps_to_wait $((training_steps + 1)) -embedding_size 100 -eval_interval_steps $((training_steps - 1)) -nohas_visualization -joint_ratio 0.5 -kg_lambda 0.5 -kg_test_files valid.dat:test.dat -l2_lambda 0 -learning_rate 0.001 -load_ckpt_file "$HOME/git/results/${experiment}/${dataset_out}/ml1m-transe-pretrained2.ckpt"  -log_path ~/git/results/${experiment}/${dataset_out}/ -model_type transh -norm_lambda 1 -optimizer_type Adam -seed 3 -topn 10 -training_steps ${training_steps} &
         pid = $!
-        resource_usage $! 600 "${HOME}/git/results/${experiment}/${dataset_out}/transh-resource_usage.csv" &
+        resource_usage $pid 600 "${HOME}/git/results/${experiment}/${dataset_out}/transh-resource_usage.csv" &
         wait $pid
         mv ~/git/results/${experiment}/${dataset_out}/ml1m-transh-1*.ckpt_final ~/git/results/${experiment}/${dataset_out}/ml1m-transh-pretrained.ckpt
         ENDTIME=$(date +%s)
@@ -718,7 +718,7 @@ recommend_cao() {
        training_steps=$((3509 * 2)) # step_per_epoch * limit
        CUDA_VISIBLE_DEVICES=0 nohup python run_knowledgable_recommendation.py -L1_flag -batch_size 400 -data_path ~/git/datasets/${experiment}/${dataset_in}/cao-format/ -dataset ml1m -early_stopping_steps_to_wait $((training_steps + 1)) -embedding_size 100 -eval_interval_steps $((training_steps - 1)) -nohas_visualization -joint_ratio 0.5 -kg_lambda 1 -kg_test_files valid.dat:test.dat -l2_lambda 0 -learning_rate 0.001 -load_ckpt_file "$HOME/git/results/${experiment}/${dataset_out}/ml1m-bprmf-pretrained2.ckpt:$HOME/git/results/${experiment}/${dataset_out}/ml1m-transe-pretrained2.ckpt" -log_path ~/git/results/${experiment}/${dataset_out}/ -model_type cfkg -negtive_samples 1 -norm_lambda 1 -optimizer_type Adam -rec_test_files valid.dat:test.dat -seed 3 -share_embeddings -topn 10 -training_steps ${training_steps} -nouse_st_gumbel &
        pid = $!
-       resource_usage $! 600 "${HOME}/git/results/${experiment}/${dataset_out}/cfkg-resource_usage.csv" &
+       resource_usage $pid 600 "${HOME}/git/results/${experiment}/${dataset_out}/cfkg-resource_usage.csv" &
        wait $pid
        ENDTIME=$(date +%s)
        echo -e "recommend-CFKG-${dataset_out}\t$(($ENDTIME - $STARTTIME))\t${STARTTIME}\t${ENDTIME}" >> ${overall_comp_cost}
@@ -732,7 +732,7 @@ recommend_cao() {
        training_steps=$((5482 * 2)) # step_per_epoch * limit
        CUDA_VISIBLE_DEVICES=0 nohup python run_knowledgable_recommendation.py -L1_flag -batch_size 256 -data_path ~/git/datasets/${experiment}/${dataset_in}/cao-format/ -dataset ml1m -early_stopping_steps_to_wait $((training_steps + 1)) -embedding_size 100 -eval_interval_steps $((training_steps - 1)) -nohas_visualization -joint_ratio 0.5 -kg_lambda 1 -kg_test_files valid.dat:test.dat -l2_lambda 0 -learning_rate 0.001 -log_path ~/git/results/${experiment}/${dataset_out}/ -model_type cke -negtive_samples 1 -norm_lambda 1 -optimizer_type Adam -rec_test_files valid.dat:test.dat -seed 3 -topn 10 -training_steps ${training_steps} -nouse_st_gumbel &
        pid = $!
-       resource_usage $! 600 "${HOME}/git/results/${experiment}/${dataset_out}/cke-resource_usage.csv" &
+       resource_usage $pid 600 "${HOME}/git/results/${experiment}/${dataset_out}/cke-resource_usage.csv" &
        wait $pid
        ENDTIME=$(date +%s)
        echo -e "recommend-CKE-${DATASET}\t$(($ENDTIME - $STARTTIME))\t${STARTTIME}\t${ENDTIME}" >> ${overall_comp_cost}
@@ -746,7 +746,7 @@ recommend_cao() {
       training_steps=$((3509 * 2)) # step_per_epoch * limit
       CUDA_VISIBLE_DEVICES=0 nohup python run_knowledgable_recommendation.py -L1_flag -batch_size 400 -data_path ~/git/datasets/${experiment}/${dataset_in}/cao-format/ -dataset ml1m -early_stopping_steps_to_wait $((training_steps + 1)) -embedding_size 100 -eval_interval_steps $((training_steps - 1)) -nohas_visualization -joint_ratio 0.5 -kg_lambda 1 -kg_test_files valid.dat:test.dat -l2_lambda 0 -learning_rate 0.001 -load_ckpt_file "$HOME/git/results/${experiment}/${dataset_out}/ml1m-fm-pretrained.ckpt:$HOME/git/results/${experiment}/${dataset_out}/ml1m-transe-pretrained2.ckpt" -log_path ~/git/results/${experiment}/${dataset_out}/ -model_type cofm -negtive_samples 1 -norm_lambda 1 -optimizer_type Adam -rec_test_files valid.dat:test.dat -seed 3 -share_embeddings -topn 10 -training_steps ${training_steps} -nouse_st_gumbel &
       pid = $!
-      resource_usage $! 600 "${HOME}/git/results/${experiment}/${dataset_out}/cofm-resource_usage.csv" &
+      resource_usage $pid 600 "${HOME}/git/results/${experiment}/${dataset_out}/cofm-resource_usage.csv" &
       wait $pid
       ENDTIME=$(date +%s)
       echo -e "recommend-CoFM-${dataset_out}\t$(($ENDTIME - $STARTTIME))\t${STARTTIME}\t${ENDTIME}" >> ${overall_comp_cost}
@@ -760,7 +760,7 @@ recommend_cao() {
         training_steps=$((3509 * 2)) # step_per_epoch * limit
         CUDA_VISIBLE_DEVICES=0 nohup python run_knowledgable_recommendation.py -L1_flag -batch_size 400 -data_path ~/git/datasets/${experiment}/${dataset_in}/cao-format/ -dataset ml1m -early_stopping_steps_to_wait $((training_steps + 1)) -embedding_size 100 -eval_interval_steps $((training_steps - 1)) -nohas_visualization -joint_ratio 0.5 -kg_lambda 1 -kg_test_files valid.dat:test.dat -l2_lambda 0 -learning_rate 0.001 -load_ckpt_file "$HOME/git/results/${experiment}/${dataset_out}/ml1m-transup-pretrained.ckpt:$HOME/git/results/${experiment}/${dataset_out}/ml1m-transh-pretrained.ckpt" -log_path ~/git/results/${experiment}/${dataset_out}/ -model_type jtransup -negtive_samples 1 -norm_lambda 1 -optimizer_type Adam -rec_test_files valid.dat:test.dat -seed 3 -topn 10 -training_steps ${training_steps} -use_st_gumbel &
         pid = $!
-        resource_usage $! 600 "${HOME}/git/results/${experiment}/${dataset_out}/ktup1-resource_usage.csv" &
+        resource_usage $pid 600 "${HOME}/git/results/${experiment}/${dataset_out}/ktup1-resource_usage.csv" &
         wait $pid
         ENDTIME=$(date +%s)
         echo -e "recommend-KTUP1-${DATASET}\t$(($ENDTIME - $STARTTIME))\t${STARTTIME}\t${ENDTIME}" >> ${overall_comp_cost}
