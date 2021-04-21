@@ -47,11 +47,12 @@ def read_summ_log(mode, log_file):
             line = line.strip()
             if 'Average Loss:' in line:
                 tokens = line.strip().split('Average Loss:')
-                for t in tokens:
-                    loss = t.split(' ')[1][:-1]
+                for i in range(1,len(tokens)):
+                    t = tokens[i].strip().split(' ')
+                    loss = float(t[0][:-1])
                     losses.append(loss)
 
-    return losses, [], 1
+    return losses[:int(len(losses)/2)], [], 1
 
 
 def plot_convergence(mode, save_file, train_losses, test_losses, epochs_per_eval):
@@ -82,7 +83,7 @@ if __name__ == '__main__':
     save_file = os.path.expanduser(parsed_args.savefile)
     print(mode)
     if mode == 'summ':
-        train_losses, test_losses, epochs_per_eval = read_sum_log(mode, log_file)
+        train_losses, test_losses, epochs_per_eval = read_summ_log(mode, log_file)
     else:
         train_losses, test_losses, epochs_per_eval = read_rec_log(mode, log_file)
     plot_convergence(mode, save_file, train_losses, test_losses, epochs_per_eval)
