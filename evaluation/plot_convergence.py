@@ -12,7 +12,7 @@ import os
 
 __author__ = 'Juarez Sacenti <juarez[DOT]sacenti[AT]gmail[DOT]com>'
 
-def read_log(mode, log_file):
+def read_rec_log(mode, log_file):
     train_losses, test_losses = [] , []
     eval_interval_steps, steps_per_epoch = 0, 0
     with open(log_file) as fin:
@@ -37,6 +37,21 @@ def read_log(mode, log_file):
 
     epochs_per_eval = float(eval_interval_steps)/float(steps_per_epoch)
     return train_losses, test_losses, epochs_per_eval
+
+
+def read_summ_log(mode, log_file):
+    losses = []
+    epochs = 0
+    with open(log_file) as fin:
+        for line in fin:
+            line = line.strip()
+            if 'Average Loss:' in line:
+                tokens = line.strip().split('Average Loss:')
+                for t in tokens:
+                    loss = t.split(' ')[1][:-1]
+                    losses.append(loss)
+
+    return losses, [], 1
 
 
 def plot_convergence(mode, save_file, train_losses, test_losses, epochs_per_eval):
@@ -66,5 +81,8 @@ if __name__ == '__main__':
     log_file = os.path.expanduser(parsed_args.logfile)
     save_file = os.path.expanduser(parsed_args.savefile)
     print(mode)
-    train_losses, test_losses, epochs_per_eval = read_log(mode, log_file)
+    if mode == 'summ':
+        train_losses, test_losses, epochs_per_eval = read_sum_log(mode, log_file)
+    else:
+        train_losses, test_losses, epochs_per_eval = read_rec_log(mode, log_file)
     plot_convergence(mode, save_file, train_losses, test_losses, epochs_per_eval)
