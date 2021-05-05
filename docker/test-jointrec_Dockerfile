@@ -1,5 +1,5 @@
 ### BUILD:  docker build -t joint-kg-recommender:1.0 .
-### RUN:    docker run --rm -it --gpus all -v "$PWD"/joint-kg-recommender_data:/data -w /workspace/joint-kg-recommender joint-kg-recommender:1.0 /bin/bash -c "$CMD"
+### RUN:    docker run --rm -it --gpus all -v "$PWD"/joint-kg-recommender_data:/data -w /workspace/joint-kg-recommender joint-kg-recommender:1.0
 FROM nvcr.io/nvidia/pytorch:18.01-py3
 
 # 1. Joint-kg-recommender setup
@@ -16,7 +16,7 @@ RUN pip install torch-0.3.0.post4-cp36-cp36m-linux_x86_64.whl
 RUN yes | pip install python-gflags \
  && yes | pip install visdom \
  && yes | pip install tqdm \
- && yes | pip install pandas 
+ && yes | pip install pandas
 
 
 # 2. Download Cao's datasets and results
