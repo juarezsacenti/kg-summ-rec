@@ -1,6 +1,6 @@
 ### BUILD:  docker build -t joint-kg-recommender:1.0 .
 ### RUN:    docker run --rm -it --gpus all -v "$PWD"/joint-kg-recommender_data:/data -w /data joint-kg-recommender:1.0 /bin/bash -c "$CMD"
-FROM nvcr.io/nvidia/pytorch:20.03-py3
+FROM nvcr.io/nvidia/pytorch:21.04-py3
 
 # 1. Joint-kg-recommender setup
 RUN git clone https://github.com/TaoMiner/joint-kg-recommender.git
@@ -20,12 +20,10 @@ RUN mkdir datasets \
  && unzip datasets.zip \
  && mkdir ml-cao \
  && mv datasets的副本/ml1m ml-cao/ml1m \
- && cd .. \
- && mkdir /data/results \
- && mkdir /data/results/ml-cao
+ && cd ..
 
 ################################################################################
 #                                     CMD                                     #
 ################################################################################
 CMD training_steps=$((686 * 350)) \
- && CUDA_VISIBLE_DEVICES=0 python run_item_recommendation.py -batch_size 1024 -data_path ../datasets/ml-cao/ -dataset ml1m -early_stopping_steps_to_wait $((training_steps + 1)) -embedding_size 100 -eval_interval_steps $((training_steps - 1)) -nohas_visualization -joint_ratio 0.5 -kg_lambda 0.5 -l2_lambda 1e-5 -learning_rate 0.005 -log_path /data/results/ml-cao/ -model_type fm -negtive_samples 1 -norm_lambda 1 -optimizer_type Adagrad -rec_test_files valid.dat:test.dat -seed 3 -topn 10 -training_steps ${training_steps}
+ && CUDA_VISIBLE_DEVICES=0 python run_item_recommendation.py -batch_size 1024 -data_path ../datasets/ml-cao/ -dataset ml1m -early_stopping_steps_to_wait $((training_steps + 1)) -embedding_size 100 -eval_interval_steps $((training_steps - 1)) -nohas_visualization -joint_ratio 0.5 -kg_lambda 0.5 -l2_lambda 1e-5 -learning_rate 0.005 -log_path /data/ -model_type fm -negtive_samples 1 -norm_lambda 1 -optimizer_type Adagrad -rec_test_files valid.dat:test.dat -seed 3 -topn 10 -training_steps ${training_steps}
