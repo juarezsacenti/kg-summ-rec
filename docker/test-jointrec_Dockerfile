@@ -1,6 +1,6 @@
 ### BUILD:  docker build -t joint-kg-recommender:1.0 .
-### RUN:    docker run --rm -it --gpus all -v "$PWD"/joint-kg-recommender_data:/data -w /data joint-kg-recommender:1.0 /bin/bash -c "$CMD"
-FROM nvcr.io/nvidia/pytorch:21.04-py3
+### RUN:    docker run --rm -it --gpus all -v "$PWD"/joint-kg-recommender_data:/data -w /workspace/joint-kg-recommender joint-kg-recommender:1.0 /bin/bash -c "$CMD"
+FROM nvcr.io/nvidia/pytorch:18.01-py3
 
 # 1. Joint-kg-recommender setup
 RUN git clone https://github.com/TaoMiner/joint-kg-recommender.git
@@ -8,12 +8,19 @@ RUN git clone https://github.com/TaoMiner/joint-kg-recommender.git
 RUN wget -O torch-0.3.0.post4-cp36-cp36m-linux_x86_64.whl https://download.pytorch.org/whl/cu75/torch-0.3.0.post4-cp36-cp36m-linux_x86_64.whl
 RUN pip install torch-0.3.0.post4-cp36-cp36m-linux_x86_64.whl
 
-RUN cd joint-kg-recommender \
- && chmod +x requirements.txt \
- && sh requirements.txt \
- && cd ..
+#RUN cd joint-kg-recommender \
+# && chmod +x requirements.txt \
+# && sh requirements.txt \
+# && cd ..
+
+RUN yes | pip install python-gflags \
+ && yes | pip install visdom \
+ && yes | pip install tqdm \
+ && yes | pip install pandas \
+
 
 # 2. Download Cao's datasets and results
+RUN apt-get update -y && apt-get install -y unzip
 RUN mkdir datasets \
  && cd datasets \
  && wget --no-check-certificate 'https://docs.google.com/uc?export=download&id=1FIbaWzP6AWUNG2-8q6SKQ3b9yTiiLvGW' -O datasets.zip \
