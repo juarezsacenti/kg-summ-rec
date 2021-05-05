@@ -8,24 +8,24 @@ RUN git clone https://github.com/TaoMiner/joint-kg-recommender.git
 RUN wget -O torch-0.3.0.post4-cp36-cp36m-linux_x86_64.whl https://download.pytorch.org/whl/cu75/torch-0.3.0.post4-cp36-cp36m-linux_x86_64.whl
 RUN pip install torch-0.3.0.post4-cp36-cp36m-linux_x86_64.whl
 
-RUN cd joint-kg-recommender
- && chmod +x requirements.txt
- && sh requirements.txt
+RUN cd joint-kg-recommender \
+ && chmod +x requirements.txt \
+ && sh requirements.txt \
  && cd ..
 
 # 2. Download Cao's datasets and results
-RUN mkdir datasets
- && cd datasets
- && wget --no-check-certificate 'https://docs.google.com/uc?export=download&id=1FIbaWzP6AWUNG2-8q6SKQ3b9yTiiLvGW' -O datasets.zip
- && unzip datasets.zip
- && mkdir ml-cao
- && mv datasets的副本/ml1m ml-cao/ml1m
- && cd ..
- && mkdir /data/results
+RUN mkdir datasets \
+ && cd datasets \
+ && wget --no-check-certificate 'https://docs.google.com/uc?export=download&id=1FIbaWzP6AWUNG2-8q6SKQ3b9yTiiLvGW' -O datasets.zip \
+ && unzip datasets.zip \
+ && mkdir ml-cao \
+ && mv datasets的副本/ml1m ml-cao/ml1m \
+ && cd .. \
+ && mkdir /data/results \
  && mkdir /data/results/ml-cao
 
 ################################################################################
 #                                     CMD                                     #
 ################################################################################
-CMD training_steps=$((686 * 350))
+CMD training_steps=$((686 * 350)) \
  && CUDA_VISIBLE_DEVICES=0 python run_item_recommendation.py -batch_size 1024 -data_path ../datasets/ml-cao/ -dataset ml1m -early_stopping_steps_to_wait $((training_steps + 1)) -embedding_size 100 -eval_interval_steps $((training_steps - 1)) -nohas_visualization -joint_ratio 0.5 -kg_lambda 0.5 -l2_lambda 1e-5 -learning_rate 0.005 -log_path /data/results/ml-cao/ -model_type fm -negtive_samples 1 -norm_lambda 1 -optimizer_type Adagrad -rec_test_files valid.dat:test.dat -seed 3 -topn 10 -training_steps ${training_steps}
