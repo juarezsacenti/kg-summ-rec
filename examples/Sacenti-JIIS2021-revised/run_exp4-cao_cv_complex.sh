@@ -685,4 +685,4 @@ run_experiment() {
 }
 
 run_experiment $1 $2 $3
-#bash -i examples/Sacenti-JIIS2021-revised/run_exp4-cao_cv_complex.sh "JIIS-revised-exp4" 3 'true' |& tee out-exp4-1.txt
+#bash -i examples/Sacenti-JIIS2021-revised/run_exp4-cao_cv_complex.sh "JIIS-revised-exp4-2" 3 'true' |& tee out-exp4-2-1.txt
