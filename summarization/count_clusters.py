@@ -4,6 +4,7 @@ import pandas as pd
 
 def count_clusters(clusterfile):
     c_map = defaultdict(list)
+    count = {}
     with open(clusterfile) as fin:
         for line in fin:
             (relation, uri, cluster) = line.rstrip('\n').split('\t')
