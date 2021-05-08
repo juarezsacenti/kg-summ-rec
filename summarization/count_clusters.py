@@ -8,7 +8,7 @@ def count_clusters(clusterfile):
         for line in fin:
             (relation, uri, cluster) = line.rstrip('\n').split('\t')
             c_map[cluster].append(uri)
-    for k, v in c_map:
+    for k, v in c_map.items():
         count[sorted(v)] = count.setdefault(sorted(v), 0) + 1
     c_df = pd.DataFrame.from_dict(count, orient='index')
     print(c_df.value_counts())
