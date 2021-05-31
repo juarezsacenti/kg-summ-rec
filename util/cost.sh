@@ -29,14 +29,24 @@ log_duration() {
 
 DATASET=$1
 
-CFKG_SEC=$(log_duration "$HOME/git/results/${DATASET}/ml1m-transe-*.log")
-CKE_SEC=$(log_duration "$HOME/git/results/${DATASET}/ml1m-transh-*.log")
-COFM_SEC=$(log_duration "$HOME/git/results/${DATASET}/ml1m-bprmf-*.log")
-KTUP_SEC=$(log_duration "$HOME/git/results/${DATASET}/ml1m-transup-*.log")
+TRANSE_SEC=$(log_duration "$HOME/git/results/${DATASET}/ml1m-transe-*.log")
+TRANSH_SEC=$(log_duration "$HOME/git/results/${DATASET}/ml1m-transh-*.log")
+BPRMF_SEC=$(log_duration "$HOME/git/results/${DATASET}/ml1m-bprmf-*.log")
+TUP_SEC=$(log_duration "$HOME/git/results/${DATASET}/ml1m-transup-*.log")
+CFKG_SEC=$(log_duration "$HOME/git/results/${DATASET}/ml1m-cfkg-*.log")
+CKE_SEC=$(log_duration "$HOME/git/results/${DATASET}/ml1m-cke-*.log")
+COFM_SEC=$(log_duration "$HOME/git/results/${DATASET}/ml1m-cofm-*.log")
+KTUP_SEC=$(log_duration "$HOME/git/results/${DATASET}/ml1m-jtransup-*.log")
+
 
 # echo "KG-based RS \t Seconds \t Training Duration"
-echo "TransE \t $CFKG_SEC \t "`date +%H:%M:%S -ud @${CFKG_SEC}`
-echo "TransH \t $CKE_SEC \t "`date +%H:%M:%S -ud @${CKE_SEC}`
-echo "BPRMF \t $COFM_SEC \t "`date +%H:%M:%S -ud @${COFM_SEC}`
-echo "TUP \t $KTUP_SEC \t "`date +%H:%M:%S -ud @${KTUP_SEC}`
+echo "TransE \t $TRANSE_SEC \t "`date +%H:%M:%S -ud @${TRANSE_SEC}`
+echo "TransH \t $TRANSH_SEC \t "`date +%H:%M:%S -ud @${TRANSH_SEC}`
+echo "BPRMF \t $BPRMF_SEC \t "`date +%H:%M:%S -ud @${BPRMF_SEC}`
+echo "TUP \t $TUP_SEC \t "`date +%H:%M:%S -ud @${TUP_SEC}`
+echo "CFKG \t $CFKG_SEC \t "`date +%H:%M:%S -ud @${CFKG_SEC}`
+echo "CKE \t $CKE_SEC \t "`date +%H:%M:%S -ud @${CKE_SEC}`
+echo "CoFM \t $COFM_SEC \t "`date +%H:%M:%S -ud @${COFM_SEC}`
+echo "KTUP \t $KTUP_SEC \t "`date +%H:%M:%S -ud @${KTUP_SEC}`
+
 

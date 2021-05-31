@@ -3,7 +3,7 @@ import pandas as pd
 import requests
 
 from ampligraph.datasets import load_from_csv
-from ampligraph.latent_features import ComplEx
+from ampligraph.latent_features import HolE, ComplEx
 from ampligraph.evaluation import evaluate_performance
 from ampligraph.evaluation import mr_score, mrr_score, hits_at_n_score
 from ampligraph.evaluation import train_test_split_no_unseen
@@ -17,7 +17,7 @@ X = load_from_csv('.', 'football.csv', sep=',')[:, 1:]
 X_train, X_test = train_test_split_no_unseen(X, test_size=10000)
 
 # ComplEx model
-model = ComplEx(batches_count=50,
+model = HolE(batches_count=50,
                 epochs=300,
                 k=100,
                 eta=20,
@@ -117,6 +117,6 @@ def plot_clusters(hue):
     adjust_text(texts)
 
 plot_clusters("continent")
-plt.savefig('./temp/continent.png')
+plt.savefig('/data/temp/continent.png')
 plot_clusters("cluster")
-plt.savefig('./temp/cluster.png')
+plt.savefig('/data/temp/cluster.png')
